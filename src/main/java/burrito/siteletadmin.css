@@ -1,0 +1,16 @@
+.highlighted {
+	border: 1px dotted #849F77;
+	margin: -1px;	
+}
+
+.sitelets-admin-header-wrapper {
+	border: 1px solid #849F77;
+	border-bottom: none;	
+	background-color: #D1EFC2;
+	font-family: helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.sitelets-admin-header {
+	padding: 2px 3px;	
+}

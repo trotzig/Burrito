@@ -1,0 +1,33 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-
+jsptaglibrary_2_0.xsd" 
+  version="2.0">  
+  <tlib-version>1.0</tlib-version>
+  <short-name>Burrito tags</short-name>
+  <uri>/burrito-tags</uri>
+  <tag-file>
+    <name>cache</name>
+    <path>/META-INF/tags/cache.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>cacheadmin</name>
+    <path>/META-INF/tags/cacheadmin.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>message</name>
+    <path>/META-INF/tags/message.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>sitelet</name>
+    <path>/META-INF/tags/sitelet.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>siteletbox</name>
+    <path>/META-INF/tags/siteletbox.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>siteletboxadmin</name>
+    <path>/META-INF/tags/siteletboxadmin.tag</path>
+  </tag-file>
+</taglib> 

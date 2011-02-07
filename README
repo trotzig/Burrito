@@ -1,0 +1,5 @@
+Install private dependencies in your local repository with these commands:
+mvn install:install-file -Dfile=libs/mvcaur-0.1.jar -DgroupId=texmex -DartifactId=taco -Dversion=0.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=libs/gwt-kanal5play-1.0.3.jar -DgroupId=texmex -DartifactId=widgets -Dversion=0.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=libs/gwt-kanal5play-serverside-1.0.3.jar -DgroupId=texmex -DartifactId=widgets-serverside -Dversion=0.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=libs/siena-0.7.7.jar -DgroupId=siena -DartifactId=siena -Dversion=0.7.7 -Dpackaging=jar -DgeneratePom=true

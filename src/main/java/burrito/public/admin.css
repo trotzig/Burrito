@@ -1,0 +1,160 @@
+body {
+	margin: 0px;
+	padding: 0px;	
+}
+body, table, input, select, textarea, iframe {
+	color: #333;	
+	font-family: helvetica, arial, sans-serif;
+	font-size: 12px;
+}
+input[type=text], select, textarea {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #666;
+	padding: 1px 3px;
+}
+textarea {
+	width: 400px;
+	height: 150px;	
+}
+
+
+input[disabled='disabled'] {
+	background-color: #CCC;	
+}
+table {
+	border-collapse: collapse;	
+}
+
+.k5-PageController {
+	margin: 5px 0px;
+}
+
+.k5-PageController-label {
+	margin-right: 3px;
+}
+
+.k5-PageController-arrow {
+	margin: 0 5px;
+}
+
+.k5-PageController-previous {
+	
+}
+
+.k5-PageController-link {
+	padding: 3px 5px;
+	float: left;
+	display: block;
+	color: #0079aa;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.k5-PageController-link:hover {
+	background-color: #ebebeb;
+}
+
+.k5-PageController-link-selected {
+	font-weight: bold;
+	color: #9fa1a4;
+	text-decoration: none;
+}
+
+
+.k5-Table .header td {
+	border-bottom: 1px solid #CCC;
+	cursor: pointer;
+}
+
+.k5-Table .header .current-sort {
+	font-weight: bold;
+	padding-left: 10px;
+	background-image: url(images/sort-descending.png);
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+
+.k5-Table .header .current-sort.ascending {
+	background-image: url(images/sort-ascending.png);
+}
+
+.k5-Table td {
+	padding: 3px 5px;
+}
+
+.k5-Table .k5-Table-row-selected {
+	background-color: #FFFFEF;
+}
+
+.k5-Table-row-odd {
+	background-color: #F0F0F0;
+}
+
+.k5-CrudPanelTop {
+	margin-bottom: 20px;
+}
+
+.k5-CrudPanelTop-breadcrumbs {
+	padding: 5px 10px;
+}
+
+.k5-CrudPanel-content, .k5-SiteletAdminPanel-content {
+	padding: 5px 10px;	
+}
+
+.k5-CrudEntityIndex-description {
+	font-style: italic;
+}
+
+.validationError {
+	color: red;
+}
+.k5-EditForm-label {
+	font-weight: bold;
+	color: #666;
+}
+.k5-EditForm-description {
+	color: #666;
+	font-size: 90%;
+	margin-bottom: 5px;
+}
+
+.k5-DateTimePicker-dateHeader, .k5-DateTimePicker-timeheader {
+	font-size: 90%;
+	color: #666;	
+}
+
+.k5-MultiValueListBox {
+	width: 300px;	
+	height: 200px;
+}
+
+.k5-InputField input {
+	width:300px;
+}
+.gwt-DialogBox .dialogContent {
+	padding: 10px 20px 20px 20px;
+}
+
+.k5-CrudEntityIndex-search .k5-SelectionBox, .k5-CrudEntityIndex-search input, .k5-CrudEntityIndex-search .gwt-HTML {
+	float: left;
+}
+
+.k5-RelationSelectionListWrapper-entity-edit .dialogContent {
+	max-height: 400px;
+	overflow: auto;
+}
+
+.k5-StringListWidget-TagPanel {
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+.k5-StringListWidget-TagPanel-TagButton {
+	margin-right: 4px;
+	font-family: monospace;
+	font-size: small;
+	background-color: #FFEEDD;
+	border: 1px solid #545454;
+}
