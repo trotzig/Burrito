@@ -1,13 +1,12 @@
 package burrito.client.crud.input;
 
-import burrito.client.SiteConstants;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.ImageField;
+import burrito.client.widgets.blobstore.BlobStoreImageField;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import burrito.client.widgets.blobstore.BlobStoreImageField;
 
 @SuppressWarnings("rawtypes")
 public class ImageCrudInputField implements CrudInputField {
@@ -76,11 +75,11 @@ public class ImageCrudInputField implements CrudInputField {
 				}
 			}
 
-			if (requiredWidth != null && requiredWidth > SiteConstants.tripletImageWidth) {
+			if (requiredWidth != null) {
 				if (previewUrl != null && previewUrl.startsWith("/images/view/")) {
 					if (previewUrl.indexOf('?') >= 0) previewUrl += '&';
 					else previewUrl += '?';
-					previewUrl += "width=" + SiteConstants.tripletImageWidth;
+					previewUrl += "width=217";
 				}
 			}
 		}
