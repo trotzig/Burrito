@@ -15,10 +15,10 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 
 import siena.Model;
 import burrito.annotations.SearchableField;
+import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.StringUtils;
 
-import com.kanal5.play.client.widgets.panels.table.ItemCollection;
-import com.kanal5.play.client.widgets.panels.table.PageMetaData;
 
 /**
  * Idéerna till den här klassen kommer främst från

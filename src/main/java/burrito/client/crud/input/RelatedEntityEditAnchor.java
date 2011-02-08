@@ -15,8 +15,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
-import com.kanal5.play.client.widgets.InfoMessagePopup;
-import com.kanal5.play.client.widgets.form.EditForm;
+import burrito.client.widgets.InfoMessagePopup;
+import burrito.client.widgets.form.EditForm;
 
 public class RelatedEntityEditAnchor extends Anchor {
 

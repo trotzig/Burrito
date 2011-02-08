@@ -1,6 +1,6 @@
 <%@ tag isELIgnored="false" body-content="scriptless" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="burrito" tagdir="/WEB-INF/tags/burrito" %>
+<%@ taglib prefix="burrito" uri="/burrito-tags" %>
 <%@ tag import="java.io.StringWriter" %>
 <%@ tag import="burrito.util.Cache" %>
 

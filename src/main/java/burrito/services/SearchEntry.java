@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import com.kanal5.play.client.widgets.panels.table.ItemCollection;
-import com.kanal5.play.client.widgets.panels.table.PageMetaData;
+import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
 
 import siena.Generator;
 import siena.Id;

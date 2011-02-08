@@ -9,6 +9,10 @@ import burrito.client.crud.CrudService;
 import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.inputfield.StringInputField;
+import burrito.client.widgets.inputfield.URLInputfield;
+import burrito.client.widgets.selection.SelectionList;
+import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -22,11 +26,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.kanal5.play.client.widgets.inputfield.StringInputField;
-import com.kanal5.play.client.widgets.inputfield.URLInputfield;
-import com.kanal5.play.client.widgets.layout.VerticalSpacer;
-import com.kanal5.play.client.widgets.selection.SelectionList;
-import com.kanal5.play.client.widgets.selection.SelectionListLabelCreator;
+import burrito.client.widgets.layout.VerticalSpacer;
 
 public class LinkedEntityWidgetPopup extends DialogBox {
 	public static interface SaveHandler {

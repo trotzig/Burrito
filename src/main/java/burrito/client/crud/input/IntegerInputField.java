@@ -1,10 +1,11 @@
 package burrito.client.crud.input;
 
+import burrito.client.widgets.inputfield.InputField;
+import burrito.client.widgets.validation.InputFieldValidator;
+import burrito.client.widgets.validation.ValidationException;
+
 import com.google.gwt.core.client.GWT;
-import com.kanal5.play.client.widgets.inputfield.InputField;
-import com.kanal5.play.client.widgets.messages.CommonMessages;
-import com.kanal5.play.client.widgets.validation.InputFieldValidator;
-import com.kanal5.play.client.widgets.validation.ValidationException;
+import burrito.client.widgets.messages.CommonMessages;
 
 public class IntegerInputField extends InputField<Integer> {
 	private CommonMessages messages = GWT.create(CommonMessages.class);

@@ -2,13 +2,15 @@
 <module rename-to='burrito'>
 	<!-- Inherit the core Web Toolkit stuff.                        -->
 	<inherits name='com.google.gwt.user.User' />
-
+	
+	<!-- Inherit Burrito widgets -->
+	<inherits name='burrito.BurritoWidgets' />
 	<!-- Inherit default theme -->
 	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 	<!-- Other module inherits                                      -->
 
 	<!-- This module contains admin widgets: -->
-	<inherits name="com.kanal5.play.Kanal5Widgets" />
+	<inherits name="burrito.BurritoWidgets" />
 	
 	<stylesheet src="admin.css" />
 	<script src="crudmessages.js"/>

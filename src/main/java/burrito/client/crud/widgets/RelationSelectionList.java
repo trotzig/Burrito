@@ -11,11 +11,11 @@ import java.util.Map;
 import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.CrudService;
 import burrito.client.crud.CrudServiceAsync;
+import burrito.client.widgets.selection.SelectionList;
+import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.kanal5.play.client.widgets.selection.SelectionList;
-import com.kanal5.play.client.widgets.selection.SelectionListLabelCreator;
 
 /**
  * Lists all values from an entity in a selection list. Values are fetched

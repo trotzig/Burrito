@@ -25,8 +25,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.kanal5.play.client.widgets.form.EditForm;
-import com.kanal5.play.client.widgets.layout.VerticalSpacer;
+import burrito.client.widgets.form.EditForm;
+import burrito.client.widgets.layout.VerticalSpacer;
 
 public class SiteletEditPanel extends Composite {
 

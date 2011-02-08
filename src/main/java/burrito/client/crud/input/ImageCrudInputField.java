@@ -7,7 +7,7 @@ import burrito.client.crud.generic.fields.ImageField;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.blobstore.BlobStoreImageField;
+import burrito.client.widgets.blobstore.BlobStoreImageField;
 
 @SuppressWarnings("rawtypes")
 public class ImageCrudInputField implements CrudInputField {

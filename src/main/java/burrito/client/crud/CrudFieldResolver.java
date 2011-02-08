@@ -34,13 +34,13 @@ import burrito.client.crud.input.RichTextInputField;
 import burrito.client.crud.input.SelectionListField;
 import burrito.client.crud.input.StringListInputField;
 import burrito.client.crud.input.StringSelectionListField;
+import burrito.client.widgets.inputfield.LongInputField;
+import burrito.client.widgets.inputfield.StringInputField;
+import burrito.client.widgets.validation.InputFieldValidator;
+import burrito.client.widgets.validation.ValidationException;
 
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBoxBase;
-import com.kanal5.play.client.widgets.inputfield.LongInputField;
-import com.kanal5.play.client.widgets.inputfield.StringInputField;
-import com.kanal5.play.client.widgets.validation.InputFieldValidator;
-import com.kanal5.play.client.widgets.validation.ValidationException;
 
 /**
  * Utility class that knows how to translate a {@link CrudField} (which is a

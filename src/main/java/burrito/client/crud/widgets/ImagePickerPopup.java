@@ -11,7 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.kanal5.play.client.widgets.blobstore.BlobStoreUploader;
+import burrito.client.widgets.blobstore.BlobStoreUploader;
 
 public class ImagePickerPopup extends DialogBox {
 

@@ -1,5 +1,5 @@
 <%@ tag isELIgnored="false" pageEncoding="UTF-8" %>
-<%@ taglib prefix="burrito" tagdir="/WEB-INF/tags/burrito" %>
+<%@ taglib prefix="burrito" uri="/burrito-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ attribute name="id" required="true" %>

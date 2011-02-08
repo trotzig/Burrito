@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.layout.VerticalSpacer;
+import burrito.client.widgets.layout.VerticalSpacer;
 
 public class SiteletAdminPanel extends Composite implements ValueChangeHandler<String> {
 

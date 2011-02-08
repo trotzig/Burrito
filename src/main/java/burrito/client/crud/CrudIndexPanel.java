@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.kanal5.play.client.widgets.layout.VerticalSpacer;
+import burrito.client.widgets.layout.VerticalSpacer;
 
 /**
  * Generic panel that displays all editable entities (as decided by

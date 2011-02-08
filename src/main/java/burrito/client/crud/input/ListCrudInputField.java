@@ -14,7 +14,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.form.EditForm;
+import burrito.client.widgets.form.EditForm;
 
 @SuppressWarnings("rawtypes")
 public class ListCrudInputField implements CrudInputField {

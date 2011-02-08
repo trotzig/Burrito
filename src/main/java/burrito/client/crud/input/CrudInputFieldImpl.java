@@ -2,9 +2,9 @@ package burrito.client.crud.input;
 
 
 import burrito.client.crud.generic.CrudField;
+import burrito.client.widgets.inputfield.InputField;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.inputfield.InputField;
 
 public class CrudInputFieldImpl<T> implements CrudInputField<T> {
 

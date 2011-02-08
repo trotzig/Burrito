@@ -1,7 +1,7 @@
 package burrito.client.crud.generic;
 
-import com.kanal5.play.client.widgets.panels.table.ItemCollection;
-import com.kanal5.play.client.widgets.panels.table.Table;
+import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.Table;
 
 /**
  * Describes a collection of entities of a certain type. Instances of this class

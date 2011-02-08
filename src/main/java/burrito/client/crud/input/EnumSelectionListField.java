@@ -9,12 +9,12 @@ import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.EnumField;
 import burrito.client.crud.labels.CrudLabelHelper;
+import burrito.client.widgets.selection.SelectionList;
+import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.selection.SelectionList;
-import com.kanal5.play.client.widgets.selection.SelectionListLabelCreator;
 
 @SuppressWarnings("rawtypes")
 public class EnumSelectionListField implements CrudInputField {

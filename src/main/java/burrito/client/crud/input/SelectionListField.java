@@ -5,6 +5,8 @@ import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.widgets.RelationSelectionList;
+import burrito.client.widgets.validation.HasValidators;
+import burrito.client.widgets.validation.InputFieldValidator;
 
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
@@ -13,9 +15,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.form.EditForm;
-import com.kanal5.play.client.widgets.validation.HasValidators;
-import com.kanal5.play.client.widgets.validation.InputFieldValidator;
+import burrito.client.widgets.form.EditForm;
 
 @SuppressWarnings("rawtypes")
 public class SelectionListField implements CrudInputField {

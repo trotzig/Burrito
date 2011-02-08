@@ -5,9 +5,9 @@ import java.util.List;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.generic.CrudEntityList;
+import burrito.client.widgets.panels.table.PageMetaData;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.kanal5.play.client.widgets.panels.table.PageMetaData;
 
 /**
  * The asynchronous version of {@link CrudService}

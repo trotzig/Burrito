@@ -5,11 +5,10 @@ import burrito.controller.AdminController;
 import burrito.controller.VoidController;
 import burrito.render.MessagesRenderer;
 import burrito.render.SiteletAdminCSSRenderer;
+import burrito.server.blobstore.BlobServiceImpl;
+import burrito.server.blobstore.BlobStoreServlet;
 import burrito.services.CrudServiceImpl;
 import burrito.services.SiteletServiceImpl;
-
-import com.kanal5.play.server.blobstore.BlobServiceImpl;
-import com.kanal5.play.server.blobstore.BlobStoreServlet;
 
 public class AdminRouter extends Router {
 

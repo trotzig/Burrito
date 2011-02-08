@@ -5,10 +5,10 @@ import java.util.Date;
 
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.DateField;
+import burrito.client.widgets.date.DateTimePickerWidget;
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.date.DateTimePickerWidget;
 
 public class DateCrudInputField implements CrudInputField<Date> {
 

@@ -5,8 +5,8 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.StringSelectionField;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.selection.SelectionList;
-import com.kanal5.play.client.widgets.selection.SelectionListLabelCreator;
+import burrito.client.widgets.selection.SelectionList;
+import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 @SuppressWarnings("rawtypes")
 public class StringSelectionListField implements CrudInputField {

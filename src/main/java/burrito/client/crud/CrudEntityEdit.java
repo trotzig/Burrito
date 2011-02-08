@@ -7,14 +7,14 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.labels.CrudLabelHelper;
+import burrito.client.widgets.form.EditForm;
+import burrito.client.widgets.inputfield.InputField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.form.EditForm;
-import com.kanal5.play.client.widgets.inputfield.InputField;
 
 /**
  * Generic panel that displays a form that can be used to edit/add an entity.

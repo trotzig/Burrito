@@ -8,6 +8,14 @@ import java.util.List;
 import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.panels.table.BatchAction;
+import burrito.client.widgets.panels.table.CellRenderer;
+import burrito.client.widgets.panels.table.Header;
+import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
+import burrito.client.widgets.panels.table.RowEditHandler;
+import burrito.client.widgets.panels.table.RowOrderHandler;
+import burrito.client.widgets.panels.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,16 +31,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.kanal5.play.client.widgets.InfoMessagePopup;
-import com.kanal5.play.client.widgets.layout.VerticalSpacer;
-import com.kanal5.play.client.widgets.panels.table.BatchAction;
-import com.kanal5.play.client.widgets.panels.table.CellRenderer;
-import com.kanal5.play.client.widgets.panels.table.Header;
-import com.kanal5.play.client.widgets.panels.table.ItemCollection;
-import com.kanal5.play.client.widgets.panels.table.PageMetaData;
-import com.kanal5.play.client.widgets.panels.table.RowEditHandler;
-import com.kanal5.play.client.widgets.panels.table.RowOrderHandler;
-import com.kanal5.play.client.widgets.panels.table.Table;
+import burrito.client.widgets.InfoMessagePopup;
+import burrito.client.widgets.layout.VerticalSpacer;
 
 /**
  * A panel showing a table of sitelets in a sitelet container

@@ -6,6 +6,8 @@ import java.util.List;
 
 
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.validation.HasValidators;
+import burrito.client.widgets.validation.InputFieldValidator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,8 +18,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.kanal5.play.client.widgets.validation.HasValidators;
-import com.kanal5.play.client.widgets.validation.InputFieldValidator;
 
 public class LinkedEntityWidget extends Composite implements HasValidators {
 	private VerticalPanel wrapper = new VerticalPanel();

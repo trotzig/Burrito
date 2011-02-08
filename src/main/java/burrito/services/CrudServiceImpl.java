@@ -51,12 +51,12 @@ import burrito.client.crud.generic.fields.RichTextField;
 import burrito.client.crud.generic.fields.StringField;
 import burrito.client.crud.generic.fields.StringListField;
 import burrito.client.crud.generic.fields.StringSelectionField;
+import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.links.Linkable;
 
 import com.google.gson.Gson;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.kanal5.play.client.widgets.panels.table.ItemCollection;
-import com.kanal5.play.client.widgets.panels.table.PageMetaData;
 
 /**
  * Service that deals with all the serialization/deserialization of objects from
