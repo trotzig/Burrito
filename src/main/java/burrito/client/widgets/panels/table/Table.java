@@ -47,6 +47,7 @@ import burrito.client.widgets.layout.VerticalSpacer;
  * @param T
  *            the type of object contained within the model list
  */
+@SuppressWarnings("deprecation")
 public abstract class Table<T extends Serializable> extends Composite {
 
 	public static interface LoadedCallback<T extends Serializable> {
