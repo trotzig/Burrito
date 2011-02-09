@@ -61,10 +61,10 @@ public class PageController extends Composite {
 			label.addStyleName("k5-PageController-label");
 			wrapper.add(label);
 		}
-		next = new PushButton(new Image(GWT.getModuleBaseURL() + "page-next.png?v=2"));
-		previous = new PushButton(new Image(GWT.getModuleBaseURL() + "page-previous.png?v=2"));
-		next.getUpDisabledFace().setImage(new Image(GWT.getModuleBaseURL() + "page-next-disabled.png?v=2"));
-		previous.getUpDisabledFace().setImage(new Image(GWT.getModuleBaseURL() + "page-previous-disabled.png?v=2"));
+		next = new PushButton(new Image(GWT.getModuleBaseURL() + "images/page-next.png?v=2"));
+		previous = new PushButton(new Image(GWT.getModuleBaseURL() + "images/page-previous.png?v=2"));
+		next.getUpDisabledFace().setImage(new Image(GWT.getModuleBaseURL() + "images/page-next-disabled.png?v=2"));
+		previous.getUpDisabledFace().setImage(new Image(GWT.getModuleBaseURL() + "images/page-previous-disabled.png?v=2"));
 		next.addStyleName("k5-PageController-nextButton");
 		previous.addStyleName("k5-PageController-previousButton");
 		currentPageLabel = createCurrentPageAnchor();

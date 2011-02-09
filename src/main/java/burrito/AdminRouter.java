@@ -1,5 +1,8 @@
 package burrito;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+
 import mvcaur.Router;
 import burrito.controller.AdminController;
 import burrito.controller.VoidController;
@@ -12,6 +15,8 @@ import burrito.services.SiteletServiceImpl;
 
 public class AdminRouter extends Router {
 
+	UserService service = UserServiceFactory.getUserService();
+	
 	@Override
 	public void init() {
 		route("/admin").through(AdminController.class).renderedBy("/Admin.jsp");
@@ -24,4 +29,13 @@ public class AdminRouter extends Router {
 	}
 	
 
+	@Override
+	public boolean isUserAdmin() {
+		UserService service = UserServiceFactory.getUserService();
+		if (!service.isUserLoggedIn()) {
+			return false;
+		}
+		return service.isUserAdmin();
+	}
+	
 }

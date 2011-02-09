@@ -22,7 +22,7 @@ public class BlobStoreUploader extends Composite {
 	private FormPanel form = new FormPanel();
 	private BlobServiceAsync service = GWT.create(BlobService.class);
 	private FileUpload file = new FileUpload();
-	private Image progress = new Image("/themes/default/images/loading.gif");
+	private Image progress = new Image(GWT.getModuleBaseURL() + "images/loading.gif");
 	
 	public BlobStoreUploader(final AsyncCallback<String> callback) {
 		this(null, null, callback);

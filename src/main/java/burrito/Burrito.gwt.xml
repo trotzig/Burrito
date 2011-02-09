@@ -17,6 +17,7 @@
 	
 	<!-- Specify the app entry point class.                         -->
 	<entry-point class='burrito.client.Burrito' />
+	<extend-property name="locale" values="sv" />
 
 	<!-- Specify the paths for translatable code                    -->
 	<source path='client' />

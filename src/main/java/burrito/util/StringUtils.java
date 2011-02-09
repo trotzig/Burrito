@@ -117,4 +117,38 @@ public class StringUtils {
 	public static String escapeJavascript(String s) {
 		return StringEscapeUtils.escapeJavaScript(s);
 	}
+	
+
+	/**
+	 * Formats a number of seconds to hours, minutes and seconds.
+	 * 
+	 * @param seconds
+	 * @return
+	 */
+	public static String formatSeconds(long seconds) {
+		StringBuilder sb = new StringBuilder();
+		long hours = seconds / (3600);
+		if (hours > 0) {
+			sb.append(hours + " h");
+		}
+		long secondsRemaining = seconds % (3600);
+		long minutes = secondsRemaining / 60;
+		if (minutes > 0) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(minutes + " min");
+		}
+		long secs = secondsRemaining % 60;
+
+		if (secs > 0 || sb.length() == 0) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(secs + " s");
+		}
+		return sb.toString();
+	}
+	
+	
 }

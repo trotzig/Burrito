@@ -1,4 +1,4 @@
-<%@tag import="burrito.util.FriendlyDateFormatter"%>
+<%@tag import="burrito.util.StringUtils"%>
 <%@ tag isELIgnored="false" pageEncoding="UTF-8" %>
 <%@ taglib prefix="burrito" uri="/burrito-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -6,7 +6,7 @@
 <%@ attribute name="expirationSeconds" required="true" type="java.lang.Integer" %>
 <%
 	Integer expiration = (Integer)jspContext.getAttribute("expirationSeconds");
-	String expString = FriendlyDateFormatter.formatSeconds(expiration);
+	String expString = StringUtils.formatSeconds(expiration);
 %>
 
 <div class="cache-admin-controls">

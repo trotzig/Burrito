@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
+
 import mvcaur.Controller;
 import mvcaur.Renderer;
 
@@ -26,7 +28,7 @@ public class MessagesRenderer implements Renderer {
 		@SuppressWarnings("unchecked")
 		Map<String, String> res = (Map<String, String>) obj;
 		for (Entry<String, String> entry : res.entrySet()) {
-			writer.println("\"" + entry.getKey() + "\" : \"" + entry.getValue() +  "\",");
+			writer.println("\"" + entry.getKey() + "\" : \"" + CharEscapers.javascriptEscaper().escape(entry.getValue()) +  "\",");
 		}
 		writer.println("\"_dummy\" : \"dummy\""); //prevents syntax error
 		writer.println("};");

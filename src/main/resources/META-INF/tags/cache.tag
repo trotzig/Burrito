@@ -25,8 +25,8 @@
 	} 
 %>
 
-<c:if test="${pageUserAdmin}">
-	<kcmfaur:cacheadmin key="${key}" expirationSeconds="${expirationSeconds}"/>
+<c:if test="${mvcaur_userIsAdmin}">
+	<burrito:cacheadmin key="${key}" expirationSeconds="${expirationSeconds}"/>
 </c:if>
 
 <div id="${key}">
