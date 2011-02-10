@@ -3,7 +3,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>texmex</groupId>
 	<artifactId>burrito</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Internal Releases</name>
+			<url>http://cat994/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Releases</name>
+			<url>http://cat994/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -37,7 +49,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>burrito</groupId>
+			<groupId>texmex</groupId>
 			<artifactId>taco</artifactId>
 			<version>0.1.2</version>
 		</dependency>
