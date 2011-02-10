@@ -73,6 +73,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 1L;
 
 	private SearchManager searchManager = SearchManager.get();
+	private PluginCrudManager pluginManager = PluginCrudManager.get();
 
 	@SuppressWarnings("unchecked")
 	public List<CrudNameIdPair> getListValues(String entityName) {
@@ -441,13 +442,31 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private CrudField createCrudField(Field field, Object entity)
 			throws Exception {
+		field.setAccessible(true);
+
+		CrudField crud = pluginManager.process(field, entity); 
+		if (crud == null) {
+			crud = processStandardCrud(field, entity);
+		}
+		crud.setName(field.getName());
+		crud.setRequired(field.isAnnotationPresent(Required.class));
+		crud.setSearchable(field.isAnnotationPresent(SearchableField.class));
+		if (field.isAnnotationPresent(DefaultSort.class)) {
+			crud.setDefaultSort(true);
+			crud.setSortAscending(field.getAnnotation(DefaultSort.class)
+					.ascending());
+		}
+		return crud;
+	}
+
+	@SuppressWarnings("unchecked")
+	private CrudField processStandardCrud(Field field, Object entity)
+			throws IllegalAccessException {
 		CrudField crud = null;
 		@SuppressWarnings("rawtypes")
 		Class clazz = field.getType();
-		field.setAccessible(true);
 		if (clazz == Date.class) {
 			crud = new DateField((Date) field.get(entity),
 					field.isAnnotationPresent(ReadOnly.class));
@@ -525,14 +544,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			crud = stringCrud;
 		} else {
 			throw new RuntimeException("No such field type: " + clazz.getName());
-		}
-		crud.setName(field.getName());
-		crud.setRequired(field.isAnnotationPresent(Required.class));
-		crud.setSearchable(field.isAnnotationPresent(SearchableField.class));
-		if (field.isAnnotationPresent(DefaultSort.class)) {
-			crud.setDefaultSort(true);
-			crud.setSortAscending(field.getAnnotation(DefaultSort.class)
-					.ascending());
 		}
 		return crud;
 	}

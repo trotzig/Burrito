@@ -19,7 +19,7 @@ public class AdminRouter extends Router {
 	
 	@Override
 	public void init() {
-		route("/admin").through(AdminController.class).renderedBy("/Admin.jsp");
+		route("/burrito/admin").through(AdminController.class).renderedBy("/Admin.jsp");
 		route("/burrito/crudmessages.js").through(MessagesController.class).renderedBy(new MessagesRenderer());
 		route("/burrito/siteletadmin.css").through(VoidController.class).renderedBy(new SiteletAdminCSSRenderer());
 		route("/burrito/crud").throughServlet(CrudServiceImpl.class);

@@ -1,5 +1,6 @@
 package burrito.client.crud;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +53,8 @@ import com.google.gwt.user.client.ui.TextBoxBase;
  */
 public class CrudFieldResolver {
 
+	private static List<CrudFieldPluginHandler> pluginHandlers = new ArrayList<CrudFieldPluginHandler>();
+	
 	public static class RegexpInputFieldValidator implements
 			InputFieldValidator {
 
@@ -80,6 +83,12 @@ public class CrudFieldResolver {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static CrudInputField createInputField(CrudField field, CrudServiceAsync service) {
+		for (CrudFieldPluginHandler pluginHandler : pluginHandlers) {
+			CrudInputField<?> pluggedIn = pluginHandler.process(field);
+			if (pluggedIn != null) {
+				return pluggedIn;
+			}
+		}
 		// First handle specific cases:
 		if (field instanceof DisplayableMethodField) {
 			//this field has no input
@@ -165,5 +174,11 @@ public class CrudFieldResolver {
 		}
 		return null;
 	}
+	
+	
+	public static void addPluginHandler(CrudFieldPluginHandler handler) {
+		pluginHandlers.add(handler);
+	}
+	
 
 }

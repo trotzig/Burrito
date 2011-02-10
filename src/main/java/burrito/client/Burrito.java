@@ -27,7 +27,5 @@ public class Burrito implements EntryPoint {
 				return;
 			}
 		}
-		
-		
 	}
 }
