@@ -7,30 +7,29 @@
 <%@ attribute name="key" required="true" %>
 <%@ attribute name="expirationSeconds" required="true" type="java.lang.Integer" %>
 
-<%
-	String key = (String) jspContext.getAttribute("key");
-	Boolean doRecache = (Boolean) jspContext.getAttribute("doRecache", PageContext.REQUEST_SCOPE);
-
-	String cachedOutput;
-	if (doRecache != null && doRecache) cachedOutput = null;
-	else cachedOutput = (String) Cache.get(key);
-
-	if (cachedOutput == null) {
-	    StringWriter buffer = new StringWriter();
-	    getJspBody().invoke(buffer);
-	    cachedOutput = buffer.toString();
-
-	    Integer expirationSeconds = (Integer) jspContext.getAttribute("expirationSeconds");
-	    Cache.put(key, cachedOutput, expirationSeconds);
-	} 
-%>
-
 <c:if test="${mvcaur_userIsAdmin}">
 	<burrito:cacheadmin key="${key}" expirationSeconds="${expirationSeconds}"/>
 </c:if>
 
 <div id="${key}">
 	<%
+		String key = (String) jspContext.getAttribute("key");
+		Boolean doRecache = (Boolean) jspContext.getAttribute("doRecache", PageContext.REQUEST_SCOPE);
+
+		String cachedOutput;
+		if (doRecache != null && doRecache) cachedOutput = null;
+		else cachedOutput = (String) Cache.get(key);
+
+		if (cachedOutput == null) {
+		    Integer expirationSeconds = (Integer) jspContext.getAttribute("expirationSeconds");
+
+		    StringWriter buffer = new StringWriter();
+		    getJspBody().invoke(buffer); // this bad boy messes up attributes in the jsp context
+		    cachedOutput = buffer.toString();
+
+		    Cache.put(key, cachedOutput, expirationSeconds);
+		}
+
 		jspContext.getOut().print(cachedOutput);
 	%>
 </div>
