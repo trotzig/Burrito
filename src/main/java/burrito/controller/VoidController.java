@@ -1,6 +1,6 @@
 package burrito.controller;
 
-import mvcaur.Controller;
+import taco.Controller;
 
 public class VoidController implements Controller<Void> {
 

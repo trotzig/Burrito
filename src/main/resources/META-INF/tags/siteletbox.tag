@@ -8,7 +8,7 @@
 <%@tag import="burrito.sitelet.Sitelet"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<c:if test="${mvcaur_userIsAdmin}">
+<c:if test="${taco_userIsAdmin}">
 	<burrito:siteletboxadmin id="${id}"/>
 </c:if>
 <div id="${id}" class="sitelet-container">

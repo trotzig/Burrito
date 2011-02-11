@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
 
-import mvcaur.Controller;
-import mvcaur.Renderer;
+import taco.Controller;
+import taco.Renderer;
 
 public class MessagesRenderer implements Renderer {
 

@@ -7,7 +7,7 @@
 <%@ attribute name="key" required="true" %>
 <%@ attribute name="expirationSeconds" required="true" type="java.lang.Integer" %>
 
-<c:if test="${mvcaur_userIsAdmin}">
+<c:if test="${taco_userIsAdmin}">
 	<burrito:cacheadmin key="${key}" expirationSeconds="${expirationSeconds}"/>
 </c:if>
 

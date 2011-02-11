@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>texmex</groupId>
 			<artifactId>taco</artifactId>
-			<version>0.1.2</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>

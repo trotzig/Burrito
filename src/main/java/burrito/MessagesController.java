@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-import mvcaur.Controller;
+import taco.Controller;
 
 public class MessagesController implements Controller<Map<String, String>> {
 

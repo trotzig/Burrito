@@ -7,8 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import mvcaur.Controller;
-import mvcaur.Renderer;
+import taco.Controller;
+import taco.Renderer;
 
 public class SiteletAdminCSSRenderer implements Renderer {
 
