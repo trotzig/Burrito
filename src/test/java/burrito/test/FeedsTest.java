@@ -12,24 +12,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.Test;
 
 import burrito.AdminRouter;
-import burrito.services.ChannelSubscription;
+import burrito.services.FeedsSubscription;
 
-public class ChannelTest extends TestBase {
+public class FeedsTest extends TestBase {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testChannelControllers() throws UnsupportedEncodingException {
+	public void testFeedsControllers() throws UnsupportedEncodingException {
 
 		/*
 		 * Create a new channel
 		 */
 
-		Object o = TestUtils.runController("/burrito/channel/new", AdminRouter.class);
+		Object o = TestUtils.runController("/burrito/feeds/subscription/new", AdminRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -37,17 +36,20 @@ public class ChannelTest extends TestBase {
 
 		assertEquals("ok", result.get("status"));
 
+		String subscriptionId = result.get("subscriptionId");
 		String channelId = result.get("channelId");
 
+		assertNotNull(subscriptionId);
 		assertNotNull(channelId);
 
-		ChannelSubscription subscription = ChannelSubscription.getByChannelId(channelId);
+		FeedsSubscription subscription = FeedsSubscription.getById(Long.valueOf(subscriptionId));
 
 		assertNotNull(subscription);
 
 		String clientId = subscription.getClientId();
 
 		assertNotNull(clientId);
+		assertEquals(subscriptionId, subscription.getId().toString());
 		assertEquals(channelId, subscription.getChannelId());
 
 		List<String> feedIds = subscription.getFeedIds();
@@ -74,8 +76,8 @@ public class ChannelTest extends TestBase {
 		for (int i = 0; i < testFeedIds.length; i++)
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("/burrito/channel/");
-			sb.append(URLEncoder.encode(channelId, "UTF-8"));
+			sb.append("/burrito/feeds/subscription/");
+			sb.append(subscriptionId);
 			sb.append("/addFeed/");
 			sb.append(URLEncoder.encode(testFeedIds[ i ], "UTF-8"));
 
@@ -87,9 +89,10 @@ public class ChannelTest extends TestBase {
 
 			assertEquals("ok", result.get("status"));
 
-			subscription = ChannelSubscription.getByChannelId(channelId);
+			subscription = FeedsSubscription.getById(Long.valueOf(subscriptionId));
 
 			assertNotNull(subscription);
+			assertEquals(subscriptionId, subscription.getId().toString());
 			assertEquals(clientId, subscription.getClientId());
 			assertEquals(channelId, subscription.getChannelId());
 
@@ -112,8 +115,8 @@ public class ChannelTest extends TestBase {
 		 */
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("/burrito/channel/");
-		sb.append(URLEncoder.encode(channelId, "UTF-8"));
+		sb.append("/burrito/feeds/subscription/");
+		sb.append(subscriptionId);
 		sb.append("/keepAlive");
 
 		o = TestUtils.runController(sb.toString(), AdminRouter.class);
@@ -124,9 +127,10 @@ public class ChannelTest extends TestBase {
 
 		assertEquals("ok", result.get("status"));
 
-		subscription = ChannelSubscription.getByChannelId(channelId);
+		subscription = FeedsSubscription.getById(Long.valueOf(subscriptionId));
 
 		assertNotNull(subscription);
+		assertEquals(subscriptionId, subscription.getId().toString());
 		assertEquals(clientId, subscription.getClientId());
 		assertEquals(channelId, subscription.getChannelId());
 
@@ -142,7 +146,7 @@ public class ChannelTest extends TestBase {
 		 * Try adding a feed to a non-existing channel
 		 */
 
-		o = TestUtils.runController("/burrito/channel/" + UUID.randomUUID().toString() + "/addFeed/nonsense", AdminRouter.class);
+		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/addFeed/whatever", AdminRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -154,7 +158,7 @@ public class ChannelTest extends TestBase {
 		 * Try calling keepAlive on a non-existing channel
 		 */
 
-		o = TestUtils.runController("/burrito/channel/" + UUID.randomUUID().toString() + "/keepAlive", AdminRouter.class);
+		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/keepAlive", AdminRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 

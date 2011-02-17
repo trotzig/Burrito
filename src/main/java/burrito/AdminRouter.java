@@ -1,10 +1,10 @@
 package burrito;
 
 import taco.Router;
-import burrito.controller.AddChannelFeedController;
+import burrito.controller.AddFeedsSubscriptionFeedController;
 import burrito.controller.AdminController;
-import burrito.controller.KeepChannelAliveController;
-import burrito.controller.NewChannelController;
+import burrito.controller.KeepFeedsSubscriptionAliveController;
+import burrito.controller.NewFeedsSubscriptionController;
 import burrito.controller.VoidController;
 import burrito.render.MessagesRenderer;
 import burrito.render.SiteletAdminCSSRenderer;
@@ -30,9 +30,9 @@ public class AdminRouter extends Router {
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class);
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
 
-		route("/burrito/channel/new").through(NewChannelController.class).renderAsJson();
-		route("/burrito/channel/{channelId}/addFeed/{feedId}").through(AddChannelFeedController.class).renderAsJson();
-		route("/burrito/channel/{channelId}/keepAlive").through(KeepChannelAliveController.class).renderAsJson();
+		route("/burrito/feeds/subscription/new").through(NewFeedsSubscriptionController.class).renderAsJson();
+		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
+		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 	}
 	
 

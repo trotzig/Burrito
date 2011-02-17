@@ -12,7 +12,7 @@ import siena.Query;
 
 /**
  * This class describes a clients connection to the channel API. Each connected
- * client will have a corresponding {@link ChannelSubscription}. The subscription
+ * client will have a corresponding {@link FeedsSubscription}. The subscription
  * is kept alive by resetting the timestamp in regular intervals. Subscriptions
  * with a timestamp older than 5 minutes are considered inactive and will not
  * receive any updates.
@@ -22,7 +22,7 @@ import siena.Query;
  * @author henper
  */
 
-public class ChannelSubscription extends Model {
+public class FeedsSubscription extends Model {
 
 	@Id(Generator.AUTO_INCREMENT)
 	private Long id;
@@ -102,7 +102,7 @@ public class ChannelSubscription extends Model {
 	 * @param threadId
 	 * @return
 	 */
-	public static List<ChannelSubscription> getSubscriptionsForFeed(String feedId) {
+	public static List<FeedsSubscription> getSubscriptionsForFeed(String feedId) {
 		// Gets all active subscriptions. A subscriptions is considered to be
 		// active if it has a timestamp less than 5 minutes ago.
 		// A channel is kept alive by a ping from the client every 2 minutes or so.
@@ -123,18 +123,18 @@ public class ChannelSubscription extends Model {
 		this.timestamp = new Date();
 	}
 
-	private static Query<ChannelSubscription> all() {
-		return Model.all(ChannelSubscription.class);
+	private static Query<FeedsSubscription> all() {
+		return Model.all(FeedsSubscription.class);
 	}
 
 	/**
-	 * Gets a subscription by its channelId
+	 * Gets a subscription by its id
 	 * 
-	 * @param channelId
+	 * @param id
 	 * @return
 	 */
-	public static ChannelSubscription getByChannelId(String channelId) {
-		return all().filter("channelId", channelId).get();
+	public static FeedsSubscription getById(Long id) {
+		return all().filter("id", id).get();
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class ChannelSubscription extends Model {
 	 * expired after two hours. (See
 	 * http://code.google.com/appengine/docs/java/channel/overview.html)
 	 */
-	public static List<ChannelSubscription> getAllExpired() {
+	public static List<FeedsSubscription> getAllExpired() {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, -2);
 		return all().filter("timestamp <", cal.getTime()).fetch();

@@ -3,23 +3,23 @@ package burrito.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import burrito.services.ChannelSubscription;
+import burrito.services.FeedsSubscription;
 
 import taco.Controller;
 
-public class KeepChannelAliveController implements Controller<Map<String, String>> {
+public class KeepFeedsSubscriptionAliveController implements Controller<Map<String, String>> {
 
-	private String channelId;
+	private Long subscriptionId;
 
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
+	public void setSubscriptionId(Long subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 
 	@Override
 	public Map<String, String> execute() {
 		Map<String, String> result = new HashMap<String, String>();
 
-		ChannelSubscription subscription = ChannelSubscription.getByChannelId(channelId);
+		FeedsSubscription subscription = FeedsSubscription.getById(subscriptionId);
 
 		if (subscription != null)
 		{
@@ -31,7 +31,7 @@ public class KeepChannelAliveController implements Controller<Map<String, String
 		else
 		{
 			result.put("status", "error");
-			result.put("message", "No such channel subscription");
+			result.put("message", "No such subscription");
 		}
 
 		return result;

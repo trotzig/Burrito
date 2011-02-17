@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import burrito.services.ChannelSubscription;
+import burrito.services.FeedsSubscription;
 
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 
 import taco.Controller;
 
-public class NewChannelController implements Controller<Map<String, String>> {
+public class NewFeedsSubscriptionController implements Controller<Map<String, String>> {
 
 	@Override
 	public Map<String, String> execute() {
@@ -22,12 +22,14 @@ public class NewChannelController implements Controller<Map<String, String>> {
 		ChannelService service = ChannelServiceFactory.getChannelService();
 		String channelId = service.createChannel(clientId);
 
-		ChannelSubscription subscription = new ChannelSubscription();
+		FeedsSubscription subscription = new FeedsSubscription();
 		subscription.setClientId(clientId);
 		subscription.setChannelId(channelId);
 		subscription.insert();
 
 		result.put("status", "ok");
+		result.put("subscriptionId", subscription.getId().toString());
+		result.put("method", "push");
 		result.put("channelId", channelId);
 
 		return result;
