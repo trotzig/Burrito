@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import com.google.appengine.api.channel.ChannelFailureException;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 
 import siena.Generator;
 import siena.Id;
@@ -92,6 +97,19 @@ public class FeedsSubscription extends Model {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public void requestChannel() {
+		try {
+			ChannelService service = ChannelServiceFactory.getChannelService();
+			clientId = UUID.randomUUID().toString();
+			channelId = service.createChannel(clientId);
+		}
+		catch (ChannelFailureException e) {
+			// we go no channel, so the subscription will use polling instead
+			clientId = null;
+			channelId = null;
+		}
 	}
 
 	/**
