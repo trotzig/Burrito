@@ -168,7 +168,7 @@ public class FeedsSubscription extends Model {
 
 	@Override
 	public String toString() {
-		return "ChannelSubscription [channelId=" + channelId + ", clientId="
+		return "FeedsSubscription [channelId=" + channelId + ", clientId="
 				+ clientId + ", created=" + created + ", feedIds=" + feedIds
 				+ ", id=" + id + ", timestamp=" + timestamp + "]";
 	}
