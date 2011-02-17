@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import burrito.AdminRouter;
 import burrito.services.FeedsSubscription;
+import burrito.services.FeedsSubscriptionMessage;
 
 public class FeedsTest extends TestBase {
 
@@ -200,5 +201,53 @@ public class FeedsTest extends TestBase {
 		result = (Map<String, String>) o;
 
 		assertEquals("error", result.get("status"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testPolling()
+	{
+		FeedsSubscriptionMessage msg = new FeedsSubscriptionMessage();
+		msg.setFeedId("hello");
+		msg.setMessage("world");
+		msg.setSubscriptionId(123L);
+		msg.insert();
+
+		Object o = TestUtils.runController("/burrito/feeds/subscription/123/poll", AdminRouter.class);
+
+		assertTrue(o instanceof Map<?, ?>);
+
+		Map<String, Object> result = (Map<String, Object>) o;
+
+		assertEquals("ok", result.get("status"));
+
+		o = result.get("messages");
+
+		assertTrue(o instanceof List<?>);
+
+		List<Map<String, String>> messages = (List<Map<String, String>>) o;
+
+		assertEquals(1, messages.size());
+
+		Map<String, String> message = messages.get(0);
+
+		assertEquals("hello", message.get("feedId"));
+		assertEquals("world", message.get("message"));
+
+		o = TestUtils.runController("/burrito/feeds/subscription/123/poll", AdminRouter.class);
+
+		assertTrue(o instanceof Map<?, ?>);
+
+		result = (Map<String, Object>) o;
+
+		assertEquals("ok", result.get("status"));
+
+		o = result.get("messages");
+
+		assertTrue(o instanceof List<?>);
+
+		messages = (List<Map<String, String>>) o;
+
+		assertEquals(0, messages.size());
 	}
 }

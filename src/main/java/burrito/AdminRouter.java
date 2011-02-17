@@ -6,6 +6,7 @@ import burrito.controller.AdminController;
 import burrito.controller.KeepFeedsSubscriptionAliveController;
 import burrito.controller.NewFeedsSubscriptionChannelController;
 import burrito.controller.NewFeedsSubscriptionController;
+import burrito.controller.PollSubscriptionController;
 import burrito.controller.VoidController;
 import burrito.render.MessagesRenderer;
 import burrito.render.SiteletAdminCSSRenderer;
@@ -35,6 +36,7 @@ public class AdminRouter extends Router {
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();
+		route("/burrito/feeds/subscription/{subscriptionId:long}/poll").through(PollSubscriptionController.class).renderAsJson();
 	}
 	
 

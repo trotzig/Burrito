@@ -1,5 +1,6 @@
 package burrito.services;
 
+import java.util.Date;
 import java.util.List;
 
 import siena.Generator;
@@ -7,12 +8,14 @@ import siena.Id;
 import siena.Model;
 import siena.Query;
 
-public class FeedsSubscriptionMessage {
+public class FeedsSubscriptionMessage extends Model {
 
 	@Id(Generator.AUTO_INCREMENT)
 	private Long id;
 
 	private Long subscriptionId;
+
+	private Date timestamp = new Date();
 
 	private String feedId;
 
@@ -32,6 +35,14 @@ public class FeedsSubscriptionMessage {
 
 	public void setSubscriptionId(Long subscriptionId) {
 		this.subscriptionId = subscriptionId;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getFeedId() {
@@ -55,6 +66,6 @@ public class FeedsSubscriptionMessage {
 	}
 
 	public static List<FeedsSubscriptionMessage> fetchBySubscriptionId(Long subscriptionId) {
-		return all().filter("subscriptionId", subscriptionId).fetch();
+		return all().filter("subscriptionId", subscriptionId).order("timestamp").fetch();
 	}
 }
