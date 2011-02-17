@@ -7,7 +7,7 @@ import siena.Id;
 import siena.Model;
 import siena.Query;
 
-public class FeedsSubscriptionMessage {
+public class FeedsSubscriptionMessage extends Model {
 
 	@Id(Generator.AUTO_INCREMENT)
 	private Long id;

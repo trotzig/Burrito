@@ -3,6 +3,7 @@ package burrito;
 import taco.Router;
 import burrito.controller.AddFeedsSubscriptionFeedController;
 import burrito.controller.AdminController;
+import burrito.controller.BroadcastMessageController;
 import burrito.controller.KeepFeedsSubscriptionAliveController;
 import burrito.controller.NewFeedsSubscriptionChannelController;
 import burrito.controller.NewFeedsSubscriptionController;
@@ -35,6 +36,7 @@ public class AdminRouter extends Router {
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();
+		route("/burrito/feeds/{feedId}/broadcast").through(BroadcastMessageController.class).renderAsJson();
 	}
 	
 
