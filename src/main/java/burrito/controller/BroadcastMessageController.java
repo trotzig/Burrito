@@ -17,7 +17,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 
 	private String feedId;
 	private String message;
-	private String skipSubscriptionId;
+	private String excludeSubscriptionId;
 	
 	
 	@Override
@@ -32,8 +32,8 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		// get a list of people (browser clients) to notify
 		List<FeedsSubscription> subs = FeedsSubscription.getSubscriptionsForFeed(feedId);
 		for (FeedsSubscription sub : subs) {
-			if (skipSubscriptionId != null
-					&& skipSubscriptionId.equals(sub.getId())) {
+			if (excludeSubscriptionId != null
+					&& excludeSubscriptionId.equals(sub.getId())) {
 				//don't push to this channel
 				continue;
 			}
@@ -53,6 +53,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 					System.err.println("Failed: "
 							+ sub.toString()
 							+ ". Exception: " + e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}
@@ -86,14 +87,15 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	}
 
 
-	public String getSkipSubscriptionId() {
-		return skipSubscriptionId;
+	public String getExcludeSubscriptionId() {
+		return excludeSubscriptionId;
 	}
 
 
-	public void setSkipSubscriptionId(String skipSubscriptionId) {
-		this.skipSubscriptionId = skipSubscriptionId;
+	public void setExcludeSubscriptionId(String excludeSubscriptionId) {
+		this.excludeSubscriptionId = excludeSubscriptionId;
 	}
+
 
 
 	
