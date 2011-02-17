@@ -1,6 +1,7 @@
 package burrito.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +26,7 @@ public class FeedsTest extends TestBase {
 	public void testFeedsControllers() throws UnsupportedEncodingException {
 
 		/*
-		 * Create a new channel
+		 * Create a new subscription
 		 */
 
 		Object o = TestUtils.runController("/burrito/feeds/subscription/new", AdminRouter.class);
@@ -40,7 +41,6 @@ public class FeedsTest extends TestBase {
 		String channelId = result.get("channelId");
 
 		assertNotNull(subscriptionId);
-		assertNotNull(channelId);
 
 		FeedsSubscription subscription = FeedsSubscription.getById(Long.valueOf(subscriptionId));
 
@@ -62,7 +62,7 @@ public class FeedsTest extends TestBase {
 		assertEquals(created, subscription.getTimestamp());
 
 		/*
-		 * Add feeds to the channel
+		 * Add feeds to the subscription
 		 */
 
 		String testFeedIds[] = { "A", "B", "C", "A" };
@@ -111,7 +111,7 @@ public class FeedsTest extends TestBase {
 		}
 
 		/*
-		 * Call keepAlive on the channel
+		 * Call keepAlive on the subscription
 		 */
 
 		StringBuilder sb = new StringBuilder();
@@ -140,10 +140,45 @@ public class FeedsTest extends TestBase {
 		assertEquals(uniqueTestFeedIds.size(), feedIds.size());
 		assertEquals(created, subscription.getCreated());
 
-		assertTrue(created.before(subscription.getTimestamp()));
+		Date timestamp = subscription.getTimestamp();
+		assertTrue(created.before(timestamp));
 
 		/*
-		 * Try adding a feed to a non-existing channel
+		 * Request a new channel for the subscription
+		 */
+
+		sb = new StringBuilder();
+		sb.append("/burrito/feeds/subscription/");
+		sb.append(subscriptionId);
+		sb.append("/newChannel");
+
+		o = TestUtils.runController(sb.toString(), AdminRouter.class);
+
+		assertTrue(o instanceof Map<?, ?>);
+
+		result = (Map<String, String>) o;
+
+		assertEquals("ok", result.get("status"));
+
+		subscription = FeedsSubscription.getById(Long.valueOf(subscriptionId));
+
+		assertNotNull(subscription);
+		assertEquals(subscriptionId, subscription.getId().toString());
+
+		if (channelId != null) {
+			assertNotSame(clientId, subscription.getClientId());
+			assertNotSame(channelId, subscription.getChannelId());
+		}
+
+		feedIds = subscription.getFeedIds();
+
+		assertNotNull(feedIds);
+		assertEquals(uniqueTestFeedIds.size(), feedIds.size());
+		assertEquals(created, subscription.getCreated());
+		assertEquals(timestamp, subscription.getTimestamp());
+
+		/*
+		 * Try adding a feed to a non-existing subscription
 		 */
 
 		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/addFeed/whatever", AdminRouter.class);
@@ -155,7 +190,7 @@ public class FeedsTest extends TestBase {
 		assertEquals("error", result.get("status"));
 
 		/*
-		 * Try calling keepAlive on a non-existing channel
+		 * Try calling keepAlive on a non-existing subscription
 		 */
 
 		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/keepAlive", AdminRouter.class);
