@@ -14,12 +14,13 @@ public class NewFeedsSubscriptionController implements Controller<Map<String, St
 
 		FeedsSubscription subscription = new FeedsSubscription();
 		subscription.requestChannel();
-		String channelId = subscription.getChannelId();
 		subscription.insert();
 
 		result.put("status", "ok");
-		result.put("channelId", channelId);
 		result.put("subscriptionId", subscription.getId().toString());
+
+		String channelId = subscription.getChannelId();
+		if (channelId != null) result.put("channelId", channelId);
 
 		return result;
 	}

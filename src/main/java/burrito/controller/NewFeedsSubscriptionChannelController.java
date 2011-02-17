@@ -24,11 +24,12 @@ public class NewFeedsSubscriptionChannelController implements Controller<Map<Str
 		if (subscription != null)
 		{
 			subscription.requestChannel();
-			String channelId = subscription.getChannelId();
 			subscription.update();
 
 			result.put("status", "ok");
-			result.put("channelId", channelId);
+
+			String channelId = subscription.getChannelId();
+			if (channelId != null) result.put("channelId", channelId);
 		}
 		else
 		{
