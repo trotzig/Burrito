@@ -1,10 +1,10 @@
 package burrito;
 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-
 import taco.Router;
+import burrito.controller.AddChannelFeedController;
 import burrito.controller.AdminController;
+import burrito.controller.KeepChannelAliveController;
+import burrito.controller.NewChannelController;
 import burrito.controller.VoidController;
 import burrito.render.MessagesRenderer;
 import burrito.render.SiteletAdminCSSRenderer;
@@ -12,6 +12,9 @@ import burrito.server.blobstore.BlobServiceImpl;
 import burrito.server.blobstore.BlobStoreServlet;
 import burrito.services.CrudServiceImpl;
 import burrito.services.SiteletServiceImpl;
+
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class AdminRouter extends Router {
 
@@ -26,6 +29,10 @@ public class AdminRouter extends Router {
 		route("/burrito/sitelets").throughServlet(SiteletServiceImpl.class);
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class);
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
+
+		route("/burrito/channel/new").through(NewChannelController.class).renderAsJson();
+		route("/burrito/channel/{channelId}/addFeed/{feedId}").through(AddChannelFeedController.class).renderAsJson();
+		route("/burrito/channel/{channelId}/keepAlive").through(KeepChannelAliveController.class).renderAsJson();
 	}
 	
 
