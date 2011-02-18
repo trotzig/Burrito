@@ -19,7 +19,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 
 	private String feedId;
 	private String message;
-	private String excludeSubscriptionId;
+	private Long excludeSubscriptionId;
 	
 	private static final Logger log = Logger.getLogger(BroadcastMessageController.class.getName());
 	
@@ -103,12 +103,12 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	}
 
 
-	public String getExcludeSubscriptionId() {
+	public Long getExcludeSubscriptionId() {
 		return excludeSubscriptionId;
 	}
 
 
-	public void setExcludeSubscriptionId(String excludeSubscriptionId) {
+	public void setExcludeSubscriptionId(Long excludeSubscriptionId) {
 		this.excludeSubscriptionId = excludeSubscriptionId;
 	}
 

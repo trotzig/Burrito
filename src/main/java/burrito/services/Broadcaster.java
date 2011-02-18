@@ -69,7 +69,7 @@ public class Broadcaster {
 				+ CharEscapers.uriEscaper(false).escape(feedId)
 				+ "/broadcast").param("message", message).param("feedId", feedId);
 		if (skipSubscriptionId != null) {
-			opts.param("skipSubscriptionId", String.valueOf(skipSubscriptionId));
+			opts.param("excludeSubscriptionId", String.valueOf(skipSubscriptionId));
 		}
 		queue.add(opts);
 	}
