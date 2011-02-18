@@ -30,7 +30,7 @@ public class FeedsTest extends TestBase {
 		 * Create a new subscription
 		 */
 
-		Object o = TestUtils.runController("/burrito/feeds/subscription/new", AdminRouter.class);
+		Object o = TestUtils.runController("/burrito/feeds/subscription/new/push", AdminRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 

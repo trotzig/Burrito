@@ -33,7 +33,7 @@ public class AdminRouter extends Router {
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class);
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
 
-		route("/burrito/feeds/subscription/new").through(NewFeedsSubscriptionController.class).renderAsJson();
+		route("/burrito/feeds/subscription/new/{method}").through(NewFeedsSubscriptionController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();

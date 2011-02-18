@@ -3,6 +3,8 @@ package burrito.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import taco.Controller;
 import burrito.services.FeedsSubscription;
@@ -19,10 +21,14 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	private String message;
 	private String excludeSubscriptionId;
 	
+	private static final Logger log = Logger.getLogger(BroadcastMessageController.class.getName());
+	
 	
 	@Override
 	public Map<String, String> execute() {
 
+		log("Starting broadcast to feed \""+feedId+"\". Message: \n" + message);
+		
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		Map<String, String> map = new HashMap<String, String>();
@@ -31,6 +37,9 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		String wrapped = new Gson().toJson(map);
 		// get a list of people (browser clients) to notify
 		List<FeedsSubscription> subs = FeedsSubscription.getSubscriptionsForFeed(feedId);
+		
+		log("Found " + subs.size() + " to send the message to");
+		
 		for (FeedsSubscription sub : subs) {
 			if (excludeSubscriptionId != null
 					&& excludeSubscriptionId.equals(sub.getId())) {
@@ -44,16 +53,18 @@ public class BroadcastMessageController implements Controller<Map<String, String
 				msg.setMessage(message);
 				msg.setSubscriptionId(sub.getId());
 				msg.insert();
+				log("Message stored for polling client with subscription id: " + sub.getId());
 			} else {
 				try {
 					// Push to client
 					channelService.sendMessage(new ChannelMessage(sub
 							.getClientId(), wrapped));
+					log("Successful push to client with subscription id " + sub.getId());
 				} catch (Exception e) {
 					System.err.println("Failed: "
 							+ sub.toString()
 							+ ". Exception: " + e.getMessage());
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 		}
@@ -63,6 +74,11 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		return result;
 		
 		
+	}
+
+
+	private void log(String string) {
+		log.log(Level.INFO, string);
 	}
 
 
