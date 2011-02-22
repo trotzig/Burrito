@@ -111,4 +111,10 @@ public class SiteletProperties extends Model implements Serializable {
 		}
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
+	
+
 }

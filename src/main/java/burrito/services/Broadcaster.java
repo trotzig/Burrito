@@ -88,7 +88,7 @@ public class Broadcaster {
 			URL broadcastUrl = new URL(broadcastServer
 					+ "/burrito/feeds/"
 					+ CharEscapers.uriEscaper(false).escape(feedId)
-					+ "/broadcast");
+					+ "/broadcast/async");
 			HttpURLConnection connection = (HttpURLConnection) broadcastUrl
 					.openConnection();
 			connection.setDoOutput(true);

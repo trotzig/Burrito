@@ -201,7 +201,7 @@ function BurritoFeeds() {
 	
 	this.keepAlive = function() {
 		$.ajax({
-			url: '/burrito/feeds/subscription/'+this.subscriptionId+'/keepAlive',
+			url: this.feedServer + '/burrito/feeds/subscription/'+this.subscriptionId+'/keepAlive',
 			crossDomain: true,
 			dataType: "jsonp"
 		});
@@ -220,6 +220,7 @@ function BurritoFeeds() {
 	}
 	
 }
-
+//create global object accessible by page
 var burritoFeeds = new BurritoFeeds();
+
 
