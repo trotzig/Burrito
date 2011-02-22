@@ -11,7 +11,7 @@
 <c:if test="${taco_userIsAdmin}">
 	<burrito:siteletboxadmin id="${id}"/>
 </c:if>
-<div id="${id}" class="sitelet-container">
+<div id="sitelet-box-${id}" class="sitelet-container">
 
 <%
 	List<SiteletProperties> sitelets = SiteletHelper.getSiteletProperties((String)jspContext.getAttribute("id")); 
