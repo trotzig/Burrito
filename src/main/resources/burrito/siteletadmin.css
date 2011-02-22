@@ -14,3 +14,21 @@
 .sitelets-admin-header {
 	padding: 2px 3px;	
 }
+.cache-admin-controls {
+	padding: 2px 3px;	
+	background-color: #D1EFC2;	
+	border: 1px solid #849F77;
+	font-family: helvetica, sans-serif;
+	font-size: 12px;
+}
+.cache-admin-controls ul {
+	list-style: none;
+	margin: 0px;
+}
+.cache-admin-controls li {
+	float: left;
+}
+
+.clear-floats {
+	clear: both;	
+}
