@@ -23,7 +23,7 @@
 	<div class="sitelets-admin-header">
 		<span><burrito:message key="sitelet_container" extra="${id}"/></span>
 		&nbsp;|&nbsp; 
-		<a class="sitelets-admin-header-edit" href="#" title="${id}" onclick="window.open('/admin?container=${id}','_blank','left=20,top=20,width=1024,height=800,toolbar=1,resizable=1,scrollbars=1'); return false;">
+		<a class="sitelets-admin-header-edit" href="#" title="${id}" onclick="window.open('/burrito/admin?container=${id}','_blank','left=20,top=20,width=1024,height=800,toolbar=1,resizable=1,scrollbars=1'); return false;">
 			<c:set var="title"><burrito:message key="sitelet_container_admin"/></c:set>
 			<span title="${title}"><burrito:message key="sitelet_container_edit"/></span>
 		</a>
