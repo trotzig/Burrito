@@ -15,22 +15,11 @@
 
 <%
 	List<SiteletProperties> sitelets = SiteletHelper.getSiteletProperties((String)jspContext.getAttribute("id")); 
-	int i = 1;
 	for (SiteletProperties siteletProperties : sitelets) {
 		jspContext.setAttribute("siteletProperties", siteletProperties);
 %>
-	<c:choose>
-		<c:when test="${siteletProperties.cacheEnabled}">
-			<burrito:cache key="${siteletProperties.cacheKey}" expirationSeconds="${siteletProperties.cacheExpirationInSeconds}">
-				<burrito:sitelet sitelet="${siteletProperties.associatedSitelet}"/>
-			</burrito:cache>
-		</c:when>
-		<c:otherwise>
-			<burrito:sitelet sitelet="${siteletProperties.associatedSitelet}"/>
-		</c:otherwise>
-	</c:choose>
+		${siteletProperties.renderedHtml}
 <%
-		i++;
 	}
 %>
 </div>

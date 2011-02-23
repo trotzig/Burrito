@@ -54,6 +54,7 @@ import burrito.client.crud.generic.fields.StringSelectionField;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.links.Linkable;
+import burrito.sitelet.Sitelet;
 
 import com.google.gson.Gson;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -308,6 +309,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			entity.insert();
 		} else {
 			entity.update();
+			if (entity instanceof Sitelet) {
+				SiteletProperties prop = SiteletProperties.getByEntityId(desc.getId());
+				prop.triggerRefreshAsync();
+			}
 		}
 		Long id = extractIDFromEntity(entity);
 		updateSearchIndicies(entity, id);
