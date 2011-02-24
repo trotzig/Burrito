@@ -27,6 +27,9 @@ function BurritoSitelets() {
 				var sitelet = sitelets[i];
 				var className = 'sitelet-properties-id-' + sitelet.id;
 				var siteletContainer = box.find('.sitelet.' + className);
+				if (siteletContainer.length) {
+					box.append(siteletContainer);
+				}
 				if (sitelet.html) {
 					if (siteletContainer.length) {
 						siteletContainer.html(sitelet.html);
@@ -37,13 +40,10 @@ function BurritoSitelets() {
 						siteletContainer.slideDown(500);
 					}
 
-					for (var i = 0; i < object.onNewSiteletContentCallbacks.length; i++) {
-						var callback = object.onNewSiteletContentCallbacks[i];
+					for (var j = 0; j < object.onNewSiteletContentCallbacks.length; j++) {
+						var callback = object.onNewSiteletContentCallbacks[j];
 						callback(siteletContainer);
 					}
-				}
-				else {
-					box.append(siteletContainer);
 				}
 			}
 		});
