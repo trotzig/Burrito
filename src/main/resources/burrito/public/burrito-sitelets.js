@@ -4,7 +4,7 @@ function BurritoSitelets() {
 
 	var adminControlsClass = 'sitelet-admin-controls';
 
-	this.onNewSiteletContentCallbacks = new Array();
+	object.onNewSiteletContentCallbacks = new Array();
 
 	this.registerLiveBox = function(siteIdentifier, boxId) {
 		burritoFeeds.registerHandler('burrito:sitelet-box:' + siteIdentifier + '|' + boxId, function(message) {
@@ -14,39 +14,60 @@ function BurritoSitelets() {
 			var box = $('#sitelet-box-' + boxId);
 
 			box.find('.sitelet').each(function() {
+				var id = object.getClassValue($(this), 'sitelet-properties-id-');
 				for (var i = 0; i < sitelets.length; i++) {
-					if ($(this).hasClass('sitelet-properties-id-' + sitelets[i].id)) return;
+					if (id == sitelets[i].id) return;
 				}
-				$(this).css('class',null);
+				$(this).removeClass('sitelet');
 				$(this).slideUp(500, function() {
 					$(this).remove();
 				});
 			});
 
+			var previousWrapper = null;
+
 			for (var i = 0; i < sitelets.length; i++) {
 				var sitelet = sitelets[i];
-				var className = 'sitelet-properties-id-' + sitelet.id;
-				var siteletContainer = box.find('.sitelet.' + className);
-				if (siteletContainer.length) {
-					box.append(siteletContainer);
+				var idClassName = 'sitelet-properties-id-' + sitelet.id;
+				var siteletWrapper = box.find('.sitelet.' + idClassName);
+
+				if (siteletWrapper.length) {
+					object.placeSiteletWrapper(box, previousWrapper, siteletWrapper, idClassName);
 				}
+
 				if (sitelet.html) {
-					if (siteletContainer.length) {
-						siteletContainer.html(sitelet.html);
+					if (siteletWrapper.length) {
+						siteletWrapper.html(sitelet.html);
 					}
 					else {
-						box.append('<div style="display: none" class="sitelet ' + className + '">' + sitelet.html + '</div>');
-						siteletContainer = box.find('.sitelet.' + className);
-						siteletContainer.slideDown(500);
+						siteletWrapper = '<div style="display: none" class="sitelet ' + idClassName + '">' + sitelet.html + '</div>';
+						object.placeSiteletWrapper(box, previousWrapper, siteletWrapper, idClassName);
+						siteletWrapper = box.find('.sitelet.' + idClassName);
+						siteletWrapper.slideDown(500);
 					}
 
 					for (var j = 0; j < object.onNewSiteletContentCallbacks.length; j++) {
 						var callback = object.onNewSiteletContentCallbacks[j];
-						callback(siteletContainer);
+						callback(siteletWrapper);
 					}
 				}
+
+				previousWrapper = siteletWrapper;
 			}
 		});
+	}
+
+	this.placeSiteletWrapper = function(box, previousWrapper, siteletWrapper, idClassName) {
+		if (previousWrapper) {
+			if (!previousWrapper.nextAll('.sitelet:first').hasClass(idClassName)) {
+				previousWrapper.after(siteletWrapper);
+			}
+		}
+		else {
+			if (!box.children('.sitelet:first').hasClass(idClassName)) {
+				box.prepend(siteletWrapper);
+			}
+		}
 	}
 
 	this.refreshSitelet = function(siteletPropertiesId) {
@@ -54,42 +75,40 @@ function BurritoSitelets() {
 	}
 
 	this.onNewSiteletContent = function(callback) {
-		this.onNewSiteletContentCallbacks.push(callback);
+		object.onNewSiteletContentCallbacks.push(callback);
 	}
 
 	this.enableAdminControls = function() {
-		var parent = this;
-
 		$('.' + adminControlsClass).live('click', function() {
-			var siteletPropertiesId = getClassValue($(this), 'sitelet-properties-id-');
+			var siteletPropertiesId = object.getClassValue($(this), 'sitelet-properties-id-');
 
 			$(this).fadeOut(function() {
 				$(this).fadeIn();
 			});
 
-			parent.refreshSitelet(siteletPropertiesId)
+			object.refreshSitelet(siteletPropertiesId)
 		});
 
 		$('.sitelet').live('mouseover mouseout', function(event) {
 			if (event.type == 'mouseover') {
-				if (!this.adminControlsTimeout) {
-					var siteletPropertiesId = getClassValue($(this), 'sitelet-properties-id-');
+				if (!object.adminControlsTimeout) {
+					var siteletPropertiesId = object.getClassValue($(this), 'sitelet-properties-id-');
 
 					if (!$('.' + adminControlsClass + '.sitelet-properties-id-' + siteletPropertiesId).length) {
 						var offset = $(this).offset();
-						this.adminControlsTimeout = setTimeout(function() {
+						object.adminControlsTimeout = setTimeout(function() {
 							$('.' + adminControlsClass).remove();
 							$('body').append('<div class="' + adminControlsClass + ' sitelet-properties-id-' + siteletPropertiesId + '" style="top: ' + offset.top + 'px; left: ' + offset.left + 'px; position: absolute">KOLLA HÄR: ' + siteletPropertiesId + '</div>');
-							this.adminControlsTimeout = false;
+							object.adminControlsTimeout = false;
 						}, 1000);
 					}
 				}
 			}
 			else {
-				if (this.adminControlsTimeout) {
-					clearTimeout(this.adminControlsTimeout);
+				if (object.adminControlsTimeout) {
+					clearTimeout(object.adminControlsTimeout);
 
-					this.adminControlsTimeout = false;
+					object.adminControlsTimeout = false;
 				}
 			}
 		});
@@ -98,17 +117,17 @@ function BurritoSitelets() {
 			$(this).remove();
 		});
 	}
-}
 
-function getClassValue(element, prefix) {
-	var classes = element.attr('class').split(' ');
-	for (var i = 0; i < classes.length; i++) {
-		var c = classes[i];
-		if (c.length >= prefix.length && c.substring(0, prefix.length) == prefix) {
-			return c.substring(prefix.length);
+	this.getClassValue = function(element, prefix) {
+		var classes = element.attr('class').split(' ');
+		for (var i = 0; i < classes.length; i++) {
+			var c = classes[i];
+			if (c.length >= prefix.length && c.substring(0, prefix.length) == prefix) {
+				return c.substring(prefix.length);
+			}
 		}
+		return null;
 	}
-	return null;
 }
 
 var burritoSitelets = new BurritoSitelets();
