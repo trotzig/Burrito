@@ -61,6 +61,7 @@ public abstract class Configurator implements ServletContextListener {
 	 */
 	protected abstract String configureSiteIdentifier();
 
+
 	/**
 	 * Return a "password" string that will be used when broadcasting messages
 	 * via the feeds server. All broadcasts will contain this secret and the
@@ -89,7 +90,6 @@ public abstract class Configurator implements ServletContextListener {
 			}
 		};
 	}
-
 	/**
 	 * Gets the site identifier configured for this Burrito instance.
 	 * 

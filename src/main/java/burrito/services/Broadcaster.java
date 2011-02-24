@@ -57,6 +57,7 @@ public class Broadcaster {
 	 *            reach
 	 */
 	public void broadcast(String message, String feedId, Long skipSubscriptionId) {
+
 		if (broadcastSettings.isBroadcastInternally()) {
 			broadcastInternally(message, feedId, skipSubscriptionId);
 		} else {
