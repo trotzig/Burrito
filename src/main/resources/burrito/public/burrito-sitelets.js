@@ -1,9 +1,10 @@
 
 function BurritoSitelets() {
+	var object = this;
 
 	var adminControlsClass = 'sitelet-admin-controls';
 
-	this.onNewSiteletContentCallbacks = [];
+	this.onNewSiteletContentCallbacks = new Array();
 
 	this.registerLiveBox = function(siteIdentifier, boxId) {
 		burritoFeeds.registerHandler('burrito:sitelet-box:' + siteIdentifier + '|' + boxId, function(message) {
@@ -36,8 +37,8 @@ function BurritoSitelets() {
 						siteletContainer.slideDown(500);
 					}
 
-					for (var i = 0; i < this.onNewSiteletContentCallbacks.length; i++) {
-						var callback = this.onNewSiteletContentCallbacks[i];
+					for (var i = 0; i < object.onNewSiteletContentCallbacks.length; i++) {
+						var callback = object.onNewSiteletContentCallbacks[i];
 						callback(siteletContainer);
 					}
 				}

@@ -54,6 +54,7 @@ public class BroadcastTest extends TestBase {
 		
 		Map<String, String[]> params = new HashMap<String, String[]>();
 		params.put("message", new String[]{"test-message"});
+		params.put("secret", new String[]{"foo"});
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast", params, BurritoRouter.class);
 		Assert.assertEquals("ok", result.get("status"));	
@@ -96,6 +97,7 @@ public class BroadcastTest extends TestBase {
 		
 		Map<String, String[]> params = new HashMap<String, String[]>();
 		params.put("message", new String[]{"test-message"});
+		params.put("secret", new String[]{"foo"});
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast/async", params, BurritoRouter.class);
 		Assert.assertEquals("ok", result.get("status"));	

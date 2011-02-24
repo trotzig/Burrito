@@ -7,8 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import taco.Controller;
-import taco.StatusCodeException;
-import burrito.Configurator;
 import burrito.services.FeedsSubscription;
 import burrito.services.FeedsSubscriptionMessage;
 
@@ -29,7 +27,6 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	
 	@Override
 	public Map<String, String> execute() {
-		validateSecret();
 		log("Starting broadcast to feed \""+feedId+"\". Message: \n" + message);
 		
 		ChannelService channelService = ChannelServiceFactory
@@ -78,17 +75,6 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		
 		
 	}
-
-
-	protected void validateSecret() {
-		if (secret == null) {
-			throw new StatusCodeException(400, "Authorization failed.");
-		}
-		if (!secret.equals(Configurator.getBroadcastSettings().getSecret())) {
-			throw new StatusCodeException(400, "Authorization failed. Wrong secret.");
-		}
-	}
-
 
 	private void log(String string) {
 		log.log(Level.INFO, string);

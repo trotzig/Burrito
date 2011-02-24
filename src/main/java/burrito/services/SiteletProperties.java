@@ -153,7 +153,6 @@ public class SiteletProperties extends Model implements Serializable {
 		new Broadcaster(Configurator.getBroadcastSettings()).broadcast(json, 
 				"burrito:sitelet-box:" + CharEscapers.uriEscaper(false).escape(Configurator.getSiteIdentifier()) + 
 				"|" + CharEscapers.uriEscaper(false).escape(containerId), null);
-		System.out.println("Broadcasting message: " + json);
 	}
 	
 	

@@ -1,11 +1,14 @@
 package burrito.services;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import burrito.BroadcastSettings;
 
@@ -13,7 +16,6 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
-import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 /**
  * 
@@ -29,6 +31,8 @@ public class Broadcaster {
 
 	private BroadcastSettings broadcastSettings; 
 
+	private Logger log = Logger.getLogger(Broadcaster.class.getName());
+	
 	/**
 	 * Creates a broadcaster for use within the same host.
 	 */
@@ -67,6 +71,7 @@ public class Broadcaster {
 
 	private void broadcastInternally(String message, String feedId,
 			Long skipSubscriptionId) {
+		log.info("Broadcasting message using task queue: " + message);
 		Queue queue = QueueFactory.getDefaultQueue();
 		TaskOptions opts = withUrl("/burrito/feeds/"
 				+ CharEscapers.uriEscaper(false).escape(feedId)
@@ -92,6 +97,7 @@ public class Broadcaster {
 					+ "/burrito/feeds/"
 					+ CharEscapers.uriEscaper(false).escape(feedId)
 					+ "/broadcast/async");
+			log.info("Broadcasting message externally: " + message + ". URL: " + broadcastUrl.toString());
 			HttpURLConnection connection = (HttpURLConnection) broadcastUrl
 					.openConnection();
 			connection.setDoOutput(true);
