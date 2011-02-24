@@ -2,6 +2,7 @@
  * Channel implementation using polling
  * 
  * @param subscriptionId
+ * @param feedServer
  * @returns {BurritoPollingChannel}
  */
 function BurritoPollingChannel(subscriptionId, feedServer) {
@@ -11,7 +12,6 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 	this.subscriptionId = subscriptionId;
 	this.currentTimeout = -1;
 	this.feedServer = feedServer;
-	
 	
 	this.onmessage = function(json){}; //callback for messages
 	
@@ -119,44 +119,63 @@ function BurritoFeeds() {
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
-				parent.onSubscriptionReceived(json);
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+
+				parent.subscriptionId = json.subscriptionId;
+				parent.triggerNewKeepAlive();
+
+				//iterate through all non-initialized handlers and make sure they are initialized
+				for (var feedId in parent.pendingHandlers) {
+					parent.registerHandler(feedId, parent.pendingHandlers[feedId]);
+					parent.pendingHandlers[feedId] = null;
+				}
+
+				parent.startListeningToChannel(json.channelId);
 			}
 		});
 	}
-	
-	this.onSubscriptionReceived = function(json) {
-		if (json.status == 'error') {
-			throw("Error response from feed server: " + json.message);
-		}
-		this.channelId = json.channelId;
-		this.subscriptionId = json.subscriptionId;
-		
-		//iterate through all non-initialized handlers and make sure they are initialized
-		for (var feedId in this.pendingHandlers) {
-			this.registerHandler(feedId, this.pendingHandlers[feedId]);
-			this.pendingHandlers[feedId] = null;
-		}
-		if (this.channelId) {
+
+	this.getNewChannel = function() {
+		var parent = this;
+		$.ajax({
+			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/newChannel', 
+			dataType: "jsonp",
+			crossDomain: true,
+			success: function(json) {
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+				this.startListeningToChannel(json.channelId);
+			}
+		});
+	}
+
+	this.dropChannel = function() {
+		var parent = this;
+		$.ajax({
+			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/dropChannel', 
+			dataType: "jsonp",
+			crossDomain: true,
+			success: function(json) {
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+				this.startListeningToChannel(null);
+			}
+		});
+	}
+
+	this.startListeningToChannel = function(channelId) {
+		this.channelId = channelId;
+		if (channelId) {
 			this.openGoogleChannel();
 		} else {
 			this.openPollingChannel();
 		}
 	}
-	
-	this.renewSubscriptionAndOpenChannel = function() {
-		clearTimeout(this.currentKeepAliveTimer);
-		var parent = this;
-		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/'+this.subscriptionId+'/newChannel', 
-			dataType: "jsonp",
-			crossDomain: true,
-			success: function(json) {
-				parent.onSubscriptionReceived(json);
-			}
-		});
-	}
-	
-	
+
 	this.onMessageReceived = function(json) {
 		var targetFeedId = json.feedId;
 	 	for (var feedId in this.registeredHandlers) {
@@ -175,20 +194,28 @@ function BurritoFeeds() {
 			parent.onMessageReceived(json);
 		}
 	}
-	
+
 	this.openGoogleChannel = function() {
 		var parent = this;
+
+		var lastChannelRetryTime = 0;
 		var channel = new goog.appengine.Channel(this.channelId);  
 		var socket = channel.open();  
+
 		socket.onopen = function() {  
-		   //do something?  
-			parent.triggerNewKeepAlive()
+		   //do something?
 		}  
-		 
+
 		socket.onclose = function(evt) {
-		 	//attempt to recreate channel
-			parent.renewSubscriptionAndOpenChannel();
+			if ((new Date().getTime()) - lastChannelRetryTime < 5 * 60 * 1000) {
+				parent.dropChannel(); // closes too frequently, so we give up
+			}
+			else {
+				lastChannelRetryTime = new Date().getTime();
+				parent.getNewChannel(); // attempt to recreate channel
+			}
 		}
+
 		socket.onmessage = function(evt) {
 		 	var json = eval("(" + evt.data + ")");
 		 	parent.onMessageReceived(json);
@@ -220,7 +247,6 @@ function BurritoFeeds() {
 	}
 	
 }
+
 //create global object accessible by page
 var burritoFeeds = new BurritoFeeds();
-
-

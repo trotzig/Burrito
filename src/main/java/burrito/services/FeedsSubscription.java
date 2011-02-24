@@ -106,10 +106,13 @@ public class FeedsSubscription extends Model {
 			channelId = service.createChannel(clientId);
 		}
 		catch (ChannelFailureException e) {
-			// we go no channel, so the subscription will use polling instead
-			clientId = null;
-			channelId = null;
+			dropChannel(); // we got no channel, so the subscription will use polling instead
 		}
+	}
+
+	public void dropChannel() {
+		clientId = null;
+		channelId = null;
 	}
 
 	/**
