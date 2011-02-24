@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import burrito.AdminRouter;
+import burrito.BurritoRouter;
 import burrito.services.SearchEntry;
 
 
@@ -14,11 +14,11 @@ public class AdminRouterTest extends TestBase {
 	
 	@Test
 	public void testCrudMessages() {
-		Object o = TestUtils.runController("/burrito/crudmessages.js", AdminRouter.class);
+		Object o = TestUtils.runController("/burrito/crudmessages.js", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 		
-		o = TestUtils.runController("/asdasd", AdminRouter.class);
+		o = TestUtils.runController("/asdasd", BurritoRouter.class);
 		assertNull(o);
 		
 		

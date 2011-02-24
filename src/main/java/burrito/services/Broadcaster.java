@@ -7,6 +7,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import burrito.BroadcastSettings;
+
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -25,7 +27,7 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
  */
 public class Broadcaster {
 
-	private String broadcastServer; // defaults to localhost
+	private BroadcastSettings broadcastSettings; 
 
 	/**
 	 * Creates a broadcaster for use within the same host.
@@ -39,8 +41,8 @@ public class Broadcaster {
 	 * 
 	 * @param broadcastServer
 	 */
-	public Broadcaster(String broadcastServer) {
-		this.broadcastServer = broadcastServer;
+	public Broadcaster(BroadcastSettings broadcastSettings) {
+		this.broadcastSettings = broadcastSettings;
 	}
 
 	/**
@@ -55,7 +57,8 @@ public class Broadcaster {
 	 *            reach
 	 */
 	public void broadcast(String message, String feedId, Long skipSubscriptionId) {
-		if (broadcastServer == null || broadcastServer.isEmpty()) {
+
+		if (broadcastSettings.isBroadcastInternally()) {
 			broadcastInternally(message, feedId, skipSubscriptionId);
 		} else {
 			broadcastExternally(message, feedId, skipSubscriptionId);
@@ -67,7 +70,7 @@ public class Broadcaster {
 		Queue queue = QueueFactory.getDefaultQueue();
 		TaskOptions opts = withUrl("/burrito/feeds/"
 				+ CharEscapers.uriEscaper(false).escape(feedId)
-				+ "/broadcast").param("message", message).param("feedId", feedId);
+				+ "/broadcast").param("message", message).param("feedId", feedId).param("secret", broadcastSettings.getSecret());
 		if (skipSubscriptionId != null) {
 			opts.param("excludeSubscriptionId", String.valueOf(skipSubscriptionId));
 		}
@@ -85,7 +88,7 @@ public class Broadcaster {
 	private void broadcastExternally(String message, String feedId,
 			Long skipSubscriptionId) {
 		try {
-			URL broadcastUrl = new URL(broadcastServer
+			URL broadcastUrl = new URL(broadcastSettings.getBroadcastUrlPrefix()
 					+ "/burrito/feeds/"
 					+ CharEscapers.uriEscaper(false).escape(feedId)
 					+ "/broadcast/async");
@@ -101,6 +104,7 @@ public class Broadcaster {
 			if (skipSubscriptionId != null) {
 				writer.write("&excludeSubscriptionId=" + skipSubscriptionId);
 			}
+			writer.write("&secret=" + CharEscapers.uriEscaper(false).escape(broadcastSettings.getSecret()));
 			writer.close();
 			if (connection.getResponseCode() != 200) {
 				throw new RuntimeException("Failed to push. Got response "

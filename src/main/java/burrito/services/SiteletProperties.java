@@ -150,7 +150,7 @@ public class SiteletProperties extends Model implements Serializable {
 	 */
 	public static void broadcast(String containerId, SiteletProperties siteletProperties) {
 		String json = new Gson().toJson(getSiteletBoxFeedMessage(containerId, siteletProperties));
-		new Broadcaster(Configurator.getFeedsServer()).broadcast(json, 
+		new Broadcaster(Configurator.getBroadcastSettings()).broadcast(json, 
 				"burrito:sitelet-box:" + CharEscapers.uriEscaper(false).escape(Configurator.getSiteIdentifier()) + 
 				"|" + CharEscapers.uriEscaper(false).escape(containerId), null);
 		System.out.println("Broadcasting message: " + json);

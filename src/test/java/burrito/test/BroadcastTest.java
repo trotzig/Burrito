@@ -15,7 +15,7 @@ import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
-import burrito.AdminRouter;
+import burrito.BurritoRouter;
 import burrito.services.FeedsSubscription;
 import burrito.services.FeedsSubscriptionMessage;
 
@@ -55,12 +55,12 @@ public class BroadcastTest extends TestBase {
 		Map<String, String[]> params = new HashMap<String, String[]>();
 		params.put("message", new String[]{"test-message"});
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast", params, AdminRouter.class);
+		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast", params, BurritoRouter.class);
 		Assert.assertEquals("ok", result.get("status"));	
 		
 		
 		//broadcast another message
-		TestUtils.runController("/burrito/feeds/feed-x/broadcast", params, AdminRouter.class);
+		TestUtils.runController("/burrito/feeds/feed-x/broadcast", params, BurritoRouter.class);
 		
 		List<FeedsSubscriptionMessage> delayeds = FeedsSubscriptionMessage.fetchBySubscriptionId(sub3.getId());
 		Assert.assertEquals(2, delayeds.size());
@@ -97,7 +97,7 @@ public class BroadcastTest extends TestBase {
 		Map<String, String[]> params = new HashMap<String, String[]>();
 		params.put("message", new String[]{"test-message"});
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast/async", params, AdminRouter.class);
+		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/feed-x/broadcast/async", params, BurritoRouter.class);
 		Assert.assertEquals("ok", result.get("status"));	
 		
 		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();

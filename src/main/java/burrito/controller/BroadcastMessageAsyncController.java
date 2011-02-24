@@ -18,14 +18,14 @@ import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
  */
 public class BroadcastMessageAsyncController extends
 		BroadcastMessageController {
-
 	
 	@Override
 	public Map<String, String> execute() {
+		validateSecret();
 		// Add a task to the queue
 		Queue queue = QueueFactory.getDefaultQueue();
 		TaskOptions options = withUrl("/burrito/feeds/" + CharEscapers.uriEscaper(false).escape(getFeedId()) + "/broadcast").param("message",
-				getMessage()).param("feedId", getFeedId());
+				getMessage()).param("feedId", getFeedId()).param("secret", getSecret());
 		if (getExcludeSubscriptionId() != null) {
 			options.param("excludeSubscriptionId", String.valueOf(getExcludeSubscriptionId()));
 		}
