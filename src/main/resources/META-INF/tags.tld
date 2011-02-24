@@ -19,8 +19,8 @@ jsptaglibrary_2_0.xsd"
     <path>/META-INF/tags/message.tag</path>
   </tag-file>
   <tag-file>
-    <name>sitelet</name>
-    <path>/META-INF/tags/sitelet.tag</path>
+    <name>siteletadmin</name>
+    <path>/META-INF/tags/siteletadmin.tag</path>
   </tag-file>
   <tag-file>
     <name>siteletbox</name>

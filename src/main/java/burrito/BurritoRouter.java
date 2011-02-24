@@ -13,6 +13,8 @@ import burrito.controller.RefreshAllSiteletsController;
 import burrito.controller.RefreshSiteletController;
 import burrito.controller.RefreshSiteletsController;
 import burrito.controller.VoidController;
+import burrito.protector.BackgroundTaskProtector;
+import burrito.protector.BroadcastProtector;
 import burrito.render.MessagesRenderer;
 import burrito.render.RefreshSiteletRenderer;
 import burrito.render.SiteletAdminCSSRenderer;
@@ -24,41 +26,35 @@ import burrito.services.SiteletServiceImpl;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-public class AdminRouter extends Router {
+public class BurritoRouter extends Router {
 
 	UserService service = UserServiceFactory.getUserService();
 	
 	@Override
 	public void init() {
-		route("/burrito/admin").through(AdminController.class).renderedBy("/Admin.jsp");
-		route("/burrito/crudmessages.js").through(MessagesController.class).renderedBy(new MessagesRenderer());
+		
+		BackgroundTaskProtector btProtector = new BackgroundTaskProtector();
+		route("/burrito/admin").through(AdminController.class).renderedBy("/Admin.jsp").protect(Configurator.getAdminProtector());
+		route("/burrito/crudmessages.js").through(MessagesController.class).renderedBy(new MessagesRenderer()).protect(Configurator.getAdminProtector());
 		route("/burrito/siteletadmin.css").through(VoidController.class).renderedBy(new SiteletAdminCSSRenderer());
-		route("/burrito/crud").throughServlet(CrudServiceImpl.class);
-		route("/burrito/sitelets").throughServlet(SiteletServiceImpl.class);
-		route("/burrito/sitelets/refresh/{siteletPropertiesId:long}").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer());
-		route("/burrito/blobService").throughServlet(BlobServiceImpl.class);
+		route("/burrito/crud").throughServlet(CrudServiceImpl.class).protect(Configurator.getAdminProtector());
+		route("/burrito/sitelets").throughServlet(SiteletServiceImpl.class).protect(Configurator.getAdminProtector());
+		route("/burrito/sitelets/refresh/{siteletPropertiesId:long}").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector); 
+		route("/burrito/blobService").throughServlet(BlobServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
 		
-		route("/burrito/cron/refreshSitelets").through(RefreshSiteletsController.class).renderAsJson();
-		route("/burrito/cron/refreshSitelets/all").through(RefreshAllSiteletsController.class).renderAsJson();
+		route("/burrito/sitelets/refresh").through(RefreshSiteletsController.class).renderAsJson().protect(btProtector);
+		route("/burrito/sitelets/refresh/all").through(RefreshAllSiteletsController.class).renderAsJson().protect(btProtector); 
 		
-		route("/burrito/feeds/subscription/new/{method}").through(NewFeedsSubscriptionController.class).renderAsJson();
+		route("/burrito/feeds/subscription/new/{method}").through(NewFeedsSubscriptionController.class).renderAsJson(); 
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/poll").through(PollSubscriptionController.class).renderAsJson();
-		route("/burrito/feeds/{feedId}/broadcast/async").through(BroadcastMessageAsyncController.class).renderAsJson();
-		route("/burrito/feeds/{feedId}/broadcast").through(BroadcastMessageController.class).renderAsJson();
+		
+		BroadcastProtector bcProtector = new BroadcastProtector();
+		route("/burrito/feeds/{feedId}/broadcast/async").through(BroadcastMessageAsyncController.class).renderAsJson().protect(bcProtector);
+		route("/burrito/feeds/{feedId}/broadcast").through(BroadcastMessageController.class).renderAsJson().protect(bcProtector);
 	}
-	
 
-	@Override
-	public boolean isUserAdmin() {
-		UserService service = UserServiceFactory.getUserService();
-		if (!service.isUserLoggedIn()) {
-			return false;
-		}
-		return service.isUserAdmin();
-	}
-	
 }
