@@ -6,6 +6,8 @@
 <%@tag import="burrito.util.SiteletHelper"%>
 <%@tag import="burrito.services.SiteletProperties"%>
 <%@tag import="burrito.sitelet.Sitelet"%>
+<%@tag import="burrito.util.StringUtils"%>
+<%@tag import="burrito.Configurator"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:if test="${taco_userIsAdmin}">
@@ -14,13 +16,22 @@
 <div id="sitelet-box-${id}" class="sitelet-container">
 
 <%
-	List<SiteletProperties> sitelets = SiteletHelper.getSiteletProperties((String)jspContext.getAttribute("id")); 
+	String id = (String)jspContext.getAttribute("id");
+	List<SiteletProperties> sitelets = SiteletHelper.getSiteletProperties(id); 
 	for (SiteletProperties siteletProperties : sitelets) {
 		jspContext.setAttribute("siteletProperties", siteletProperties);
 %>
-		${siteletProperties.renderedHtml}
+		<c:if test="${taco_userIsAdmin}">
+			<burrito:siteletadmin siteletProperties="${siteletProperties}"/>
+		</c:if>
+		<div class="sitelet sitelet-properties-id-${siteletProperties.id}">
+			${siteletProperties.renderedHtml}
+		</div>
 <%
 	}
 %>
 </div>
 
+<script type="text/javascript">
+	burritoSitelets.registerLiveBox("<%= StringUtils.escapeJavascript(Configurator.getSiteIdentifier()) %>", "<%= StringUtils.escapeJavascript(id) %>");
+</script>

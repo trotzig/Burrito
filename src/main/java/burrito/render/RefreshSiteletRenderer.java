@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import taco.Controller;
 import taco.Renderer;
+import burrito.controller.RefreshSiteletController;
 import burrito.services.SiteletProperties;
 import burrito.sitelet.AutoRefresh;
 import burrito.sitelet.Sitelet;
@@ -49,7 +50,8 @@ public class RefreshSiteletRenderer implements Renderer {
 		props.setNextAutoRefresh(autoRefresh.getTime());
 		
 		String newHTML = recordingResponse.toString();
-		if (!newHTML.equals(props.getRenderedHtml())) {
+		Boolean force = ((RefreshSiteletController) controller).getForce();
+		if ((force != null && force) || !newHTML.equals(props.getRenderedHtml())) {
 			props.setRenderedHtml(newHTML);
 			props.broadcastUpdate();
 			Cache.delete(SiteletHelper.CACHE_PREFIX + props.containerId);

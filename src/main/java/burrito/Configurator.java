@@ -48,7 +48,7 @@ public abstract class Configurator implements ServletContextListener {
 
 	protected abstract String configureSiteIdentifier();
 	protected String configureFeedsServer() {
-		return "";
+		return null;
 	}
 	
 	public static String getSiteIdentifier() {

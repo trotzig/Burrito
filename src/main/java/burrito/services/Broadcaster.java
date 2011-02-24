@@ -55,7 +55,7 @@ public class Broadcaster {
 	 *            reach
 	 */
 	public void broadcast(String message, String feedId, Long skipSubscriptionId) {
-		if (broadcastServer == null) {
+		if (broadcastServer == null || broadcastServer.isEmpty()) {
 			broadcastInternally(message, feedId, skipSubscriptionId);
 		} else {
 			broadcastExternally(message, feedId, skipSubscriptionId);
