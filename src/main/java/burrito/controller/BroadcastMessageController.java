@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import taco.Controller;
+import burrito.services.DeferredMessage;
 import burrito.services.FeedsSubscription;
 import burrito.services.FeedsSubscriptionMessage;
 
@@ -21,6 +22,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	private String message;
 	private Long excludeSubscriptionId;
 	private String secret;
+	private Long deferredMessageId;
 	
 	private static final Logger log = Logger.getLogger(BroadcastMessageController.class.getName());
 	
@@ -28,7 +30,17 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	@Override
 	public Map<String, String> execute() {
 		log("Starting broadcast to feed \""+feedId+"\". Message: \n" + message);
-		
+		if (message == null) {
+			//we need to fetch the deferred message from the datastore
+			DeferredMessage deferredMessage = DeferredMessage.get(deferredMessageId);
+			message = deferredMessage.getMessage();
+			try {
+				deferredMessage.delete();
+			} catch (Exception e) {
+				// ignore failed deletes
+				log.warning("Failed to remove deferred message from datastore. The message will still be broadcasted but you will have to manually remove the message from the DeferredMessage table");
+			}
+		}
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		Map<String, String> map = new HashMap<String, String>();
@@ -83,6 +95,14 @@ public class BroadcastMessageController implements Controller<Map<String, String
 
 	public String getFeedId() {
 		return feedId;
+	}
+	
+	public void setDeferredMessageId(Long deferredMessageId) {
+		this.deferredMessageId = deferredMessageId;
+	}
+	
+	public Long getDeferredMessageId() {
+		return deferredMessageId;
 	}
 
 

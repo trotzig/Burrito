@@ -147,7 +147,7 @@ function BurritoFeeds() {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
 				}
-				this.startListeningToChannel(json.channelId);
+				parent.startListeningToChannel(json.channelId);
 			}
 		});
 	}
@@ -162,7 +162,7 @@ function BurritoFeeds() {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
 				}
-				this.startListeningToChannel(null);
+				parent.startListeningToChannel(null);
 			}
 		});
 	}
