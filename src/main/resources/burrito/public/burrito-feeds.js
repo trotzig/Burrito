@@ -6,7 +6,8 @@
  * @returns {BurritoPollingChannel}
  */
 function BurritoPollingChannel(subscriptionId, feedServer) {
-	
+	var object = this;
+
 	this.pollingIntervalSeconds = 10;
 
 	this.subscriptionId = subscriptionId;
@@ -32,7 +33,6 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 	}
 	
 	this.doPoll = function() {
-		var parent = this;
 		$.ajax({
 			url: this.feedServer + '/burrito/feeds/subscription/'+this.subscriptionId+'/poll', 
 			dataType: "jsonp",
@@ -41,21 +41,19 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
 				}
-				parent.onMessages(json);
+				object.onMessages(json);
 			}
 		});
 	}
 	
 	this.triggerNewPoll = function() {
-		var parent = this;
 		this.currentTimeout = setTimeout(function() {
-			parent.doPoll();
-			parent.triggerNewPoll();
+			object.doPoll();
+			object.triggerNewPoll();
 		}, this.pollingIntervalSeconds * 1000);
 	}
-	
-	
 }
+
 /**
  * Burrito Feeds Object
  * 
@@ -64,6 +62,7 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
  * @returns
  */
 function BurritoFeeds() {
+	var object = this;
 	
 	this.pendingHandlers = new Array();
 	this.registeredHandlers = new Array();
@@ -72,8 +71,7 @@ function BurritoFeeds() {
 	this.method = 'push';
 	this.channelId = '';
 	this.subscriptionId = -1;
-	this.channelRequestSent = false;
-	this.currentKeepAliveTimer = -1;
+	this.subscriptionRequestSent = false;
 
 	/**
 	 * Registers a new feed handler
@@ -82,21 +80,40 @@ function BurritoFeeds() {
 		if (this.subscriptionId < 0) {
 			this.pendingHandlers[feedId] = callback;
 
-			if (!this.channelRequestSent) {	
-				this.channelRequestSent = true;
+			if (!this.subscriptionRequestSent) {	
+				this.subscriptionRequestSent = true;
 				this.getSubscriptionAndOpenChannel();
 			}
 		}
 		else {
 			this.registeredHandlers[feedId] = callback;
+			this.addFeedToSubscription(feedId);
+		}
+	}
+
+	this.addFeedToSubscription = function(feedId) {
+		if (this.addFeedToSubscriptionLock) {
+			setTimeout(function() {
+				this.addFeedToSubscription(feedId);
+			}, 200);
+		}
+		else {
+			this.addFeedToSubscriptionLock = true;
+
 			$.ajax({
 				url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/addFeed/' + encodeURIComponent(feedId),
 				crossDomain: true,
-				dataType: "jsonp"
+				dataType: "jsonp",
+				success: function(json) {
+					this.addFeedToSubscriptionLock = false;
+					if (json.status == 'error') {
+						throw("Error response from feed server: " + json.message);
+					}
+				}
 			});
 		}
 	}
-	
+
 	/**
 	 * Overrides the default channel server
 	 */
@@ -113,7 +130,6 @@ function BurritoFeeds() {
 	}
 	
 	this.getSubscriptionAndOpenChannel = function() {
-		var parent = this;
 		$.ajax({
 			url: this.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(this.method), 
 			dataType: "jsonp",
@@ -123,22 +139,21 @@ function BurritoFeeds() {
 					throw("Error response from feed server: " + json.message);
 				}
 
-				parent.subscriptionId = json.subscriptionId;
-				parent.triggerNewKeepAlive();
+				object.subscriptionId = json.subscriptionId;
+				object.triggerNewKeepAlive();
 
 				//iterate through all non-initialized handlers and make sure they are initialized
-				for (var feedId in parent.pendingHandlers) {
-					parent.registerHandler(feedId, parent.pendingHandlers[feedId]);
-					parent.pendingHandlers[feedId] = null;
+				for (var feedId in object.pendingHandlers) {
+					object.registerHandler(feedId, object.pendingHandlers[feedId]);
+					object.pendingHandlers[feedId] = null;
 				}
 
-				parent.startListeningToChannel(json.channelId);
+				object.startListeningToChannel(json.channelId);
 			}
 		});
 	}
 
 	this.getNewChannel = function() {
-		var parent = this;
 		$.ajax({
 			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/newChannel', 
 			dataType: "jsonp",
@@ -147,13 +162,12 @@ function BurritoFeeds() {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
 				}
-				parent.startListeningToChannel(json.channelId);
+				object.startListeningToChannel(json.channelId);
 			}
 		});
 	}
 
 	this.dropChannel = function() {
-		var parent = this;
 		$.ajax({
 			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/dropChannel', 
 			dataType: "jsonp",
@@ -162,7 +176,7 @@ function BurritoFeeds() {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
 				}
-				parent.startListeningToChannel(null);
+				object.startListeningToChannel(null);
 			}
 		});
 	}
@@ -187,38 +201,35 @@ function BurritoFeeds() {
 	}
 	
 	this.openPollingChannel = function() {
-		var parent = this;
 		var pollingChannel = new BurritoPollingChannel(this.subscriptionId, this.feedServer);
 		var socket = pollingChannel.open();
 		socket.onmessage = function(json) {
-			parent.onMessageReceived(json);
+			object.onMessageReceived(json);
 		}
 	}
 
 	this.openGoogleChannel = function() {
-		var parent = this;
-
 		var lastChannelRetryTime = 0;
-		var channel = new goog.appengine.Channel(this.channelId);  
-		var socket = channel.open();  
+		var channel = new goog.appengine.Channel(this.channelId);
+		var socket = channel.open();
 
-		socket.onopen = function() {  
-		   //do something?
-		}  
+		socket.onopen = function() {
+			//do something?
+		}
 
 		socket.onclose = function(evt) {
 			if ((new Date().getTime()) - lastChannelRetryTime < 5 * 60 * 1000) {
-				parent.dropChannel(); // closes too frequently, so we give up
+				object.dropChannel(); // closes too frequently, so we give up
 			}
 			else {
 				lastChannelRetryTime = new Date().getTime();
-				parent.getNewChannel(); // attempt to recreate channel
+				object.getNewChannel(); // attempt to recreate channel
 			}
 		}
 
 		socket.onmessage = function(evt) {
 		 	var json = eval("(" + evt.data + ")");
-		 	parent.onMessageReceived(json);
+		 	object.onMessageReceived(json);
 		} 
 
 		socket.onerror = function(error) {
@@ -236,16 +247,14 @@ function BurritoFeeds() {
 	}
 	
 	this.triggerNewKeepAlive = function() {
-		var parent = this;
-		currentKeepAliveTimer = setTimeout(function() {
-				parent.keepAlive();
-			}, 180000); // three minutes
+		setTimeout(function() {
+			object.keepAlive();
+		}, 180000); // three minutes
 	}
-	
+
 	this.getSubscriptionId = function() {
 		return this.subscriptionId;
 	}
-	
 }
 
 //create global object accessible by page
