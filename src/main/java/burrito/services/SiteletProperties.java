@@ -130,7 +130,7 @@ public class SiteletProperties extends Model implements Serializable {
 		List<SiteletProperties> props = getByContainerId(containerId);
 		for (SiteletProperties prop : props) {
 			SiteletBoxMemberMessage msg = new SiteletBoxMemberMessage(prop.getId());
-			if (updatedSitelet != null && updatedSitelet.getId() == prop.getId()) {
+			if (updatedSitelet != null && updatedSitelet.getId().longValue() == prop.getId().longValue()) {
 				msg.setHtml(updatedSitelet.getRenderedHtml());
 			}
 			messages.add(msg);
