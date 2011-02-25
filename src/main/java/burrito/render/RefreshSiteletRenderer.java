@@ -44,6 +44,7 @@ public class RefreshSiteletRenderer implements Renderer {
 		Sitelet sitelet = props.getAssociatedSitelet();
 		CharResponseWrapper recordingResponse = new CharResponseWrapper(response);
 		request.setAttribute("sitelet", sitelet);
+		request.setAttribute("doRecache", true);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/sitelets/" + sitelet.getClass().getSimpleName() + "/render.jsp");
 		dispatcher.forward(request, recordingResponse);
 		AutoRefresh autoRefresh = sitelet.getNextAutoRefresh();
