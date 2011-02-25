@@ -98,7 +98,7 @@ function BurritoSitelets() {
 						var offset = $(this).offset();
 						object.adminControlsTimeout = setTimeout(function() {
 							$('.' + adminControlsClass).remove();
-							$('body').append('<div class="' + adminControlsClass + ' sitelet-properties-id-' + siteletPropertiesId + '" style="top: ' + offset.top + 'px; left: ' + offset.left + 'px; position: absolute">KOLLA HÄR: ' + siteletPropertiesId + '</div>');
+							$('body').append('<div class="' + adminControlsClass + ' sitelet-properties-id-' + siteletPropertiesId + '" style="top: ' + offset.top + 'px; left: ' + offset.left + 'px; position: absolute">Refresh</div>');
 							object.adminControlsTimeout = false;
 						}, 1000);
 					}

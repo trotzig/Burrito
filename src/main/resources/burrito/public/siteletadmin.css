@@ -30,5 +30,16 @@
 }
 
 .clear-floats {
-	clear: both;	
+	clear: both;
+}
+
+.sitelet-admin-controls {
+	border: 1px solid white;
+	background-color: black;
+	color: white;
+	padding: 2px;
+	text-transform: uppercase;
+	font-family: helvetica, arial, sans-serif;
+	font-size: 10px;
+	cursor: pointer;
 }
