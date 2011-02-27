@@ -92,9 +92,10 @@ function BurritoFeeds() {
 	}
 
 	this.addFeedToSubscription = function(feedId) {
+		var parent = this;
 		if (this.addFeedToSubscriptionLock) {
 			setTimeout(function() {
-				this.addFeedToSubscription(feedId);
+				parent.addFeedToSubscription(feedId);
 			}, 200);
 		}
 		else {
@@ -105,7 +106,7 @@ function BurritoFeeds() {
 				crossDomain: true,
 				dataType: "jsonp",
 				success: function(json) {
-					this.addFeedToSubscriptionLock = false;
+					parent.addFeedToSubscriptionLock = false;
 					if (json.status == 'error') {
 						throw("Error response from feed server: " + json.message);
 					}
