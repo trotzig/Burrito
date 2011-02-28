@@ -17,7 +17,7 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 	this.onmessage = function(json){}; //callback for messages
 	
 	this.open = function() {
-		this.triggerNewPoll();
+		object.triggerNewPoll();
 		return this;
 	}
 	
@@ -28,13 +28,13 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 		//loop through all messages received and call the onmessage callback
 		for (var i = 0; i < json.messages.length; i++) {
 			var msgJson = json.messages[i];
-			this.onmessage(msgJson);
+			object.onmessage(msgJson);
 		}
 	}
 	
 	this.doPoll = function() {
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/'+this.subscriptionId+'/poll', 
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/poll', 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
@@ -47,10 +47,10 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 	}
 	
 	this.triggerNewPoll = function() {
-		this.currentTimeout = setTimeout(function() {
+		object.currentTimeout = setTimeout(function() {
 			object.doPoll();
 			object.triggerNewPoll();
-		}, this.pollingIntervalSeconds * 1000);
+		}, object.pollingIntervalSeconds * 1000);
 	}
 }
 
@@ -77,36 +77,35 @@ function BurritoFeeds() {
 	 * Registers a new feed handler
 	 */
 	this.registerHandler = function(feedId, callback) {
-		if (this.subscriptionId < 0) {
-			this.pendingHandlers[feedId] = callback;
+		if (object.subscriptionId < 0) {
+			object.pendingHandlers[feedId] = callback;
 
-			if (!this.subscriptionRequestSent) {	
-				this.subscriptionRequestSent = true;
-				this.getSubscriptionAndOpenChannel();
+			if (!object.subscriptionRequestSent) {	
+				object.subscriptionRequestSent = true;
+				object.getSubscriptionAndOpenChannel();
 			}
 		}
 		else {
-			this.registeredHandlers[feedId] = callback;
-			this.addFeedToSubscription(feedId);
+			object.registeredHandlers[feedId] = callback;
+			object.addFeedToSubscription(feedId);
 		}
 	}
 
 	this.addFeedToSubscription = function(feedId) {
-		var parent = this;
-		if (this.addFeedToSubscriptionLock) {
+		if (object.addFeedToSubscriptionLock) {
 			setTimeout(function() {
-				parent.addFeedToSubscription(feedId);
+				object.addFeedToSubscription(feedId);
 			}, 200);
 		}
 		else {
-			this.addFeedToSubscriptionLock = true;
+			object.addFeedToSubscriptionLock = true;
 
 			$.ajax({
-				url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/addFeed/' + encodeURIComponent(feedId),
+				url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/addFeed/' + encodeURIComponent(feedId),
 				crossDomain: true,
 				dataType: "jsonp",
 				success: function(json) {
-					parent.addFeedToSubscriptionLock = false;
+					object.addFeedToSubscriptionLock = false;
 					if (json.status == 'error') {
 						throw("Error response from feed server: " + json.message);
 					}
@@ -119,7 +118,7 @@ function BurritoFeeds() {
 	 * Overrides the default channel server
 	 */
 	this.setFeedServer = function(chServer) {
-		this.feedServer = chServer;
+		object.feedServer = chServer;
 	}
 	
 	/**
@@ -127,12 +126,12 @@ function BurritoFeeds() {
 	 * The feed server will try to respect your setting, but it is not guaranteed. 
 	 */
 	this.setMethod = function(mthd) {
-		this.method = mthd;
+		object.method = mthd;
 	}
 	
 	this.getSubscriptionAndOpenChannel = function() {
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(this.method), 
+			url: object.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(object.method), 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
@@ -156,7 +155,7 @@ function BurritoFeeds() {
 
 	this.getNewChannel = function() {
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/newChannel', 
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/newChannel', 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
@@ -170,7 +169,7 @@ function BurritoFeeds() {
 
 	this.dropChannel = function() {
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/dropChannel', 
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/dropChannel', 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
@@ -183,26 +182,26 @@ function BurritoFeeds() {
 	}
 
 	this.startListeningToChannel = function(channelId) {
-		this.channelId = channelId;
+		object.channelId = channelId;
 		if (channelId) {
-			this.openGoogleChannel();
+			object.openGoogleChannel();
 		} else {
-			this.openPollingChannel();
+			object.openPollingChannel();
 		}
 	}
 
 	this.onMessageReceived = function(json) {
 		var targetFeedId = json.feedId;
-	 	for (var feedId in this.registeredHandlers) {
+	 	for (var feedId in object.registeredHandlers) {
 	 		if (feedId == targetFeedId) {
-	 			var callback = this.registeredHandlers[feedId];
+	 			var callback = object.registeredHandlers[feedId];
 	 			callback(json.message);
 	 		}
 		}
 	}
 	
 	this.openPollingChannel = function() {
-		var pollingChannel = new BurritoPollingChannel(this.subscriptionId, this.feedServer);
+		var pollingChannel = new BurritoPollingChannel(object.subscriptionId, object.feedServer);
 		var socket = pollingChannel.open();
 		socket.onmessage = function(json) {
 			object.onMessageReceived(json);
@@ -211,7 +210,7 @@ function BurritoFeeds() {
 
 	this.openGoogleChannel = function() {
 		var lastChannelRetryTime = 0;
-		var channel = new goog.appengine.Channel(this.channelId);
+		var channel = new goog.appengine.Channel(object.channelId);
 		var socket = channel.open();
 
 		socket.onopen = function() {
@@ -240,11 +239,11 @@ function BurritoFeeds() {
 	
 	this.keepAlive = function() {
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/'+this.subscriptionId+'/keepAlive',
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/keepAlive',
 			crossDomain: true,
 			dataType: "jsonp"
 		});
-		this.triggerNewKeepAlive();
+		object.triggerNewKeepAlive();
 	}
 	
 	this.triggerNewKeepAlive = function() {
@@ -254,7 +253,7 @@ function BurritoFeeds() {
 	}
 
 	this.getSubscriptionId = function() {
-		return this.subscriptionId;
+		return object.subscriptionId;
 	}
 }
 
