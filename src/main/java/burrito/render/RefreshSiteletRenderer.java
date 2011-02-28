@@ -52,11 +52,19 @@ public class RefreshSiteletRenderer implements Renderer {
 		
 		String newHTML = recordingResponse.toString();
 		Boolean force = ((RefreshSiteletController) controller).getForce();
+
 		if ((force != null && force) || !newHTML.equals(props.getRenderedHtml())) {
 			props.setRenderedHtml(newHTML);
+
+			Integer version = props.getRenderedVersion();
+			if (version != null) version++;
+			else version = 1;
+			props.setRenderedVersion(version);
+
 			props.broadcastUpdate();
 			Cache.delete(SiteletHelper.CACHE_PREFIX + props.containerId);
 		}
+
 		props.update();
 	}
 

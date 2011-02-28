@@ -38,6 +38,8 @@ public class SiteletProperties extends Model implements Serializable {
 
 	public String renderedHtml;
 
+	public Integer renderedVersion;
+
 	public Date nextAutoRefresh;
 
 	public static Query<SiteletProperties> all() {
@@ -103,6 +105,14 @@ public class SiteletProperties extends Model implements Serializable {
 		return renderedHtml;
 	}
 
+	public void setRenderedVersion(Integer renderedVersion) {
+		this.renderedVersion = renderedVersion;
+	}
+
+	public Integer getRenderedVersion() {
+		return renderedVersion;
+	}
+
 	public void setNextAutoRefresh(Date nextAutoRefresh) {
 		this.nextAutoRefresh = nextAutoRefresh;
 	}
@@ -131,7 +141,11 @@ public class SiteletProperties extends Model implements Serializable {
 		for (SiteletProperties prop : props) {
 			SiteletBoxMemberMessage msg = new SiteletBoxMemberMessage(prop.getId());
 			if (updatedSitelet != null && updatedSitelet.getId().longValue() == prop.getId().longValue()) {
+				msg.setVersion(updatedSitelet.getRenderedVersion());
 				msg.setHtml(updatedSitelet.getRenderedHtml());
+			}
+			else {
+				msg.setVersion(prop.getRenderedVersion());
 			}
 			messages.add(msg);
 		}
