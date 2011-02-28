@@ -48,7 +48,7 @@ public class RefreshSiteletRenderer implements Renderer {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/sitelets/" + sitelet.getClass().getSimpleName() + "/render.jsp");
 		dispatcher.forward(request, recordingResponse);
 		AutoRefresh autoRefresh = sitelet.getNextAutoRefresh();
-		props.setNextAutoRefresh(autoRefresh.getTime());
+		props.setNextAutoRefresh(autoRefresh != null ? autoRefresh.getTime() : null);
 		
 		String newHTML = recordingResponse.toString();
 		Boolean force = ((RefreshSiteletController) controller).getForce();
