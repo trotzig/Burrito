@@ -115,6 +115,11 @@ public class FeedsSubscription extends Model {
 		channelId = null;
 	}
 
+	public void reuse() {
+		feedIds = null;
+		timestamp = new Date();
+	}
+
 	/**
 	 * Gets all active subscriptions to a feed. A subscription is considered
 	 * active if it has a timestamp that is less than 5 minutes old.
@@ -167,6 +172,16 @@ public class FeedsSubscription extends Model {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, -2);
 		return all().filter("timestamp <", cal.getTime()).fetch();
+	}
+
+	/**
+	 * Gets a subscription by its channelId
+	 * 
+	 * @param channelId
+	 * @return
+	 */
+	public static FeedsSubscription getByChannelId(String channelId) {
+		return all().filter("channelId", channelId).get();
 	}
 
 	@Override

@@ -45,6 +45,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/sitelets/refresh/all").through(RefreshAllSiteletsController.class).renderAsJson().protect(btProtector); 
 		
 		route("/burrito/feeds/subscription/new/{method}").through(NewFeedsSubscriptionController.class).renderAsJson(); 
+		route("/burrito/feeds/subscription/new/{method}/{channelId}").through(NewFeedsSubscriptionController.class).renderAsJson(); 
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();

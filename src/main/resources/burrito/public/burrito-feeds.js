@@ -130,8 +130,16 @@ function BurritoFeeds() {
 	}
 	
 	this.getSubscriptionAndOpenChannel = function() {
+		var url = object.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(object.method);
+		if (object.method == 'push') {
+			var channelId = object.getCookie('burrito_unloadedChannelId');
+			if (channelId) {
+				object.deleteCookie('burrito_unloadedChannelId');
+				url += '/' + encodeURIComponent(channelId);
+			}
+		}
 		$.ajax({
-			url: object.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(object.method), 
+			url: url, 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
@@ -184,6 +192,14 @@ function BurritoFeeds() {
 	this.startListeningToChannel = function(channelId) {
 		object.channelId = channelId;
 		if (channelId) {
+			if (!object.unloadHandlerAttached) {
+				object.unloadHandlerAttached = true;
+				$(window).unload(function() {
+					if (object.channelId) {
+						object.setCookie('burrito_unloadedChannelId', object.channelId, 5 * 60 * 60 * 1000);
+					}
+				});
+			}
 			object.openGoogleChannel();
 		} else {
 			object.openPollingChannel();
@@ -254,6 +270,30 @@ function BurritoFeeds() {
 
 	this.getSubscriptionId = function() {
 		return object.subscriptionId;
+	}
+
+	this.setCookie = function(name, value, expireInMillis) {
+		var c = name + '=' + value;
+		if (expireInMillis) {
+			var date = new Date();
+			date.setTime(date.getTime() + expireInMillis);
+			c += '; expires=' + date.toGMTString();
+		}
+		document.cookie = c + '; path=/';
+	}
+
+	this.deleteCookie = function(name) {
+		object.setCookie(name, '', -60 * 60 * 1000);
+	}
+
+	this.getCookie = function(name) {
+		name += '=';
+		var cookies = document.cookie.split(';');
+		for (var i = 0; i < cookies.length; i++) {
+			var c = $.trim(cookies[i]);
+			if (c.indexOf(name) == 0) return c.substring(name.length);
+		}
+		return null;
 	}
 }
 

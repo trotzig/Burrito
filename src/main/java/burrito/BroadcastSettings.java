@@ -56,7 +56,7 @@ public class BroadcastSettings {
 	 */
 	public String getSubscribeUrlPrefix() {
 		if (feedsDomain == null) {
-			return null;
+			return "";
 		}
 		return "http://" + feedsDomain;
 	}
@@ -68,7 +68,7 @@ public class BroadcastSettings {
 	 */
 	public String getBroadcastUrlPrefix() {
 		if (feedsDomain == null) {
-			return null;
+			return "";
 		}
 		return "https://" + feedsDomain;
 	}
