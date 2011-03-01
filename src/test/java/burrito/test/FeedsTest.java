@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import burrito.AdminRouter;
+import burrito.BurritoRouter;
 import burrito.services.FeedsSubscription;
 import burrito.services.FeedsSubscriptionMessage;
 
@@ -30,7 +30,7 @@ public class FeedsTest extends TestBase {
 		 * Create a new subscription
 		 */
 
-		Object o = TestUtils.runController("/burrito/feeds/subscription/new", AdminRouter.class);
+		Object o = TestUtils.runController("/burrito/feeds/subscription/new/push", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -82,7 +82,7 @@ public class FeedsTest extends TestBase {
 			sb.append("/addFeed/");
 			sb.append(URLEncoder.encode(testFeedIds[ i ], "UTF-8"));
 
-			o = TestUtils.runController(sb.toString(), AdminRouter.class);
+			o = TestUtils.runController(sb.toString(), BurritoRouter.class);
 
 			assertTrue(o instanceof Map<?, ?>);
 
@@ -120,7 +120,7 @@ public class FeedsTest extends TestBase {
 		sb.append(subscriptionId);
 		sb.append("/keepAlive");
 
-		o = TestUtils.runController(sb.toString(), AdminRouter.class);
+		o = TestUtils.runController(sb.toString(), BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -153,7 +153,7 @@ public class FeedsTest extends TestBase {
 		sb.append(subscriptionId);
 		sb.append("/newChannel");
 
-		o = TestUtils.runController(sb.toString(), AdminRouter.class);
+		o = TestUtils.runController(sb.toString(), BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -182,7 +182,7 @@ public class FeedsTest extends TestBase {
 		 * Try adding a feed to a non-existing subscription
 		 */
 
-		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/addFeed/whatever", AdminRouter.class);
+		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/addFeed/whatever", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -194,7 +194,7 @@ public class FeedsTest extends TestBase {
 		 * Try calling keepAlive on a non-existing subscription
 		 */
 
-		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/keepAlive", AdminRouter.class);
+		o = TestUtils.runController("/burrito/feeds/subscription/" + Long.MAX_VALUE + "/keepAlive", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -213,7 +213,7 @@ public class FeedsTest extends TestBase {
 		msg.setSubscriptionId(123L);
 		msg.insert();
 
-		Object o = TestUtils.runController("/burrito/feeds/subscription/123/poll", AdminRouter.class);
+		Object o = TestUtils.runController("/burrito/feeds/subscription/123/poll", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 
@@ -234,7 +234,7 @@ public class FeedsTest extends TestBase {
 		assertEquals("hello", message.get("feedId"));
 		assertEquals("world", message.get("message"));
 
-		o = TestUtils.runController("/burrito/feeds/subscription/123/poll", AdminRouter.class);
+		o = TestUtils.runController("/burrito/feeds/subscription/123/poll", BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
 

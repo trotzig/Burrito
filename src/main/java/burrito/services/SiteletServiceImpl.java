@@ -63,6 +63,7 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 		item.order = order;
 		item.containerId = containerName;
 		item.insert();
+		item.triggerRefreshAsync();
 		clearContainerCache(containerName);
 	}
 
@@ -75,6 +76,7 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 			order++;
 		}
 		clearContainerCache(containerName);
+		SiteletProperties.broadcast(containerName, null);
 	}
 
 	public void deleteSitelets(String containerName, List<Long> ids) {
@@ -93,6 +95,7 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 			item.delete();
 		}
 		clearContainerCache(containerName);
+		SiteletProperties.broadcast(containerName, null);
 	}
 
 	private void clearContainerCache(String containerName) {

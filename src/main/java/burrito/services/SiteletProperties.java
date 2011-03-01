@@ -1,15 +1,25 @@
 package burrito.services;
 
-import java.io.Serializable;
-import java.util.List;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
-import burrito.annotations.Cache;
-import burrito.sitelet.Sitelet;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import siena.Generator;
 import siena.Id;
 import siena.Model;
 import siena.Query;
+import burrito.Configurator;
+import burrito.sitelet.Sitelet;
+import burrito.sitelet.SiteletBoxFeedMessage;
+import burrito.sitelet.SiteletBoxMemberMessage;
+
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
+import com.google.gson.Gson;
 
 public class SiteletProperties extends Model implements Serializable {
 
@@ -26,9 +36,11 @@ public class SiteletProperties extends Model implements Serializable {
 
 	public Long entityId;
 
-	private transient Boolean cacheEnabled;
+	public String renderedHtml;
 
-	private transient Integer cacheExpirationInSeconds;
+	public Integer renderedVersion;
+
+	public Date nextAutoRefresh;
 
 	public static Query<SiteletProperties> all() {
 		return Model.all(SiteletProperties.class);
@@ -55,60 +67,109 @@ public class SiteletProperties extends Model implements Serializable {
 		return all().filter("entityId", entityId).get();
 	}
 
-	/**
-	 * Gets the cache expiration time for this sitelet. This time is taken from
-	 * the embedded sitelet entity and its {@link Cache} annotation.
-	 * 
-	 * @return
-	 */
-	public int getCacheExpirationInSeconds() {
-		ensureCacheResolved();
-		return cacheExpirationInSeconds.intValue();
-	}
-
-	/**
-	 * Decides whether this sitelet can be cached or not.
-	 * 
-	 * @return
-	 */
-	public boolean isCacheEnabled() {
-		ensureCacheResolved();
-		return cacheEnabled.booleanValue();
-	}
-
-	private void ensureCacheResolved() {
-		if (cacheEnabled != null) {
-			// already resolved
-			return;
-		}
-		try {
-			Class<?> clazz = Class.forName(entityTypeClassName);
-			burrito.annotations.Cache cache = clazz.getAnnotation(burrito.annotations.Cache.class);
-			if (cache == null) {
-				disableCache();
-				return;
-			}
-			cacheExpirationInSeconds = cache.expirationInSeconds();
-			cacheEnabled = cache.enabled();
-		} catch (ClassNotFoundException e) {
-			disableCache();
-		}
-	}
-
-	private void disableCache() {
-		cacheEnabled = false;
-		cacheExpirationInSeconds = 0;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public Sitelet getAssociatedSitelet() {
 		try {
-			return (Sitelet) Model.all(
-					(Class<? extends Model>) Class.forName(this.entityTypeClassName)).filter(
-					"id", entityId).get();
+			return (Sitelet) Model
+					.all((Class<? extends Model>) Class
+							.forName(this.entityTypeClassName))
+					.filter("id", entityId).get();
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Unknown class: " + entityTypeClassName, e);
+			throw new RuntimeException("Unknown class: " + entityTypeClassName,
+					e);
 		}
 	}
+
+	/**
+	 * Gets all sitelets that need to be refreshed. I.e. those who have a
+	 * nextAutoRefresh date in the past.
+	 */
+	public static List<SiteletProperties> getSiteletsNeedingRefresh() {
+		return all().filter("nextAutoRefresh<", new Date()).fetch();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * Sets the pre-rendered html output from this sitelet instance
+	 * 
+	 * @param renderedHtml
+	 */
+	public void setRenderedHtml(String renderedHtml) {
+		this.renderedHtml = renderedHtml;
+	}
+
+	public String getRenderedHtml() {
+		return renderedHtml;
+	}
+
+	public void setRenderedVersion(Integer renderedVersion) {
+		this.renderedVersion = renderedVersion;
+	}
+
+	public Integer getRenderedVersion() {
+		return renderedVersion;
+	}
+
+	public void setNextAutoRefresh(Date nextAutoRefresh) {
+		this.nextAutoRefresh = nextAutoRefresh;
+	}
+
+	public Date getNextAutoRefresh() {
+		return nextAutoRefresh;
+	}
+
+	
+	/**
+	 * Triggers a job that will rerender the html for this sitelet. Please note
+	 * that this refresh is done in the background. You can't be absolutely sure
+	 * when the sitelet is done refreshing.
+	 */
+	public void triggerRefreshAsync() {
+		if (id == null) {
+			throw new IllegalStateException("The sitelet has no id. Must call insert() first");
+		}
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(withUrl("/burrito/sitelets/refresh/" + id));
+	}
+
+	public static SiteletBoxFeedMessage getSiteletBoxFeedMessage(String containerId, SiteletProperties updatedSitelet) {
+		List<SiteletBoxMemberMessage> messages = new ArrayList<SiteletBoxMemberMessage>();
+		List<SiteletProperties> props = getByContainerId(containerId);
+		for (SiteletProperties prop : props) {
+			SiteletBoxMemberMessage msg = new SiteletBoxMemberMessage(prop.getId());
+			if (updatedSitelet != null && updatedSitelet.getId().longValue() == prop.getId().longValue()) {
+				msg.setVersion(updatedSitelet.getRenderedVersion());
+				msg.setHtml(updatedSitelet.getRenderedHtml());
+			}
+			else {
+				msg.setVersion(prop.getRenderedVersion());
+			}
+			messages.add(msg);
+		}
+		SiteletBoxFeedMessage result = new SiteletBoxFeedMessage();
+		result.setSitelets(messages);
+		return result;
+	}
+
+	public void broadcastUpdate() {
+		broadcast(this.containerId, this);
+	}
+
+	/**
+	 * Broadcast a change to this sitelet box
+	 * @param siteletProperties
+	 */
+	public static void broadcast(String containerId, SiteletProperties siteletProperties) {
+		String json = new Gson().toJson(getSiteletBoxFeedMessage(containerId, siteletProperties));
+		new Broadcaster(Configurator.getBroadcastSettings()).broadcast(json, 
+				"burrito:sitelet-box:" + CharEscapers.uriEscaper(false).escape(Configurator.getSiteIdentifier()) + 
+				"|" + CharEscapers.uriEscaper(false).escape(containerId), null);
+	}
+	
+	
+	
 
 }

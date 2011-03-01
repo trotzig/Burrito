@@ -1,93 +1,251 @@
+/**
+ * Channel implementation using polling
+ * 
+ * @param subscriptionId
+ * @param feedServer
+ * @returns {BurritoPollingChannel}
+ */
+function BurritoPollingChannel(subscriptionId, feedServer) {
+	var object = this;
+
+	this.pollingIntervalSeconds = 10;
+
+	this.subscriptionId = subscriptionId;
+	this.currentTimeout = -1;
+	this.feedServer = feedServer;
+	
+	this.onmessage = function(json){}; //callback for messages
+	
+	this.open = function() {
+		object.triggerNewPoll();
+		return this;
+	}
+	
+	this.onMessages = function(json) {
+		if (!json.messages) {
+			return;
+		}
+		//loop through all messages received and call the onmessage callback
+		for (var i = 0; i < json.messages.length; i++) {
+			var msgJson = json.messages[i];
+			object.onmessage(msgJson);
+		}
+	}
+	
+	this.doPoll = function() {
+		$.ajax({
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/poll', 
+			dataType: "jsonp",
+			crossDomain: true,
+			success: function(json) {
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+				object.onMessages(json);
+			}
+		});
+	}
+	
+	this.triggerNewPoll = function() {
+		object.currentTimeout = setTimeout(function() {
+			object.doPoll();
+			object.triggerNewPoll();
+		}, object.pollingIntervalSeconds * 1000);
+	}
+}
 
 /**
  * Burrito Feeds Object
  * 
+ * Responsible for keeping a channel open to the feed server. 
+ * 
  * @returns
  */
 function BurritoFeeds() {
+	var object = this;
 	
 	this.pendingHandlers = new Array();
 	this.registeredHandlers = new Array();
 	
 	this.feedServer = ''; //defaults to same domain as website
-	this.method = 'poll';
+	this.method = 'push';
 	this.channelId = '';
 	this.subscriptionId = -1;
-	this.channelRequestSent = false;
+	this.subscriptionRequestSent = false;
 
 	/**
 	 * Registers a new feed handler
 	 */
 	this.registerHandler = function(feedId, callback) {
-		if (this.channelId == '') {
-			this.pendingHandlers[feedId] = callback;
+		if (object.subscriptionId < 0) {
+			object.pendingHandlers[feedId] = callback;
 
-			if (!this.channelRequestSent) {	
-				this.channelRequestSent = true;
-				this.getSubscriptionAndOpenChannel();
+			if (!object.subscriptionRequestSent) {	
+				object.subscriptionRequestSent = true;
+				object.getSubscriptionAndOpenChannel();
 			}
 		}
 		else {
-			this.registeredHandlers[feedId] = callback;
+			object.registeredHandlers[feedId] = callback;
+			object.addFeedToSubscription(feedId);
+		}
+	}
+
+	this.addFeedToSubscription = function(feedId) {
+		if (object.addFeedToSubscriptionLock) {
+			setTimeout(function() {
+				object.addFeedToSubscription(feedId);
+			}, 200);
+		}
+		else {
+			object.addFeedToSubscriptionLock = true;
+
 			$.ajax({
-				url: this.feedServer + '/burrito/feeds/subscription/' + this.subscriptionId + '/addFeed/' + feedId,
+				url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/addFeed/' + encodeURIComponent(feedId),
 				crossDomain: true,
-				dataType: "jsonp"
+				dataType: "jsonp",
+				success: function(json) {
+					object.addFeedToSubscriptionLock = false;
+					if (json.status == 'error') {
+						throw("Error response from feed server: " + json.message);
+					}
+				}
 			});
 		}
 	}
-	
+
 	/**
 	 * Overrides the default channel server
 	 */
 	this.setFeedServer = function(chServer) {
-		channelServer = chServer;
+		object.feedServer = chServer;
+	}
+	
+	/**
+	 * Sets the method used for subscribing to feeds. Either 'poll' or 'push'. 
+	 * The feed server will try to respect your setting, but it is not guaranteed. 
+	 */
+	this.setMethod = function(mthd) {
+		object.method = mthd;
 	}
 	
 	this.getSubscriptionAndOpenChannel = function() {
-		var parent = this;
+		var url = object.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(object.method);
+		if (object.method == 'push') {
+			var channelId = object.getCookie('burrito_unloadedChannelId');
+			if (channelId) {
+				object.deleteCookie('burrito_unloadedChannelId');
+				url += '/' + encodeURIComponent(channelId);
+			}
+		}
 		$.ajax({
-			url: this.feedServer + '/burrito/feeds/subscription/new', 
+			url: url, 
 			dataType: "jsonp",
 			crossDomain: true,
 			success: function(json) {
 				if (json.status == 'error') {
-					alert(json.message);
-					return;
+					throw("Error response from feed server: " + json.message);
 				}
-				parent.channelId = json.channelId;
-				parent.subscriptionId = json.subscriptionId;
-				for (var feedId in parent.pendingHandlers) {
-					parent.registerHandler(feedId, parent.pendingHandlers[feedId]);
-					parent.pendingHandlers[feedId] = null;
+
+				object.subscriptionId = json.subscriptionId;
+				object.triggerNewKeepAlive();
+
+				//iterate through all non-initialized handlers and make sure they are initialized
+				for (var feedId in object.pendingHandlers) {
+					object.registerHandler(feedId, object.pendingHandlers[feedId]);
+					object.pendingHandlers[feedId] = null;
 				}
-				parent.openGoogleChannel();
+
+				object.startListeningToChannel(json.channelId);
 			}
 		});
 	}
-	
-	this.openGoogleChannel = function() {
-		var parent = this;
-		var channel = new goog.appengine.Channel(this.channelId);  
-		var socket = channel.open();  
-		socket.onopen = function() {  
-		   //do something?  
-			parent.triggerNewKeepAlive()
-		}  
-		 
-		socket.onclose = function(evt) {
-		 	//attempt to recreate channel
-			parent.getSubscriptionAndOpenChannel();
+
+	this.getNewChannel = function() {
+		$.ajax({
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/newChannel', 
+			dataType: "jsonp",
+			crossDomain: true,
+			success: function(json) {
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+				object.startListeningToChannel(json.channelId);
+			}
+		});
+	}
+
+	this.dropChannel = function() {
+		$.ajax({
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/dropChannel', 
+			dataType: "jsonp",
+			crossDomain: true,
+			success: function(json) {
+				if (json.status == 'error') {
+					throw("Error response from feed server: " + json.message);
+				}
+				object.startListeningToChannel(null);
+			}
+		});
+	}
+
+	this.startListeningToChannel = function(channelId) {
+		object.channelId = channelId;
+		if (channelId) {
+			if (!object.unloadHandlerAttached) {
+				object.unloadHandlerAttached = true;
+				$(window).unload(function() {
+					if (object.channelId) {
+						object.setCookie('burrito_unloadedChannelId', object.channelId, 5 * 60 * 60 * 1000);
+					}
+				});
+			}
+			object.openGoogleChannel();
+		} else {
+			object.openPollingChannel();
 		}
+	}
+
+	this.onMessageReceived = function(json) {
+		var targetFeedId = json.feedId;
+	 	for (var feedId in object.registeredHandlers) {
+	 		if (feedId == targetFeedId) {
+	 			var callback = object.registeredHandlers[feedId];
+	 			callback(json.message);
+	 		}
+		}
+	}
+	
+	this.openPollingChannel = function() {
+		var pollingChannel = new BurritoPollingChannel(object.subscriptionId, object.feedServer);
+		var socket = pollingChannel.open();
+		socket.onmessage = function(json) {
+			object.onMessageReceived(json);
+		}
+	}
+
+	this.openGoogleChannel = function() {
+		var lastChannelRetryTime = 0;
+		var channel = new goog.appengine.Channel(object.channelId);
+		var socket = channel.open();
+
+		socket.onopen = function() {
+			//do something?
+		}
+
+		socket.onclose = function(evt) {
+			if ((new Date().getTime()) - lastChannelRetryTime < 5 * 60 * 1000) {
+				object.dropChannel(); // closes too frequently, so we give up
+			}
+			else {
+				lastChannelRetryTime = new Date().getTime();
+				object.getNewChannel(); // attempt to recreate channel
+			}
+		}
+
 		socket.onmessage = function(evt) {
 		 	var json = eval("(" + evt.data + ")");
-		 	var targetFeedId = json.feedId;
-		 	for (var feedId in parent.registeredHandlers) {
-		 		if (feedId == targetFeedId) {
-		 			var callback = parent.registeredHandlers[feedId];
-		 			callback(json.message);
-		 		}
-			}
+		 	object.onMessageReceived(json);
 		} 
 
 		socket.onerror = function(error) {
@@ -97,22 +255,47 @@ function BurritoFeeds() {
 	
 	this.keepAlive = function() {
 		$.ajax({
-			url: '/burrito/feeds/subscription/'+this.subscriptionId+'/keepAlive',
+			url: object.feedServer + '/burrito/feeds/subscription/' + object.subscriptionId + '/keepAlive',
 			crossDomain: true,
 			dataType: "jsonp"
 		});
-		this.triggerNewKeepAlive();
+		object.triggerNewKeepAlive();
 	}
 	
 	this.triggerNewKeepAlive = function() {
-		setTimeout("burritoFeeds.keepAlive()", 180000);
+		setTimeout(function() {
+			object.keepAlive();
+		}, 180000); // three minutes
 	}
-	
+
 	this.getSubscriptionId = function() {
-		return this.subscriptionId;
+		return object.subscriptionId;
 	}
-	
+
+	this.setCookie = function(name, value, expireInMillis) {
+		var c = name + '=' + value;
+		if (expireInMillis) {
+			var date = new Date();
+			date.setTime(date.getTime() + expireInMillis);
+			c += '; expires=' + date.toGMTString();
+		}
+		document.cookie = c + '; path=/';
+	}
+
+	this.deleteCookie = function(name) {
+		object.setCookie(name, '', -60 * 60 * 1000);
+	}
+
+	this.getCookie = function(name) {
+		name += '=';
+		var cookies = document.cookie.split(';');
+		for (var i = 0; i < cookies.length; i++) {
+			var c = $.trim(cookies[i]);
+			if (c.indexOf(name) == 0) return c.substring(name.length);
+		}
+		return null;
+	}
 }
 
+//create global object accessible by page
 var burritoFeeds = new BurritoFeeds();
-
