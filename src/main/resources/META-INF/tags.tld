@@ -30,4 +30,8 @@ jsptaglibrary_2_0.xsd"
     <name>siteletboxadmin</name>
     <path>/META-INF/tags/siteletboxadmin.tag</path>
   </tag-file>
+  <tag-file>
+    <name>parseLink</name>
+    <path>/META-INF/tags/parseLink.tag</path>
+  </tag-file>
 </taglib> 
