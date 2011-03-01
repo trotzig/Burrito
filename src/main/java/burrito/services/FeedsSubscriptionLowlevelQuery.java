@@ -58,6 +58,7 @@ public class FeedsSubscriptionLowlevelQuery implements Iterable<FeedsSubscriptio
 		if (entity == null) return null;
 
 		FeedsSubscription subscription = new FeedsSubscription();
+		subscription.setId((Long) entity.getKey().getId());
 		subscription.setClientId((String) entity.getProperty("clientId"));
 		subscription.setChannelId((String) entity.getProperty("channelId"));
 		subscription.setFeedIds((List<String>) entity.getProperty("feedIds"));
