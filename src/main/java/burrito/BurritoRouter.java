@@ -9,6 +9,7 @@ import burrito.controller.DropFeedsSubscriptionChannelController;
 import burrito.controller.KeepFeedsSubscriptionAliveController;
 import burrito.controller.NewFeedsSubscriptionChannelController;
 import burrito.controller.NewFeedsSubscriptionController;
+import burrito.controller.PollSiteletBoxController;
 import burrito.controller.PollSubscriptionController;
 import burrito.controller.RefreshAllSiteletsController;
 import burrito.controller.RefreshSiteletController;
@@ -40,11 +41,13 @@ public class BurritoRouter extends Router {
 		route("/burrito/sitelets/refresh/{siteletPropertiesId:long}").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector); 
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
-		
+
 		route("/burrito/sitelets/refresh").through(RefreshSiteletsController.class).renderAsJson().protect(btProtector);
 		route("/burrito/sitelets/refresh/all").through(RefreshAllSiteletsController.class).renderAsJson().protect(btProtector); 
-		
+		route("/burrito/sitelets/box/{containerId}/poll").through(PollSiteletBoxController.class).renderAsJson();
+
 		route("/burrito/feeds/subscription/new/{method}").through(NewFeedsSubscriptionController.class).renderAsJson(); 
+		route("/burrito/feeds/subscription/new/{method}/{channelId}").through(NewFeedsSubscriptionController.class).renderAsJson(); 
 		route("/burrito/feeds/subscription/{subscriptionId:long}/addFeed/{feedId}").through(AddFeedsSubscriptionFeedController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/keepAlive").through(KeepFeedsSubscriptionAliveController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();

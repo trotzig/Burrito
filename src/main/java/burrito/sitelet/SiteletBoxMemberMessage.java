@@ -3,12 +3,8 @@ package burrito.sitelet;
 public class SiteletBoxMemberMessage {
 
 	private Long id;
+	private Integer version;
 	private String html;
-
-	public SiteletBoxMemberMessage(Long id, String html) {
-		this.id = id;
-		this.html = html;
-	}
 
 	public SiteletBoxMemberMessage(Long id) {
 		this.id = id;
@@ -22,6 +18,14 @@ public class SiteletBoxMemberMessage {
 		this.id = id;
 	}
 
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
 	public String getHtml() {
 		return html;
 	}
@@ -29,5 +33,4 @@ public class SiteletBoxMemberMessage {
 	public void setHtml(String html) {
 		this.html = html;
 	}
-
 }

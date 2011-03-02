@@ -38,6 +38,8 @@ public class SiteletProperties extends Model implements Serializable {
 
 	public String renderedHtml;
 
+	public Integer renderedVersion;
+
 	public Date nextAutoRefresh;
 
 	public static Query<SiteletProperties> all() {
@@ -103,6 +105,14 @@ public class SiteletProperties extends Model implements Serializable {
 		return renderedHtml;
 	}
 
+	public void setRenderedVersion(Integer renderedVersion) {
+		this.renderedVersion = renderedVersion;
+	}
+
+	public Integer getRenderedVersion() {
+		return renderedVersion;
+	}
+
 	public void setNextAutoRefresh(Date nextAutoRefresh) {
 		this.nextAutoRefresh = nextAutoRefresh;
 	}
@@ -125,13 +135,18 @@ public class SiteletProperties extends Model implements Serializable {
 		queue.add(withUrl("/burrito/sitelets/refresh/" + id));
 	}
 
-	public static SiteletBoxFeedMessage getSiteletBoxFeedMessage(String containerId, SiteletProperties updatedSitelet) {
+	public static SiteletBoxFeedMessage getSiteletBoxFeedMessage(String containerId, SiteletProperties updatedSitelet, boolean includeAllHtml) {
 		List<SiteletBoxMemberMessage> messages = new ArrayList<SiteletBoxMemberMessage>();
 		List<SiteletProperties> props = getByContainerId(containerId);
 		for (SiteletProperties prop : props) {
 			SiteletBoxMemberMessage msg = new SiteletBoxMemberMessage(prop.getId());
 			if (updatedSitelet != null && updatedSitelet.getId().longValue() == prop.getId().longValue()) {
+				msg.setVersion(updatedSitelet.getRenderedVersion());
 				msg.setHtml(updatedSitelet.getRenderedHtml());
+			}
+			else {
+				msg.setVersion(prop.getRenderedVersion());
+				if (includeAllHtml) msg.setHtml(prop.getRenderedHtml());
 			}
 			messages.add(msg);
 		}
@@ -149,7 +164,7 @@ public class SiteletProperties extends Model implements Serializable {
 	 * @param siteletProperties
 	 */
 	public static void broadcast(String containerId, SiteletProperties siteletProperties) {
-		String json = new Gson().toJson(getSiteletBoxFeedMessage(containerId, siteletProperties));
+		String json = new Gson().toJson(getSiteletBoxFeedMessage(containerId, siteletProperties, false));
 		new Broadcaster(Configurator.getBroadcastSettings()).broadcast(json, 
 				"burrito:sitelet-box:" + CharEscapers.uriEscaper(false).escape(Configurator.getSiteIdentifier()) + 
 				"|" + CharEscapers.uriEscaper(false).escape(containerId), null);

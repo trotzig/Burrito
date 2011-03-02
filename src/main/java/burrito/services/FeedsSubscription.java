@@ -6,14 +6,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.appengine.api.channel.ChannelFailureException;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
-
 import siena.Generator;
 import siena.Id;
 import siena.Model;
 import siena.Query;
+
+import com.google.appengine.api.channel.ChannelFailureException;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 
 /**
  * This class describes a clients connection to the channel API. Each connected
@@ -115,15 +115,19 @@ public class FeedsSubscription extends Model {
 		channelId = null;
 	}
 
+	public void reuse() {
+		feedIds = null;
+		timestamp = new Date();
+	}
+
 	/**
 	 * Gets all active subscriptions to a feed. A subscription is considered
 	 * active if it has a timestamp that is less than 5 minutes old.
 	 *
-	 * @param siteId
-	 * @param threadId
+	 * @param feedId
 	 * @return
 	 */
-	public static List<FeedsSubscription> getSubscriptionsForFeed(String feedId) {
+	public static Iterable<FeedsSubscription> getSubscriptionsForFeed(String feedId) {
 		// Gets all active subscriptions. A subscriptions is considered to be
 		// active if it has a timestamp less than 5 minutes ago.
 		// A channel is kept alive by a ping from the client every 2 minutes or so.
@@ -133,7 +137,12 @@ public class FeedsSubscription extends Model {
 
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, -5);
-		return all().filter("feedIds", feedId).filter("timestamp >", cal.getTime()).fetch();
+
+		FeedsSubscriptionLowlevelQuery query = new FeedsSubscriptionLowlevelQuery();
+		query.addFilter("feedIds", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, feedId);
+		query.addFilter("timestamp", com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN, cal.getTime());
+
+		return query;
 	}
 
 	/**
@@ -167,6 +176,16 @@ public class FeedsSubscription extends Model {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, -2);
 		return all().filter("timestamp <", cal.getTime()).fetch();
+	}
+
+	/**
+	 * Gets a subscription by its channelId
+	 * 
+	 * @param channelId
+	 * @return
+	 */
+	public static FeedsSubscription getByChannelId(String channelId) {
+		return all().filter("channelId", channelId).get();
 	}
 
 	@Override

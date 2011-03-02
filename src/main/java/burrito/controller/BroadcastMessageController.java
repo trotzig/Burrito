@@ -1,7 +1,6 @@
 package burrito.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,9 +47,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		map.put("feedId", feedId);
 		String wrapped = new Gson().toJson(map);
 		// get a list of people (browser clients) to notify
-		List<FeedsSubscription> subs = FeedsSubscription.getSubscriptionsForFeed(feedId);
-		
-		log("Found " + subs.size() + " to send the message to");
+		Iterable<FeedsSubscription> subs = FeedsSubscription.getSubscriptionsForFeed(feedId);
 		
 		for (FeedsSubscription sub : subs) {
 			if (excludeSubscriptionId != null

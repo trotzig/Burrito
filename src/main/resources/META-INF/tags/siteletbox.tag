@@ -21,7 +21,7 @@
 		for (SiteletProperties siteletProperties : sitelets) {
 			jspContext.setAttribute("siteletProperties", siteletProperties);
 			%>
-				<div class="sitelet sitelet-properties-id-${siteletProperties.id}">
+				<div class="sitelet sitelet-properties-id-${siteletProperties.id} sitelet-version-${empty siteletProperties.renderedVersion ? 0 : siteletProperties.renderedVersion}">
 					${siteletProperties.renderedHtml}
 				</div>
 			<%
