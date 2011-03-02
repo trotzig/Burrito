@@ -38,7 +38,7 @@ public class BlobStoreServlet extends HttpServlet {
 		} else {
 			String url = imagesService.getServingUrl(blobKey);
 			url = url.replace("http://0.0.0.0:", "http://localhost:");
-			url += "=s200";
+			url += "=s" + s;
 			resp.sendRedirect(url);
 		}
 	}
