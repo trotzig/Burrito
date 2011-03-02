@@ -8,53 +8,86 @@ function BurritoSitelets() {
 
 	this.registerLiveBox = function(siteIdentifier, boxId) {
 		burritoFeeds.registerHandler('burrito:sitelet-box:' + siteIdentifier + '|' + boxId, function(message) {
-			message = eval('(' + message + ')');
-			var sitelets = message.sitelets;
+			object.handleIncomingUpdate(boxId, eval('(' + message + ')'));
+		});
+	}
 
-			var box = $('#sitelet-box-' + boxId);
+	this.handleIncomingUpdate = function(boxId, update) {
+		var sitelets = update.sitelets;
 
-			box.find('.sitelet').each(function() {
-				var id = object.getClassValue($(this), 'sitelet-properties-id-');
-				for (var i = 0; i < sitelets.length; i++) {
-					if (id == sitelets[i].id) return;
-				}
-				$(this).removeClass('sitelet');
-				$(this).slideUp(500, function() {
-					$(this).remove();
-				});
-			});
+		var box = $('#sitelet-box-' + boxId);
 
-			var previousWrapper = null;
-
+		box.find('.sitelet').each(function() {
+			var id = object.getClassValue($(this), 'sitelet-properties-id-');
 			for (var i = 0; i < sitelets.length; i++) {
-				var sitelet = sitelets[i];
-				var idClassName = 'sitelet-properties-id-' + sitelet.id;
-				var siteletWrapper = box.find('.sitelet.' + idClassName);
+				if (id == sitelets[i].id) return;
+			}
+			$(this).removeClass('sitelet');
+			$(this).slideUp(500, function() {
+				$(this).remove();
+			});
+		});
+
+		var previousWrapper = null;
+
+		for (var i = 0; i < sitelets.length; i++) {
+			var sitelet = sitelets[i];
+			var idClassName = 'sitelet-properties-id-' + sitelet.id;
+			var siteletWrapper = box.find('.sitelet.' + idClassName);
+
+			if (siteletWrapper.length) {
+				object.placeSiteletWrapper(box, previousWrapper, siteletWrapper, idClassName);
+			}
+
+			if (sitelet.html) {
+				var hasNewContent;
 
 				if (siteletWrapper.length) {
+					var existingVersion = object.getClassValue(siteletWrapper, 'sitelet-version-');
+					hasNewContent = sitelet.version > existingVersion;
+					if (hasNewContent) {
+						siteletWrapper.html(sitelet.html);
+						siteletWrapper.removeClass('sitelet-version-' + existingVersion);
+						siteletWrapper.addClass('sitelet-version-' + sitelet.version);
+					}
+				}
+				else {
+					hasNewContent = true;
+					siteletWrapper = '<div style="display: none" class="sitelet ' + idClassName + ' sitelet-version-' + sitelet.version + '">' + sitelet.html + '</div>';
 					object.placeSiteletWrapper(box, previousWrapper, siteletWrapper, idClassName);
+					siteletWrapper = box.find('.sitelet.' + idClassName);
+					siteletWrapper.slideDown(500);
 				}
 
-				if (sitelet.html) {
-					if (siteletWrapper.length) {
-						siteletWrapper.html(sitelet.html);
-					}
-					else {
-						siteletWrapper = '<div style="display: none" class="sitelet ' + idClassName + '">' + sitelet.html + '</div>';
-						object.placeSiteletWrapper(box, previousWrapper, siteletWrapper, idClassName);
-						siteletWrapper = box.find('.sitelet.' + idClassName);
-						siteletWrapper.slideDown(500);
-					}
-
+				if (hasNewContent) {
 					for (var j = 0; j < object.onNewSiteletContentCallbacks.length; j++) {
 						var callback = object.onNewSiteletContentCallbacks[j];
 						callback(siteletWrapper);
 					}
 				}
-
-				previousWrapper = siteletWrapper;
 			}
-		});
+			else if (sitelet.version > object.getClassValue(siteletWrapper, 'sitelet-version-')) {
+				if (!object.boxPollTimeout) {
+					alert("polling for box contents soon");
+					object.boxPollTimeout = setTimeout(function() {
+						alert("polling for box contents now");
+						object.boxPollTimeout = false;
+						$.ajax({
+							url: '/burrito/sitelets/box/' + boxId + '/poll',
+							dataType: "jsonp",
+							success: function(json) {
+								if (json.status == 'error') {
+									throw("Error response from feed server: " + json.message);
+								}
+								object.handleIncomingUpdate(boxId, json);
+							}
+						});
+					}, 100 + Math.floor(60 * 1000 * Math.random()));
+				}
+			}
+
+			previousWrapper = siteletWrapper;
+		}
 	}
 
 	this.placeSiteletWrapper = function(box, previousWrapper, siteletWrapper, idClassName) {
