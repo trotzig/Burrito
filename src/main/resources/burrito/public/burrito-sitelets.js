@@ -102,9 +102,9 @@ function BurritoSitelets() {
 					var existingVersion = burritoUtils.getClassValue(siteletWrapper, 'sitelet-version-');
 					hasNewContent = sitelet.version > existingVersion;
 					if (hasNewContent) {
-						siteletWrapper.html(sitelet.html);
 						siteletWrapper.removeClass('sitelet-version-' + existingVersion);
 						siteletWrapper.addClass('sitelet-version-' + sitelet.version);
+						siteletWrapper.html(sitelet.html);
 					}
 				}
 				else {
