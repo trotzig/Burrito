@@ -43,6 +43,7 @@ public class RefreshSiteletRenderer implements Renderer {
 		SiteletProperties props = (SiteletProperties) result;
 		Sitelet sitelet = props.getAssociatedSitelet();
 		CharResponseWrapper recordingResponse = new CharResponseWrapper(response);
+		request.setAttribute("siteletProperties", props);
 		request.setAttribute("sitelet", sitelet);
 		request.setAttribute("doRecache", true);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/sitelets/" + sitelet.getClass().getSimpleName() + "/render.jsp");
