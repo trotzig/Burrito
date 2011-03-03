@@ -102,9 +102,9 @@ function BurritoSitelets() {
 					var existingVersion = burritoUtils.getClassValue(siteletWrapper, 'sitelet-version-');
 					hasNewContent = sitelet.version > existingVersion;
 					if (hasNewContent) {
-						siteletWrapper.html(sitelet.html);
 						siteletWrapper.removeClass('sitelet-version-' + existingVersion);
 						siteletWrapper.addClass('sitelet-version-' + sitelet.version);
+						siteletWrapper.html(sitelet.html);
 					}
 				}
 				else {
@@ -205,8 +205,9 @@ function BurritoSitelets() {
 		});
 	}
 
-	this.runOnceForSiteletVersion = function(siteletPropertiesId, renderedVersion, callback) {
-		burritoUtils.runOnce('burrito-sitelet-' + siteletPropertiesId + '-version-' + renderedVersion, callback);
+	this.runOnceForSiteletVersion = function(siteletElement, callback) {
+		siteletElement = siteletElement.closest('.sitelet');
+		burritoUtils.runOnce('burrito-sitelet-' + burritoUtils.getClassValue(siteletElement, 'sitelet-properties-id-') + '-version-' + burritoUtils.getClassValue(siteletElement, 'sitelet-version-'), callback);
 	}
 }
 
