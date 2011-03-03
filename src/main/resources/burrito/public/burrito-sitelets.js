@@ -124,9 +124,7 @@ function BurritoSitelets() {
 			}
 			else if (sitelet.version > burritoUtils.getClassValue(siteletWrapper, 'sitelet-version-')) {
 				if (!self.boxPollTimeout) {
-					alert("polling for box contents soon");
 					self.boxPollTimeout = setTimeout(function() {
-						alert("polling for box contents now");
 						self.boxPollTimeout = false;
 						$.ajax({
 							url: '/burrito/sitelets/box/' + boxId + '/poll',
