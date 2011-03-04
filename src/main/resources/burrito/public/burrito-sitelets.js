@@ -29,12 +29,15 @@ function BurritoUtils() {
 
 			if (!self.jsFilesStartedLoading[jsFileUrl]) {
 				self.jsFilesStartedLoading[jsFileUrl] = true;
-
-				$.getScript(jsFileUrl, function() {
-					self.jsFilesLoaded[jsFileUrl] = true;
-
-					for (var i = 0; i < pendingCallbacks.length; i++) {
-						pendingCallbacks[i]();
+				$.ajax({
+					  url: jsFileUrl,
+					  dataType: 'script',
+					  cache: true,
+					  success: function() {
+						self.jsFilesLoaded[jsFileUrl] = true;
+						for (var i = 0; i < pendingCallbacks.length; i++) {
+							pendingCallbacks[i]();
+						}
 					}
 				});
 			}
