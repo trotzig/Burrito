@@ -131,8 +131,8 @@ public class SiteletProperties extends Model implements Serializable {
 		if (id == null) {
 			throw new IllegalStateException("The sitelet has no id. Must call insert() first");
 		}
-		Queue queue = QueueFactory.getDefaultQueue();
-		queue.add(withUrl("/burrito/sitelets/refresh/" + id));
+		Queue queue = QueueFactory.getQueue("burrito-sitelets");
+		queue.add(withUrl("/burrito/sitelets/refresh/sitelet").param("siteletPropertiesId", String.valueOf(id)));
 	}
 
 	public static SiteletBoxFeedMessage getSiteletBoxFeedMessage(String containerId, SiteletProperties updatedSitelet, boolean includeAllHtml) {
