@@ -34,7 +34,7 @@ public class SiteletAdminPanel extends Composite implements ValueChangeHandler<S
 
 	private Widget createContentWidget(String historyToken) {
 		if ("".equals(historyToken)) {
-			return new SiteletOverviewPanel(containerName);
+			return new SiteletDragAndDropPanel(containerName);
 		} 
 		try {
 			Long id = Long.parseLong(historyToken);

@@ -1,7 +1,11 @@
-#Wed Feb 09 13:25:06 CET 2011
+#Fri Mar 04 09:40:44 CET 2011
 eclipse.preferences.version=1
 encoding//src/main/resources/burrito/BurritoMessages.properties=UTF-8
 encoding//src/main/resources/burrito/client/crud/labels/CrudMessages.properties=UTF-8
-encoding//src/main/resources/burrito/client/crud/labels/CrudMessages_sv.properties=UTF-8
+encoding//src/main/resources/burrito/client/widgets/date/DateTimePickerMessages.properties=UTF-8
+encoding//src/main/resources/burrito/client/widgets/form/EditFormMessages.properties=UTF-8
+encoding//src/main/resources/burrito/client/widgets/inputfield/ValidationMessages.properties=UTF-8
+encoding//src/main/resources/burrito/client/widgets/messages/CommonMessages.properties=UTF-8
+encoding//src/main/resources/burrito/client/widgets/newpassword/NewPasswordMessages.properties=UTF-8
 encoding//src/main/resources/burrito/client/widgets/panels/table/TableMessages.properties=UTF-8
 encoding/<project>=UTF-8

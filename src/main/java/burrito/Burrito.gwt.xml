@@ -9,6 +9,9 @@
 	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 	<!-- Other module inherits                                      -->
 
+	<!-- Inherit gwt-dnd -->
+	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
+	
 	<!-- This module contains admin widgets: -->
 	<inherits name="burrito.BurritoWidgets" />
 	

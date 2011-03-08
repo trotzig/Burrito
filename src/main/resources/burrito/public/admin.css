@@ -158,3 +158,37 @@ a.k5-PageController-link:hover {
 	background-color: #FFEEDD;
 	border: 1px solid #545454;
 }
+
+
+.dragdrop-dropTarget .dragdrop-dropTarget-engage{
+	background-color: #F1FFF2;
+	padding: 10px 0;
+}
+
+.dragdrop-draggable { 
+	margin: 5px 0;
+} 
+
+.dragdrop-handle {
+	padding: 10px;
+	border: 1px black; 
+}
+
+.k5-SiteLetDraggableWidget-Wrapper {
+	background-color: #D1EFC2;
+}
+
+.k5-SiteLetDraggableWidget-Header {
+	padding: 5px;
+	font-weight: bold;
+	background-color: #FFFFFF;
+	border-bottom: 2px black;
+}
+
+.k5-SiteLetDraggableWidget-Actions {
+	padding: 20px 5px 5px;
+}
+
+.k5-SiteLetDraggableWidget-Actions a {
+	margin-right: 5px;
+}

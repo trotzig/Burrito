@@ -14,7 +14,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class Burrito implements EntryPoint {
 	
 	public void onModuleLoad() {
-		RootPanel adminPanel = RootPanel.get("burrito-admin");		
+		RootPanel adminPanel = RootPanel.get("burrito-admin");
+
 		if (adminPanel != null) {
 			String siteletContainerId = Window.Location.getParameter("container");
 			if (siteletContainerId != null && !siteletContainerId.isEmpty()) {
