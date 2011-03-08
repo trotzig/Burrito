@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>texmex</groupId>
 	<artifactId>burrito</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<distributionManagement>
 		<repository>
 			<id>releases</id>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>texmex</groupId>
 			<artifactId>taco</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.1.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
