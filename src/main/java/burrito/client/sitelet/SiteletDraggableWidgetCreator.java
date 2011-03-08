@@ -47,7 +47,8 @@ public class SiteletDraggableWidgetCreator implements DraggableWidgetCreator<Cru
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				History.newItem(String.valueOf(modelObj.getId()));				
+				History.newItem(String.valueOf(modelObj.getId()));	
+				event.preventDefault();
 			}
 		});
 		editAnchor.addStyleName("k5-SiteLetDraggableWidget-Wrapper-EditAnchor");
@@ -59,6 +60,9 @@ public class SiteletDraggableWidgetCreator implements DraggableWidgetCreator<Cru
 			public void onClick(ClickEvent event) {
 				List<Long> idList = new ArrayList<Long>();
 				idList.add(modelObj.getId());
+				if (!Window.confirm(labels.confirmDeleteSitelet())) {
+					return;
+				}
 				service.deleteSitelets(containerName, idList, new AsyncCallback<Void>() {
 					
 					@Override
@@ -71,6 +75,7 @@ public class SiteletDraggableWidgetCreator implements DraggableWidgetCreator<Cru
 						throw new RuntimeException("Failed when trying to delete sitelet with id " + modelObj.getId() + " from container " + containerName, caught);
 					}
 				});
+				event.preventDefault();
 			}
 		});
 		deleteAnchor.addStyleName("k5-SiteLetDraggableWidget-DeleteAnchor");

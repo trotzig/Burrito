@@ -127,4 +127,6 @@ public interface CrudMessages extends Messages {
 
 	String clickToDeleteTag();
 
+	String confirmDeleteSitelet();
+
 }

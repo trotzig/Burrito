@@ -159,6 +159,9 @@ a.k5-PageController-link:hover {
 	border: 1px solid #545454;
 }
 
+.k5-SiteletAdminPanel .dragdrop-dropTarget {
+  margin: 10px 0px;
+}
 
 .dragdrop-dropTarget .dragdrop-dropTarget-engage{
 	background-color: #F1FFF2;
@@ -170,18 +173,18 @@ a.k5-PageController-link:hover {
 } 
 
 .dragdrop-handle {
-	padding: 10px;
+	padding: 5px 0px;
 	border: 1px black; 
 }
 
 .k5-SiteLetDraggableWidget-Wrapper {
 	background-color: #D1EFC2;
+  border: 1px solid #CCC;
+  padding: 5px;
 }
 
 .k5-SiteLetDraggableWidget-Header {
 	padding: 5px;
-	font-weight: bold;
-	background-color: #FFFFFF;
 	border-bottom: 2px black;
 }
 
