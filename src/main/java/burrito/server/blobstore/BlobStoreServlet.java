@@ -34,6 +34,7 @@ public class BlobStoreServlet extends HttpServlet {
 		BlobKey blobKey = new BlobKey(req.getParameter("key"));
 		String s = req.getParameter("s");
 		if (s == null) {
+			resp.setHeader("Cache-Control", "public, max-age=86400");
 			blobstoreService.serve(blobKey, resp);
 		} else {
 			String url = imagesService.getServingUrl(blobKey);
