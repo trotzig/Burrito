@@ -39,6 +39,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/crud").throughServlet(CrudServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/burrito/sitelets").throughServlet(SiteletServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/burrito/sitelets/refresh/sitelet").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector); 
+		route("/burrito/sitelets/refresh/{siteletPropertiesId:long}").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector);
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
 
