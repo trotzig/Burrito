@@ -161,7 +161,7 @@ function BurritoSitelets() {
 	}
 
 	this.refreshSitelet = function(siteletPropertiesId) {
-		$.ajax({url: '/burrito/sitelets/refresh/' + siteletPropertiesId + '?force=true'});
+		$.ajax({type: 'POST', url: '/burrito/sitelets/refresh/' + siteletPropertiesId, data: {force: true}});
 	}
 
 	this.onNewSiteletContent = function(callback) {
