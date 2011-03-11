@@ -1,5 +1,7 @@
 package burrito.client.crud.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import burrito.client.crud.labels.CrudMessages;
 
@@ -29,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 @SuppressWarnings("deprecation")
 public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 
+	private static final List<CrudRichTextPlugin> PLUGGED_IN_CONTROLLERS = new ArrayList<CrudRichTextPlugin>();
 	private DockPanel richTextDock = new DockPanel();
 	private VerticalPanel wrapper = new VerticalPanel();
 	private TabPanel tabPanel = new TabPanel();
@@ -96,11 +99,11 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 				formatter.insertImage("/blobstore/image?key=" + value);
 			}
 		});
-		
+
 		wrapper.add(tabPanel);
 
-		ToggleButton maximize = new ToggleButton(labels.maximize(), labels
-				.minimize());
+		ToggleButton maximize = new ToggleButton(labels.maximize(),
+				labels.minimize());
 		maximize.addClickHandler(new ClickHandler() {
 			boolean max = false;
 
@@ -137,8 +140,8 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 
 	private Widget createCommandsArea() {
 		HorizontalPanel hp = new HorizontalPanel();
-		this.bold = new ToggleButton(new Image(
-				GWT.getModuleBaseURL() + "images/format-text-bold.png"), new ClickHandler() {
+		this.bold = new ToggleButton(new Image(GWT.getModuleBaseURL()
+				+ "images/format-text-bold.png"), new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
 				formatter.toggleBold();
@@ -147,8 +150,8 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 		bold.setTitle(labels.bold());
 		hp.add(bold);
 
-		this.italics = new ToggleButton(new Image(
-				GWT.getModuleBaseURL() + "images/format-text-italic.png"), new ClickHandler() {
+		this.italics = new ToggleButton(new Image(GWT.getModuleBaseURL()
+				+ "images/format-text-italic.png"), new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
 				formatter.toggleItalic();
@@ -157,19 +160,18 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 		italics.setTitle(labels.italic());
 		hp.add(italics);
 
-		this.strikethrough = new ToggleButton(new Image(
-				GWT.getModuleBaseURL() + "images/format-text-strikethrough.png"),
-				new ClickHandler() {
+		this.strikethrough = new ToggleButton(new Image(GWT.getModuleBaseURL()
+				+ "images/format-text-strikethrough.png"), new ClickHandler() {
 
-					public void onClick(ClickEvent event) {
-						formatter.toggleStrikethrough();
-					}
-				});
+			public void onClick(ClickEvent event) {
+				formatter.toggleStrikethrough();
+			}
+		});
 		strikethrough.setTitle(labels.strikethrough());
 		hp.add(strikethrough);
 
-		this.underline = new ToggleButton(new Image(
-				GWT.getModuleBaseURL() + "images/format-text-underline.png"), new ClickHandler() {
+		this.underline = new ToggleButton(new Image(GWT.getModuleBaseURL()
+				+ "images/format-text-underline.png"), new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
 				formatter.toggleUnderline();
@@ -178,8 +180,8 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 		underline.setTitle(labels.underline());
 		hp.add(underline);
 
-		PushButton image = new PushButton(new Image(
-				GWT.getModuleBaseURL() + "images/image-x-generic.png"), new ClickHandler() {
+		PushButton image = new PushButton(new Image(GWT.getModuleBaseURL()
+				+ "images/image-x-generic.png"), new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
 				imagePicker.center();
@@ -192,15 +194,27 @@ public class CrudRichTextArea extends Composite implements HasKeyDownHandlers {
 		PushButton link = new PushButton(labels.link(), new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				formatter.createLink(Window
-						.prompt(labels.pasteLinkHere(), null));
+				formatter.createLink(Window.prompt(labels.pasteLinkHere(), null));
 			}
 		});
 		link.setTitle(labels.insertLink());
 		hp.add(link);
 
+		for (CrudRichTextPlugin control : PLUGGED_IN_CONTROLLERS) {
+			hp.add(control.getWidget(formatter));
+		}
+
 		return hp;
 
+	}
+
+	/**
+	 * Adds a plugin controller
+	 * 
+	 * @param plugin
+	 */
+	public static void addPlugin(CrudRichTextPlugin plugin) {
+		PLUGGED_IN_CONTROLLERS.add(plugin);
 	}
 
 	public String getValue() {

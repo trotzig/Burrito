@@ -9,6 +9,8 @@ public interface CrudMessages extends Messages {
 	String deleteDescription();
 
 	String delete();
+	
+	String edit();
 
 	String chooseEntity();
 	
@@ -124,5 +126,7 @@ public interface CrudMessages extends Messages {
 	String youCanSearchFor(String commaSeparateFields);
 
 	String clickToDeleteTag();
+
+	String confirmDeleteSitelet();
 
 }

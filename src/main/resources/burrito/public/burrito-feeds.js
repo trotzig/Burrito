@@ -8,7 +8,7 @@
 function BurritoPollingChannel(subscriptionId, feedServer) {
 	var object = this;
 
-	this.pollingIntervalSeconds = 10;
+	this.pollingIntervalSeconds = 45;
 
 	this.subscriptionId = subscriptionId;
 	this.currentTimeout = -1;

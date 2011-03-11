@@ -28,7 +28,6 @@ public class BroadcastMessageController implements Controller<Map<String, String
 	
 	@Override
 	public Map<String, String> execute() {
-		log("Starting broadcast to feed \""+feedId+"\". Message: \n" + message);
 		if (message == null) {
 			//we need to fetch the deferred message from the datastore
 			DeferredMessage deferredMessage = DeferredMessage.get(deferredMessageId);
@@ -40,6 +39,7 @@ public class BroadcastMessageController implements Controller<Map<String, String
 				log.warning("Failed to remove deferred message from datastore. The message will still be broadcasted but you will have to manually remove the message from the DeferredMessage table");
 			}
 		}
+		log("Starting broadcast to feed \""+feedId+"\". Message: \n" + message);
 		ChannelService channelService = ChannelServiceFactory
 				.getChannelService();
 		Map<String, String> map = new HashMap<String, String>();
