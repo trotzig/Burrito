@@ -126,10 +126,16 @@ function BurritoFeeds() {
 	 * The feed server will try to respect your setting, but it is not guaranteed. 
 	 */
 	this.setMethod = function(mthd) {
-		object.method = mthd;
+		//Just noticed that the channel api won't work in internet explorer 9. 
+		//Therefore, we force poll if the talkkgadget.js code hasn't been loaded properly.
+		if (typeof(goog) == 'undefined') {
+			object.method = "poll";
+		} else {
+			object.method = mthd;
+		}
 	}
 	
-	this.getSubscriptionAndOpenChannel = function() {
+	this.getSubscriptionAndOpenChannel = function() {		
 		var url = object.feedServer + '/burrito/feeds/subscription/new/' + encodeURIComponent(object.method);
 		if (object.method == 'push') {
 			var channelId = object.getCookie('burrito_unloadedChannelId');
