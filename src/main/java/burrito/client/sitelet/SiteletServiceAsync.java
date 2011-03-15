@@ -18,7 +18,7 @@ public interface SiteletServiceAsync {
 	void getSitelet(Long siteletId, AsyncCallback<SiteletDescription> asyncCallback);
 
 	void addSitelet(String containerName, String entityName, Long savedId,
-			AsyncCallback<Void> asyncCallback);
+			boolean addOnTop, AsyncCallback<Void> asyncCallback);
 
 	void saveSiteletOrder(String containerName, List<Long> longOrder,
 			AsyncCallback<Void> asyncCallback);

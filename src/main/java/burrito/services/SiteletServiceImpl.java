@@ -45,15 +45,20 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 	}
 
 	public void addSitelet(String containerName, String entityName,
-			Long savedId) {
+			Long savedId, boolean addOnTop) {
 
 		// Get the next order int:
 		Integer order = 0;
 		List<SiteletProperties> items = SiteletProperties
 				.getByContainerId(containerName);
 		if (items != null && !items.isEmpty()) {
-			SiteletProperties last = items.get(items.size() - 1);
-			order = last.order + 1;
+			if(addOnTop) {
+				SiteletProperties first = items.get(0);
+				order = first.order - 1;
+			} else {
+				SiteletProperties last = items.get(items.size() - 1);
+				order = last.order + 1;
+			}
 		}
 
 		// insert the sitelet

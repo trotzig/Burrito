@@ -9,9 +9,9 @@
 
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="live" required="false" %>
-
+<%@ attribute name="addOnTop" required="false" type="java.lang.Boolean" %>
 <c:if test="${taco_userIsAdmin}">
-	<burrito:siteletboxadmin id="${id}"/>
+	<burrito:siteletboxadmin id="${id}" addOnTop="${empty addOnTop ? false : addOnTop}"/>
 </c:if>
 
 <div id="sitelet-box-${id}" class="sitelet-container">

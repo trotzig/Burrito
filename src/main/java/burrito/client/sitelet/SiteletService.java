@@ -18,7 +18,7 @@ public interface SiteletService extends RemoteService {
 
 	SiteletDescription getSitelet(Long id);
 
-	void addSitelet(String containerName, String entityName, Long savedId);
+	void addSitelet(String containerName, String entityName, Long savedId, boolean addOnTop);
 
 	void saveSiteletOrder(String containerName, List<Long> longOrder);
 
