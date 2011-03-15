@@ -3,9 +3,12 @@ package burrito;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.RandomStringUtils;
 
 import siena.Model;
 import taco.Protector;
@@ -20,6 +23,7 @@ public abstract class Configurator implements ServletContextListener {
 	public static List<Class<? extends Model>> crudables = new ArrayList<Class<? extends Model>>();
 	public static List<Class<? extends Sitelet>> sitelets = new ArrayList<Class<? extends Sitelet>>();
 	public static List<Class<? extends burrito.links.Linkable>> linkables = new ArrayList<Class<? extends Linkable>>();
+	private static final String DEV_MODE_CONFIGURATION_SUFFIX = "-DEV-" + RandomStringUtils.randomAlphabetic(4);
 	private static String SITE_IDENTIFIER;
 	private static BroadcastSettings BROADCAST_SETTINGS;
 	private static Protector ADMIN_PROTECTOR;
@@ -119,10 +123,24 @@ public abstract class Configurator implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent ctx) {
-		SITE_IDENTIFIER = configureSiteIdentifier();
+		if(isDevMode(ctx.getServletContext())) {
+			SITE_IDENTIFIER = configureSiteIdentifier() + DEV_MODE_CONFIGURATION_SUFFIX;
+		} else {
+			SITE_IDENTIFIER = configureSiteIdentifier();
+		}
 		BROADCAST_SETTINGS = configureBroadcastSettings();
 		ADMIN_PROTECTOR = configureAdminProtector();
+		
 		init();
+	}
+	
+	private boolean isDevMode(ServletContext context) {
+		String serverInfo = context.getServerInfo();
+		/*
+		 * ServerInfo will look something like "Google App Engine Development/x.x.x" when running in
+		 * the development server. In production mode it will look like "Google App Engine/x.x.x"
+		 */
+		return serverInfo.contains("Development");
 	}
 
 }
