@@ -103,7 +103,7 @@ public class BroadcastTest extends TestBase {
 		Assert.assertEquals("ok", result.get("status"));	
 		
 		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
-        QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getQueue("burrito-broadcast").getQueueName());
         Assert.assertEquals(1, qsi.getTaskInfo().size());        
 	}
 	

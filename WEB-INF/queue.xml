@@ -1,0 +1,7 @@
+<queue-entries>
+  <queue>
+    <name>burrito-broadcast</name>
+    <rate>20/s</rate>
+    <bucket-size>40</bucket-size>
+  </queue>
+</queue-entries>
