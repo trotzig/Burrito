@@ -54,7 +54,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/feeds/subscription/{subscriptionId:long}/newChannel").through(NewFeedsSubscriptionChannelController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/dropChannel").through(DropFeedsSubscriptionChannelController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/poll").through(PollSubscriptionController.class).renderAsJson();
-		route("/burrito/feeds/cleanup/{nrOfDays:int}").through(FeedsCleanupController.class).protect(btProtector);
+		route("/burrito/feeds/cleanup/{nrOfDays:int}").through(FeedsCleanupController.class).renderAsJson().protect(btProtector);
 		
 		BroadcastProtector bcProtector = new BroadcastProtector();
 		route("/burrito/feeds/{feedId}/broadcast/async").through(BroadcastMessageAsyncController.class).renderAsJson().protect(bcProtector);
