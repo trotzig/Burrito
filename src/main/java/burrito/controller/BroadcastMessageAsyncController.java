@@ -23,7 +23,7 @@ public class BroadcastMessageAsyncController extends BroadcastMessageController 
 	@Override
 	public Map<String, String> execute() {
 		// Add a task to the queue
-		Queue queue = QueueFactory.getDefaultQueue();
+		Queue queue = QueueFactory.getQueue("burrito-broadcast");
 		TaskOptions options = withUrl("/burrito/feeds/"
 				+ CharEscapers.uriEscaper(false).escape(getFeedId())
 				+ "/broadcast");

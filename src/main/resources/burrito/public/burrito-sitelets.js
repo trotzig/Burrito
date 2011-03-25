@@ -45,11 +45,14 @@ function BurritoUtils() {
 	}
 
 	this.getClassValue = function(element, prefix) {
-		var classes = element.attr('class').split(' ');
-		for (var i = 0; i < classes.length; i++) {
-			var c = classes[i];
-			if (c.length >= prefix.length && c.substring(0, prefix.length) == prefix) {
-				return c.substring(prefix.length);
+		var classes = element.attr('class');
+		if (classes) {
+			classes = classes.split(' ');
+			for (var i = 0; i < classes.length; i++) {
+				var c = classes[i];
+				if (c.length >= prefix.length && c.substring(0, prefix.length) == prefix) {
+					return c.substring(prefix.length);
+				}
 			}
 		}
 		return null;
@@ -125,7 +128,7 @@ function BurritoSitelets() {
 					}
 				}
 			}
-			else if (sitelet.version > burritoUtils.getClassValue(siteletWrapper, 'sitelet-version-')) {
+			else if (!siteletWrapper.length || sitelet.version > burritoUtils.getClassValue(siteletWrapper, 'sitelet-version-')) {
 				if (!self.boxPollTimeout) {
 					self.boxPollTimeout = setTimeout(function() {
 						self.boxPollTimeout = false;
