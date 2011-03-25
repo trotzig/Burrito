@@ -9,10 +9,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
-
 import taco.Controller;
 import taco.Renderer;
+
+import com.google.gson.Gson;
 
 public class MessagesRenderer implements Renderer {
 
@@ -20,6 +20,7 @@ public class MessagesRenderer implements Renderer {
 	public void render(Object obj, Controller<?> ctrl,
 			HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		Gson gson = new Gson();
 		resp.setContentType("text/javascript");
 		resp.setCharacterEncoding("UTF-8");
 		PrintWriter writer = resp.getWriter();
@@ -28,7 +29,7 @@ public class MessagesRenderer implements Renderer {
 		@SuppressWarnings("unchecked")
 		Map<String, String> res = (Map<String, String>) obj;
 		for (Entry<String, String> entry : res.entrySet()) {
-			writer.println("\"" + entry.getKey() + "\" : \"" + CharEscapers.javascriptEscaper().escape(entry.getValue()) +  "\",");
+			writer.println("\"" + entry.getKey() + "\" : " + gson.toJson(entry.getValue()) +  ",");
 		}
 		writer.println("\"_dummy\" : \"dummy\""); //prevents syntax error
 		writer.println("};");
