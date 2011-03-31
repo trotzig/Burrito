@@ -6,6 +6,7 @@ import burrito.controller.AdminController;
 import burrito.controller.BroadcastMessageAsyncController;
 import burrito.controller.BroadcastMessageController;
 import burrito.controller.DropFeedsSubscriptionChannelController;
+import burrito.controller.FeedsInactivateController;
 import burrito.controller.KeepFeedsSubscriptionAliveController;
 import burrito.controller.NewFeedsSubscriptionChannelController;
 import burrito.controller.NewFeedsSubscriptionController;
@@ -55,6 +56,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/feeds/subscription/{subscriptionId:long}/dropChannel").through(DropFeedsSubscriptionChannelController.class).renderAsJson();
 		route("/burrito/feeds/subscription/{subscriptionId:long}/poll").through(PollSubscriptionController.class).renderAsJson();
 		route("/burrito/feeds/cleanup/{nrOfDays:int}").through(FeedsCleanupController.class).renderAsJson().protect(btProtector);
+		route("/burrito/feeds/inactivate").through(FeedsInactivateController.class).renderAsJson().protect(btProtector);
 		
 		BroadcastProtector bcProtector = new BroadcastProtector();
 		route("/burrito/feeds/{feedId}/broadcast/async").through(BroadcastMessageAsyncController.class).renderAsJson().protect(bcProtector);

@@ -72,8 +72,19 @@ public class FeedsSubscriptionLowlevelQuery implements Iterable<FeedsSubscriptio
 	public boolean hasNext() {
 		if (currentIterator == null || !currentIterator.hasNext()) {
 			fetchResult();
+			onNewBatch(currentIterator);
 		}
 		return currentIterator.hasNext();
+	}
+
+	/**
+	 * Method called between every chunked query made. Default implementation
+	 * does nothing.
+	 * 
+	 * @param currentIterator
+	 */
+	protected void onNewBatch(Iterator<Entity> currentIterator) {
+		//Default impl: do nothing
 	}
 
 	@Override
