@@ -61,11 +61,12 @@ public class FeedsSubscriptionMessage extends Model {
 		this.message = message;
 	}
 
-	private static Query<FeedsSubscriptionMessage> all() {
+	public static Query<FeedsSubscriptionMessage> all() {
 		return Model.all(FeedsSubscriptionMessage.class);
 	}
 
 	public static List<FeedsSubscriptionMessage> fetchBySubscriptionId(Long subscriptionId) {
 		return all().filter("subscriptionId", subscriptionId).order("timestamp").fetch();
 	}
+	
 }

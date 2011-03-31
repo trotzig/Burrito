@@ -4,19 +4,33 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
+/**
+ * 
+ * A low-level query used to fetch FeedsSubscriptions. The reason we use this
+ * class instead of a simple Siena query is that we need chunked results. 
+ * 
+ * This query is divided into chunks of 200 entities. Each chunk is fetched as 
+ * a list, to avoid hanging on to a datastore connection while iterating. 
+ * 
+ * @author Mikael Claesson, Joakim Söderström, Henric Persson
+ * 
+ */
 public class FeedsSubscriptionLowlevelQuery implements Iterable<FeedsSubscription>, Iterator<FeedsSubscription> {
 
 	private final DatastoreService datastore;
 	private final Query query;
-	private Iterator<Entity> result;
+	private Cursor nextCursor;
+	private Iterator<Entity> currentIterator;
 
 	public FeedsSubscriptionLowlevelQuery() {
 		datastore = DatastoreServiceFactory.getDatastoreService();
@@ -34,7 +48,19 @@ public class FeedsSubscriptionLowlevelQuery implements Iterable<FeedsSubscriptio
 	}
 
 	private void fetchResult() {
-		result = datastore.prepare(query).asIterator(FetchOptions.Builder.withChunkSize(100));
+		FetchOptions options = FetchOptions.Builder.withLimit(200);
+		if (nextCursor != null) {
+			options.startCursor(nextCursor);
+		}
+		//To avoid datastore timeouts while iterating through subscriptions, 
+		//We make sure that we fetch entities in chunks, where each chunk is
+		//a standalone query. This way we can spend as much time as we want to 
+		//in each iteration. 
+		QueryResultList<Entity> currentBatch = datastore.prepare(query).asQueryResultList(options);
+		if (currentBatch != null) {
+			nextCursor = currentBatch.getCursor();
+		}
+		currentIterator = currentBatch.iterator();
 	}
 
 	@Override
@@ -44,17 +70,18 @@ public class FeedsSubscriptionLowlevelQuery implements Iterable<FeedsSubscriptio
 
 	@Override
 	public boolean hasNext() {
-		if (result == null) fetchResult();
-
-		return result.hasNext();
+		if (currentIterator == null || !currentIterator.hasNext()) {
+			fetchResult();
+		}
+		return currentIterator.hasNext();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public FeedsSubscription next() {
-		if (result == null) fetchResult();
+		if (currentIterator == null) fetchResult();
 
-		Entity entity = result.next();
+		Entity entity = currentIterator.next();
 		if (entity == null) return null;
 
 		FeedsSubscription subscription = new FeedsSubscription();

@@ -48,7 +48,9 @@ public class BroadcastMessageController implements Controller<Map<String, String
 		String wrapped = new Gson().toJson(map);
 		// get a list of people (browser clients) to notify
 		Iterable<FeedsSubscription> subs = FeedsSubscription.getSubscriptionsForFeed(feedId);
-		
+		int nOfPush = 0;
+		int nOfPoll = 0;
+		int nOfFailed = 0;
 		for (FeedsSubscription sub : subs) {
 			if (excludeSubscriptionId != null
 					&& excludeSubscriptionId.equals(sub.getId())) {
@@ -62,24 +64,29 @@ public class BroadcastMessageController implements Controller<Map<String, String
 				msg.setMessage(message);
 				msg.setSubscriptionId(sub.getId());
 				msg.insert();
-				log("Message stored for polling client with subscription id: " + sub.getId());
+				nOfPoll++;
 			} else {
 				try {
 					// Push to client
 					channelService.sendMessage(new ChannelMessage(sub
 							.getClientId(), wrapped));
-					log("Successful push to client with subscription id " + sub.getId());
+					nOfPush++;
 				} catch (Exception e) {
 					System.err.println("Failed: "
 							+ sub.toString()
 							+ ". Exception: " + e.getMessage());
-//					e.printStackTrace();
+					nOfFailed++;
 				}
 			}
 		}
-		
+		log("Successful push. Number of push channels: " + nOfPush + 
+				". Number of poll channels: " + nOfPoll + 
+				". Number of failed: " + nOfFailed);
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("status", "ok");
+		result.put("numberOfPush", String.valueOf(nOfPush));
+		result.put("numberOfPoll", String.valueOf(nOfPoll));
+		result.put("numberOfFailed", String.valueOf(nOfFailed));
 		return result;
 		
 		
