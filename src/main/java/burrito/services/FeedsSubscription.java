@@ -132,7 +132,7 @@ public class FeedsSubscription extends Model {
 
 	public void reuse() {
 		feedIds = null;
-		timestamp = new Date();
+		keepAlive();
 	}
 
 	/**
