@@ -47,7 +47,7 @@ public class FeedsSubscription extends Model {
 	 * not. And yes, this is redundant as we already have a timestamp. But it
 	 * allows for easier queries when fetching active subscriptions.
 	 */
-	private boolean active = true;
+	private Boolean active = true;
 	
 	public Long getId() {
 		return id;
@@ -106,11 +106,11 @@ public class FeedsSubscription extends Model {
 		this.timestamp = timestamp;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 	
-	public boolean isActive() {
+	public Boolean getActive() {
 		return active;
 	}
 	
