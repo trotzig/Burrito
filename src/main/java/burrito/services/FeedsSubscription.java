@@ -42,6 +42,13 @@ public class FeedsSubscription extends Model {
 
 	private Date timestamp = created;
 
+	/**
+	 * Flag used to tell Burrito about whether the subscription is active or
+	 * not. And yes, this is redundant as we already have a timestamp. But it
+	 * allows for easier queries when fetching active subscriptions.
+	 */
+	private Boolean active = true;
+	
 	public Long getId() {
 		return id;
 	}
@@ -99,6 +106,14 @@ public class FeedsSubscription extends Model {
 		this.timestamp = timestamp;
 	}
 
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
+	public Boolean getActive() {
+		return active;
+	}
+	
 	public void requestChannel() {
 		try {
 			ChannelService service = ChannelServiceFactory.getChannelService();
@@ -117,7 +132,7 @@ public class FeedsSubscription extends Model {
 
 	public void reuse() {
 		feedIds = null;
-		timestamp = new Date();
+		keepAlive();
 	}
 
 	/**
@@ -135,13 +150,22 @@ public class FeedsSubscription extends Model {
 		// timed out even after 2 minutes, but by testing with different devices
 		// it's seems to be a good thing to be generous to ping failures
 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, -5);
 
 		FeedsSubscriptionLowlevelQuery query = new FeedsSubscriptionLowlevelQuery();
-		query.addFilter("feedIds", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, feedId);
-		query.addFilter("timestamp", com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN, cal.getTime());
+		return getSubscriptionsForFeed(feedId, query);
+	}
 
+	/**
+	 * Same as getSubscriptionsForFeed(String feedId) but you can provide your
+	 * own query
+	 * 
+	 * @param feedId
+	 * @param query
+	 * @return
+	 */
+	public static Iterable<FeedsSubscription> getSubscriptionsForFeed(String feedId, FeedsSubscriptionLowlevelQuery query) {
+		query.addFilter("feedIds", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, feedId);
+		query.addFilter("active", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, true);
 		return query;
 	}
 
@@ -151,9 +175,10 @@ public class FeedsSubscription extends Model {
 	 */
 	public void keepAlive() {
 		this.timestamp = new Date();
+		this.active = true;
 	}
 
-	private static Query<FeedsSubscription> all() {
+	public static Query<FeedsSubscription> all() {
 		return Model.all(FeedsSubscription.class);
 	}
 

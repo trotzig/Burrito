@@ -24,7 +24,7 @@ public class FeedsTest extends TestBase {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testFeedsControllers() throws UnsupportedEncodingException {
+	public void testFeedsControllers() throws UnsupportedEncodingException, InterruptedException {
 
 		/*
 		 * Create a new subscription
@@ -120,6 +120,10 @@ public class FeedsTest extends TestBase {
 		sb.append(subscriptionId);
 		sb.append("/keepAlive");
 
+		// adding a short delay since this testcase sometimes failed because
+		// everything happened within a millisecond.
+		Thread.sleep(10);
+		
 		o = TestUtils.runController(sb.toString(), BurritoRouter.class);
 
 		assertTrue(o instanceof Map<?, ?>);
