@@ -30,6 +30,7 @@ public abstract class DragAndDropPanel<T> extends SimplePanel {
 
 		PickupDragController dragController = new PickupDragController(
 				boundaryPanel, false);
+		dragController.setBehaviorDragStartSensitivity(5);
 		dragController.setBehaviorMultipleSelection(false);
 		dragController.addDragHandler(new SortingPanelDragHandler());
 
