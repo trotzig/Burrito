@@ -339,7 +339,9 @@ public abstract class Table<T extends Serializable> extends Composite {
 		loadingLabel.setVisible(true);
 		table.setVisible(false);
 		batchJobs.setVisible(false);
-		selectAll.setValue(false);
+		if (rowsSelectable) {
+			selectAll.setValue(false);
+		}
 		if (currentHeader != null) {
 			sortKey = currentHeader.getKey();
 		}
