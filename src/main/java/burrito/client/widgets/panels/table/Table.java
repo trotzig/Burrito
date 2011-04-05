@@ -77,6 +77,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 	private StringInputField filterText = new StringInputField(false);;
 	private HorizontalPanel search = new HorizontalPanel();
 	private boolean searchable;
+	private CheckBox selectAll;
 	
 	
 	/**
@@ -189,6 +190,24 @@ public abstract class Table<T extends Serializable> extends Composite {
 	public void addCellRenderer(CellRenderer<T> renderer) {
 		cellRenderers.add(renderer);
 	}
+	
+	public void selectAll( boolean all){
+		for (int row = 1; row < currentModel.size() + 1; row++) {
+			CheckBox cb = (CheckBox) table.getWidget(row, 0);
+			
+			if(all){
+				cb.setValue(true);
+				
+				table.getRowFormatter().addStyleName(
+						row, "k5-Table-row-selected");			
+			}else{
+				cb.setValue(false);
+				
+				table.getRowFormatter().removeStyleName(
+						row, "k5-Table-row-selected");
+			}						
+		}
+	}
 
 	/**
 	 * Adds a header to this table. The order in which this method is called is
@@ -260,11 +279,21 @@ public abstract class Table<T extends Serializable> extends Composite {
 	}
 
 	protected void renderHeader() {
-		int margin = 0;
-		if (rowsSelectable) {
-			margin++; // one column left out for select checkbox
-		}
 		int i = 0;
+		if (rowsSelectable) {
+			selectAll = new CheckBox();
+			
+			selectAll.addClickHandler(new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent event) {
+					selectAll(((CheckBox) event.getSource()).getValue());
+				}
+			});
+			table.setWidget(0, i, selectAll);
+			i = 1;
+		}
+		
+				
 		for (final Header head : tableHeader) {
 			final String sortKey = head.getKey();
 			if (sortKey != null) {
@@ -296,9 +325,9 @@ public abstract class Table<T extends Serializable> extends Composite {
 					}
 				});
 				table.getCellFormatter()
-						.addStyleName(0, i + margin, "sortable");
+						.addStyleName(0, i, "sortable");
 			}
-			table.setWidget(0, i + margin, head);
+			table.setWidget(0, i, head);
 			i++;
 		}
 
@@ -310,6 +339,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 		loadingLabel.setVisible(true);
 		table.setVisible(false);
 		batchJobs.setVisible(false);
+		selectAll.setValue(false);
 		if (currentHeader != null) {
 			sortKey = currentHeader.getKey();
 		}
