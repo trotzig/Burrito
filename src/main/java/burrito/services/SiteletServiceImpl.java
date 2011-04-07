@@ -115,6 +115,9 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 	}
 	
 	public void clearCache(Long entityId) {
-		Cache.delete(SiteletProperties.getByEntityId(entityId).getCacheKey());
+		SiteletProperties siteletProperties = SiteletProperties.getByEntityId(entityId);
+		if (siteletProperties != null) {
+			Cache.delete(siteletProperties.getCacheKey());
+		}
 	}
 }
