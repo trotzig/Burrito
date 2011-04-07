@@ -3,8 +3,8 @@ package burrito.client.sitelet;
 import java.util.ArrayList;
 import java.util.List;
 
-import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.dto.SiteletDescription;
 import burrito.client.widgets.InfoMessagePopup;
 import burrito.client.widgets.draganddrop.DragAndDropPanel;
 
@@ -15,27 +15,44 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class SiteletDragAndDropPanel extends Composite {
 
 	private static CrudMessages labels = GWT.create(CrudMessages.class);
 
-	private final String containerName;
 	private VerticalPanel wrapper = new VerticalPanel();
-	private DragAndDropPanel<CrudNameIdPair> sortingPanel;
+	private SimplePanel siteletsContainer = new SimplePanel();
+	private DragAndDropPanel<SiteletDescription> sortingPanel;
 	private SiteletServiceAsync service = GWT.create(SiteletService.class);
 	private List<Long> currentOrder;
+	private List<SiteletDescription> currentModel;
 	private Button saveOrderButton;
 	private HorizontalPanel orderChangedPanel = new HorizontalPanel();
-
-	public SiteletDragAndDropPanel(final String siteletContainerName) {
-		super();
-		this.containerName = siteletContainerName;
+	SiteletDraggableWidgetCreator widgetCreator = new SiteletDraggableWidgetCreator(new AsyncCallback<SiteletDescription>() {
 		
+		@Override
+		public void onSuccess(SiteletDescription result) {
+			currentModel.remove(result);
+			InfoMessagePopup popup = new InfoMessagePopup();
+			popup.setTextAndShow(labels.siteletsRemoved(1));
+			render();
+		}
+		
+		@Override
+		public void onFailure(Throwable caught) {
+			throw new RuntimeException(caught);
+		}
+	});
+
+	public SiteletDragAndDropPanel(final String containerName) {
+		super();
+		widgetCreator.setContainerName(containerName);
 		Hyperlink addSitelet = new Hyperlink(labels.addSitelet(), "-1");
 
 		wrapper.add(addSitelet);
@@ -63,36 +80,19 @@ public class SiteletDragAndDropPanel extends Composite {
 
 			}
 		});
+		orderChangedPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		orderChangedPanel.add(new Label(labels.orderChanged()));
 		orderChangedPanel.add(new HTML("&nbsp;"));
 		orderChangedPanel.add(saveOrderButton);
 		orderChangedPanel.setVisible(false);
 		
-		service.getSitelets(this.containerName,
-				new AsyncCallback<List<CrudNameIdPair>>() {
+		service.getSitelets(containerName,
+				new AsyncCallback<List<SiteletDescription>>() {
 
 					@Override
-					public void onSuccess(final List<CrudNameIdPair> result) {
-						if (result == null || result.isEmpty()) {
-							wrapper.add(new Label(labels.noSiteletsHaveBeenAdded()));
-						} else {
-							currentOrder = convertToLongList(result);
-							SiteletDraggableWidgetCreator widgetCreator = new SiteletDraggableWidgetCreator();
-							widgetCreator.setContainerName(containerName);
-							sortingPanel = new DragAndDropPanel<CrudNameIdPair>(
-									result, widgetCreator) {
-								@Override
-								public void onOrderChanged(List<CrudNameIdPair> newOrder) {
-									List<Long> newLongList = convertToLongList(newOrder); 
-									if(!currentOrder.equals(newLongList)) {
-										currentOrder = newLongList;
-										orderChangedPanel.setVisible(true);
-									}
-								}
-							};
-							wrapper.add(sortingPanel);
-							wrapper.add(orderChangedPanel);
-						}
+					public void onSuccess(final List<SiteletDescription> result) {
+						currentModel = result;
+						render();
 					}
 
 					@Override
@@ -101,13 +101,36 @@ public class SiteletDragAndDropPanel extends Composite {
 							+ containerName, caught);
 					}
 				});
+		wrapper.add(siteletsContainer);
+		wrapper.add(orderChangedPanel);
 		initWidget(wrapper);
 	}
 
-	private List<Long> convertToLongList(List<CrudNameIdPair> items) {
+	protected void render() {
+		if (currentModel == null || currentModel.isEmpty()) {
+			siteletsContainer.setWidget(new Label(labels.noSiteletsHaveBeenAdded()));
+		} else {
+			currentOrder = convertToLongList(currentModel);
+			
+			sortingPanel = new DragAndDropPanel<SiteletDescription>(
+					currentModel, widgetCreator) {
+				@Override
+				public void onOrderChanged(List<SiteletDescription> newOrder) {
+					List<Long> newLongList = convertToLongList(newOrder); 
+					if(!currentOrder.equals(newLongList)) {
+						currentOrder = newLongList;
+						orderChangedPanel.setVisible(true);
+					}
+				}
+			};
+			siteletsContainer.setWidget(sortingPanel);
+		}
+	}
+
+	private List<Long> convertToLongList(List<SiteletDescription> items) {
 		List<Long> longOrder = new ArrayList<Long>();
-		for (CrudNameIdPair id : items) {
-			longOrder.add(id.getId());
+		for (SiteletDescription id : items) {
+			longOrder.add(id.getEntityId());
 		}
 		return longOrder;
 	}

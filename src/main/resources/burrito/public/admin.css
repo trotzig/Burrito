@@ -173,25 +173,44 @@ a.k5-PageController-link:hover {
 } 
 
 .dragdrop-handle {
-	padding: 5px 0px;
-	border: 1px black; 
+
+}
+
+.burrito-clear-floats {
+	clear: both;	
+}
+.burrito-progress-text {
+	padding-left: 20px;
+	background-image: url(images/loading.gif);
+	background-position: center left;
+	background-repeat: no-repeat;
 }
 
 .k5-SiteLetDraggableWidget-Wrapper {
 	background-color: #D1EFC2;
-  border: 1px solid #CCC;
-  padding: 5px;
+  	border: 1px solid #CCC;
+  	padding: 5px;
 }
 
+
 .k5-SiteLetDraggableWidget-Header {
-	padding: 5px;
-	border-bottom: 2px black;
+	float: left;
+  	margin-right: 10px;
+  	font-weight: bold;
 }
 
 .k5-SiteLetDraggableWidget-Actions {
-	padding: 20px 5px 5px;
+  	float: right;
+  	margin-left: 10px;
 }
 
-.k5-SiteLetDraggableWidget-Actions a {
+.k5-SiteLetDraggableWidget-Action {
 	margin-right: 5px;
+	display: inline;
+}
+
+.k5-SiteLetDraggableWidget-Desc {
+	color: #888;	
+  	float: left;
+  	max-width: 500px;
 }

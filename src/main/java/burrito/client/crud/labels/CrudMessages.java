@@ -10,6 +10,8 @@ public interface CrudMessages extends Messages {
 
 	String delete();
 	
+	String deleting();
+	
 	String edit();
 
 	String chooseEntity();

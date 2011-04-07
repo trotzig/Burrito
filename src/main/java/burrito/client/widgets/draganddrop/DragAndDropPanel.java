@@ -18,16 +18,22 @@ public abstract class DragAndDropPanel<T> extends SimplePanel {
 
 	private VerticalPanel wrapper = new VerticalPanel();
 	private VerticalPanel draggablePanel = new VerticalPanelWithSpacer();
-	private List<T> model;
+	private DraggableWidgetCreator<T> widgetCreator;
+	private AbsolutePanel boundaryPanel;
 
 	public DragAndDropPanel(List<T> data, DraggableWidgetCreator<T> creator) {
-		this.model = data;
-		AbsolutePanel boundaryPanel = new AbsolutePanel();
+		this.widgetCreator = creator;
+		boundaryPanel = new AbsolutePanel();
 		boundaryPanel.setSize("100%", "100%");
 		setWidget(boundaryPanel);
 
 		boundaryPanel.add(wrapper);
 
+		wrapper.add(draggablePanel);
+		render(data);
+	}
+
+	private void render(List<T> model) {
 		PickupDragController dragController = new PickupDragController(
 				boundaryPanel, false);
 		dragController.setBehaviorDragStartSensitivity(5);
@@ -36,17 +42,13 @@ public abstract class DragAndDropPanel<T> extends SimplePanel {
 
 		VerticalPanelDropController dropController = new VerticalPanelDropController(
 				draggablePanel);
-
 		dragController.registerDropController(dropController);
-
 		for (T modelObj : model) {
-			Widget w = creator.createWidget(modelObj);
+			Widget w = widgetCreator.createWidget(modelObj);
 			ObjectWrapper label = new ObjectWrapper(modelObj, w);
 			draggablePanel.add(label);
 			dragController.makeDraggable(label);
 		}
-		wrapper.add(draggablePanel);
-
 	}
 
 	/**

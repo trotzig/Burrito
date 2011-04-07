@@ -2,9 +2,6 @@ package burrito.client.sitelet;
 
 import java.util.List;
 
-
-
-import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.dto.SiteletDescription;
 
@@ -13,7 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SiteletServiceAsync {
 
 	void getSitelets(String containerId,
-			AsyncCallback<List<CrudNameIdPair>> asyncCallback);
+			AsyncCallback<List<SiteletDescription>> asyncCallback);
 
 	void getSitelet(Long siteletId, AsyncCallback<SiteletDescription> asyncCallback);
 

@@ -5,7 +5,6 @@ import java.util.List;
 
 import siena.Model;
 import burrito.Configurator;
-import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.dto.SiteletDescription;
 import burrito.client.sitelet.SiteletService;
@@ -21,15 +20,15 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 
 	public SiteletDescription getSitelet(Long id) {
 		SiteletProperties item = SiteletProperties.get(id);
-		return new SiteletDescription(item.entityTypeClassName, item.entityId);
+		return new SiteletDescription(item.entityTypeClassName, item.entityId, item.describe());
 	}
  
-	public List<CrudNameIdPair> getSitelets(String containerId) {
+	public List<SiteletDescription> getSitelets(String containerId) {
 		List<SiteletProperties> items = SiteletProperties
 				.getByContainerId(containerId);
-		List<CrudNameIdPair> result = new ArrayList<CrudNameIdPair>();
+		List<SiteletDescription> result = new ArrayList<SiteletDescription>();
 		for (SiteletProperties sitelet : items) {
-			result.add(new CrudNameIdPair(sitelet.id, sitelet.entityTypeClassName));
+			result.add(new SiteletDescription(sitelet.entityTypeClassName, sitelet.id, sitelet.describe()));
 		}
 		return result;
 	}

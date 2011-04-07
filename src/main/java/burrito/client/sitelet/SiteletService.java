@@ -2,9 +2,6 @@ package burrito.client.sitelet;
 
 import java.util.List;
 
-
-
-import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.dto.SiteletDescription;
 
@@ -14,7 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("sitelets")
 public interface SiteletService extends RemoteService {
 
-	List<CrudNameIdPair> getSitelets(String containerId);
+	List<SiteletDescription> getSitelets(String containerId);
 
 	SiteletDescription getSitelet(Long id);
 

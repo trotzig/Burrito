@@ -17,4 +17,18 @@ public interface Sitelet {
 	 * @return
 	 */
 	public AutoRefresh getNextAutoRefresh();
+
+	/**
+	 * Gets a string describing the content of the sitelet instance. Tryto keep
+	 * this value short. ~100 characters should be enough.
+	 * <br><br>
+	 * Example (for an <i>RssFeedSitelet</i>): <br>
+	 * <code>"RSS feed from " + rssFeedUrl</code><br>
+	 * <br>
+	 * Another example (for a <i>UserProfileSitelet</i>):<br>
+	 * <code>return "User profile for " + userName;</code><br> 
+	 * 
+	 * @return
+	 */
+	public String describe();
 }

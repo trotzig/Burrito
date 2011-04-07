@@ -8,10 +8,12 @@ public class SiteletDescription implements Serializable {
 
 	private String entityName;
 	private Long entityId;
+	private String description;
 
-	public SiteletDescription(String entityName, Long entityId) {
+	public SiteletDescription(String entityName, Long entityId, String description) {
 		this.entityName = entityName;
 		this.entityId = entityId;
+		this.description = description;
 	}
 
 	public SiteletDescription() {
@@ -32,6 +34,14 @@ public class SiteletDescription implements Serializable {
 
 	public void setEntityId(Long entityId) {
 		this.entityId = entityId;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 }

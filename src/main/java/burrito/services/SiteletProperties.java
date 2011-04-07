@@ -169,6 +169,14 @@ public class SiteletProperties extends Model implements Serializable {
 				"burrito:sitelet-box:" + CharEscapers.uriEscaper(false).escape(Configurator.getSiteIdentifier()) + 
 				"|" + CharEscapers.uriEscaper(false).escape(containerId), null);
 	}
+
+	/**
+	 * Returns a description of the content of 
+	 * @return
+	 */
+	public String describe() {
+		return getAssociatedSitelet().describe();
+	}
 	
 	
 	
