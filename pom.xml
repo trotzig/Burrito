@@ -38,7 +38,7 @@
 	</distributionManagement>
 	<build>
 		<plugins>
-			<plugin>
+			 <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<version>2.1.0-1</version>
@@ -49,6 +49,56 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>yuicompressor-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compress</goal>
+						</goals>
+					</execution>
+				</executions> 
+				<configuration>
+				  <suffix>.min</suffix>
+				  <linebreakpos>8000</linebreakpos>
+				  <jswarn>false</jswarn>
+		          <excludes>
+		            <exclude>**/jquery*.js</exclude>
+		            <exclude>**/*.css</exclude>
+		          </excludes>
+				  <aggregations>
+				  	<aggregation>
+				  	  <!-- for full configuration, see http://alchim.sourceforge.net/yuicompressor-maven-plugin/ex_aggregation.html -->
+		              
+		              <!-- insert new line after each concatenation (default: false) -->
+		              <insertNewLine>true</insertNewLine>
+		              <output>${basedir}/target/classes/burrito/public/burrito-all.min.js</output>
+		              <!-- files to include, path relative to output's directory or absolute path-->
+		              <!--inputDir>base directory for non absolute includes, default to parent dir of output</inputDir-->
+		              <includes>
+	                    <include>**/burrito-license.txt</include> 
+		                <include>**/burrito*min.js</include>
+		              </includes>
+		              <excludes>
+		                <exclude>**/burrito-all.min.js</exclude>
+		              </excludes>
+		            </aggregation>
+		            
+		            <aggregation>
+				  	  <insertNewLine>true</insertNewLine>
+		              <output>${basedir}/target/classes/burrito/public/burrito-all-with-jquery.min.js</output>
+		              <includes>
+		                <include>**/jquery*.min.js</include>
+		                <include>**/burrito-all.min.js</include>
+		              </includes>
+		            </aggregation>
+		            
+		            
+				  </aggregations>
+		        </configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -171,6 +221,13 @@
 			<version>1.4.0</version>
 			<type>jar</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.yahoo.platform.yui</groupId>
+			<artifactId>yuicompressor</artifactId>
+			<version>2.4.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
