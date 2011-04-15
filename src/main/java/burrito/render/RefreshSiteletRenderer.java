@@ -20,6 +20,7 @@ package burrito.render;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -38,6 +39,8 @@ import burrito.util.SiteletHelper;
 
 public class RefreshSiteletRenderer implements Renderer {
 
+	private Logger log = Logger.getLogger(RefreshSiteletRenderer.class.getName());
+	
 	public class CharResponseWrapper extends
 	   HttpServletResponseWrapper {
 	   private CharArrayWriter output;
@@ -59,19 +62,23 @@ public class RefreshSiteletRenderer implements Renderer {
 			throws ServletException, IOException {
 		SiteletProperties props = (SiteletProperties) result;
 		Sitelet sitelet = props.getAssociatedSitelet();
-		CharResponseWrapper recordingResponse = new CharResponseWrapper(response);
-		request.setAttribute("sitelet", sitelet);
-		request.setAttribute("doRecache", true);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/sitelets/" + sitelet.getClass().getSimpleName() + "/render.jsp");
-		dispatcher.forward(request, recordingResponse);
+		String path = "/sitelets/" + sitelet.getClass().getSimpleName();
+		String newHTML = renderAndRecordJspOutput(path + "/render.jsp", request, response, sitelet);
+		String updateJsFunction = null;
+		try {
+			updateJsFunction = renderAndRecordJspOutput(path + "/update.jsp", request, response, sitelet).trim();
+		} catch (Exception e) {
+			log.info("No update.jsp found for " + sitelet.getClass().getSimpleName());
+		}
+		
 		AutoRefresh autoRefresh = sitelet.getNextAutoRefresh();
 		props.setNextAutoRefresh(autoRefresh != null ? autoRefresh.getTime() : null);
 		
-		String newHTML = recordingResponse.toString();
 		Boolean force = ((RefreshSiteletController) controller).getForce();
 
 		if ((force != null && force) || !newHTML.equals(props.getRenderedHtml())) {
 			props.setRenderedHtml(newHTML);
+			props.setRenderedUpdateFunction(updateJsFunction);
 
 			Integer version = props.getRenderedVersion();
 			if (version != null) version++;
@@ -83,6 +90,18 @@ public class RefreshSiteletRenderer implements Renderer {
 		}
 
 		props.update();
+	}
+
+	private String renderAndRecordJspOutput(String jsp, HttpServletRequest request,
+			HttpServletResponse response, Sitelet sitelet) throws ServletException, IOException {
+		CharResponseWrapper recordingResponse = new CharResponseWrapper(response);
+		request.setAttribute("sitelet", sitelet);
+		request.setAttribute("doRecache", true);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(jsp);
+		dispatcher.include(request, recordingResponse);
+		
+		String newHTML = recordingResponse.toString();
+		return newHTML;
 	}
 
 }

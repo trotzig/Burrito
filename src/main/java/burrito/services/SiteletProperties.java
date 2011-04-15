@@ -54,6 +54,8 @@ public class SiteletProperties extends Model implements Serializable {
 	public Long entityId;
 
 	public String renderedHtml;
+	
+	public String renderedUpdateFunction;
 
 	public Integer renderedVersion;
 
@@ -139,6 +141,14 @@ public class SiteletProperties extends Model implements Serializable {
 	}
 
 	
+	public String getRenderedUpdateFunction() {
+		return renderedUpdateFunction;
+	}
+
+	public void setRenderedUpdateFunction(String renderedUpdateFunction) {
+		this.renderedUpdateFunction = renderedUpdateFunction;
+	}
+
 	/**
 	 * Triggers a job that will rerender the html for this sitelet. Please note
 	 * that this refresh is done in the background. You can't be absolutely sure
@@ -160,6 +170,7 @@ public class SiteletProperties extends Model implements Serializable {
 			if (updatedSitelet != null && updatedSitelet.getId().longValue() == prop.getId().longValue()) {
 				msg.setVersion(updatedSitelet.getRenderedVersion());
 				msg.setHtml(updatedSitelet.getRenderedHtml());
+				msg.setJs(updatedSitelet.getRenderedUpdateFunction());
 			}
 			else {
 				msg.setVersion(prop.getRenderedVersion());

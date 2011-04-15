@@ -127,7 +127,12 @@ function BurritoSitelets() {
 					if (hasNewContent) {
 						siteletWrapper.removeClass('sitelet-version-' + existingVersion);
 						siteletWrapper.addClass('sitelet-version-' + sitelet.version);
-						siteletWrapper.html(sitelet.html);
+						if (sitelet.js) {
+							var siteletUpdateFunc = eval("(" + sitelet.js + ")");
+							siteletUpdateFunc(siteletWrapper);
+						} else {
+							siteletWrapper.html(sitelet.html);
+						}
 					}
 				}
 				else {

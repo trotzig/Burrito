@@ -22,6 +22,7 @@ public class SiteletBoxMemberMessage {
 	private Long id;
 	private Integer version;
 	private String html;
+	private String js;
 
 	public SiteletBoxMemberMessage(Long id) {
 		this.id = id;
@@ -50,4 +51,14 @@ public class SiteletBoxMemberMessage {
 	public void setHtml(String html) {
 		this.html = html;
 	}
+
+	public String getJs() {
+		return js;
+	}
+
+	public void setJs(String js) {
+		this.js = js;
+	}
+	
+	
 }
