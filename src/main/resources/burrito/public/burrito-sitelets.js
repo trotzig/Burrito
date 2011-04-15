@@ -128,7 +128,7 @@ function BurritoSitelets() {
 						siteletWrapper.removeClass('sitelet-version-' + existingVersion);
 						siteletWrapper.addClass('sitelet-version-' + sitelet.version);
 						if (sitelet.js) {
-							var siteletUpdateFunc = eval("(" + sitelet.js + ")");
+							eval("var siteletUpdateFunc = (" + sitelet.js + ");");
 							siteletUpdateFunc(siteletWrapper);
 						} else {
 							siteletWrapper.html(sitelet.html);
