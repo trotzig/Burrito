@@ -129,7 +129,12 @@
 			<artifactId>siena</artifactId>
 			<version>0.7.7</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.google.gdata</groupId>
+			<artifactId>gdata-core</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
 
 		<dependency>
 			<groupId>javax.servlet</groupId>

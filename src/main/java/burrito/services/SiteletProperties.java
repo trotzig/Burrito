@@ -35,7 +35,7 @@ import burrito.sitelet.SiteletBoxMemberMessage;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
+import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gson.Gson;
 
 public class SiteletProperties extends Model implements Serializable {

@@ -32,7 +32,7 @@ import burrito.BroadcastSettings;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
+import com.google.gdata.util.common.base.CharEscapers;
 
 /**
  * 

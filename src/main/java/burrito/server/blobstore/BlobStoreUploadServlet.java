@@ -32,7 +32,7 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.repackaged.com.google.common.base.CharEscapers;
+import com.google.gdata.util.common.base.CharEscapers;
 
 public class BlobStoreUploadServlet extends HttpServlet {
 
