@@ -149,9 +149,17 @@ public class CrudEntityDescription implements Serializable {
 	 * @return
 	 */
 	public Object getValue(String fieldName) {
+		CrudField field = getField(fieldName);
+		if (field == null) {
+			return null;
+		}
+		return field.getValue();
+	}
+	
+	public CrudField getField(String fieldName) {
 		for (CrudField field : fields) {
 			if (fieldName.equals(field.getName())) {
-				return field.getValue();
+				return field;
 			}
 		}
 		return null;

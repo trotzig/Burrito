@@ -23,6 +23,7 @@ import java.util.List;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
+import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
 import burrito.client.widgets.layout.VerticalSpacer;
@@ -43,6 +44,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -101,8 +103,12 @@ public class CrudEntityIndex extends Composite {
 				addCellRenderer(new CellRenderer<CrudEntityDescription>() {
 
 					public Widget render(CrudEntityDescription modelObj) {
-						return new Label(valueToString(modelObj.getValue(f
-								.getName())));
+						CrudField field = modelObj.getField(f.getName());
+						if (field instanceof AdminLinkMethodField) {
+							AdminLinkMethodField linkField = (AdminLinkMethodField) field;
+							return new Anchor(linkField.getText(), linkField.getUrl());
+						}
+						return new Label(valueToString(field.getValue()));
 					}
 				});
 			}

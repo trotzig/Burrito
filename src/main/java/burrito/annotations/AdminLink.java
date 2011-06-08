@@ -23,22 +23,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotate fields and/or methods in model classes.
+ * Annotation used to signal that the result of a method should be treated as an
+ * URL and that it should be displayed in the crud admin table.
  * 
- * Makes the value display in a column in the CRUD admin view.
+ * @author henper
  * 
- * Methods that are annotated can return object of most types.
- * 
- * @author mikcla
  */
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Displayable {
+public @interface AdminLink {
 	/**
-	 * Set this field to true to force the crud field to be displayed at the
-	 * last column of the crud table
+	 * The text to use as link text
 	 * 
 	 * @return
 	 */
-	boolean last() default false;
+	String text();
 }

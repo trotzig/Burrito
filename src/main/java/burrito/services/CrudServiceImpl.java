@@ -31,6 +31,7 @@ import siena.Id;
 import siena.Model;
 import siena.Query;
 import burrito.Configurator;
+import burrito.annotations.AdminLink;
 import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
 import burrito.annotations.Displayable;
@@ -52,6 +53,7 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
+import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
@@ -130,25 +132,51 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		CrudEntityDescription desc = new CrudEntityDescription();
 		desc.setCloneable(clazz.isAnnotationPresent(Cloneable.class));
 		ArrayList<CrudField> result = new ArrayList<CrudField>();
-
+		ArrayList<CrudField> delayed = new ArrayList<CrudField>();
+		//find all Displayable methods
 		for (Method method : clazz.getDeclaredMethods()) {
-			if (method.isAnnotationPresent(Displayable.class)) {
+			Displayable dispAnn = method.getAnnotation(Displayable.class);
+			if (dispAnn != null) {
 				CrudField crudField = new DisplayableMethodField();
 				crudField.setName(method.getName());
-				result.add(crudField);
+				if (dispAnn.last()) {
+					//delay it
+					delayed.add(crudField);
+				} else {
+					result.add(crudField);
+				}
 			}
 		}
-
+		//find all Displayable fields
 		for (Field field : clazz.getDeclaredFields()) {
-			if (field.isAnnotationPresent(Displayable.class)) {
+			Displayable dispAnn = field.getAnnotation(Displayable.class);
+			if (dispAnn != null) {
 				try {
 					CrudField crudField = createCrudField(field, fakeEntity);
-					result.add(crudField);
+					if (dispAnn.last()) {
+						delayed.add(crudField);
+					} else {
+						result.add(crudField);
+					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to create crud field", e);
 				}
 			}
 		}
+		
+		//add all delayed fields
+		result.addAll(delayed);
+		
+		//find all AdminLinks
+		for (Method method : clazz.getDeclaredMethods()) {
+			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
+			if (linkAnn != null) {
+				CrudField crudField = new AdminLinkMethodField();
+				crudField.setName(method.getName());
+				result.add(crudField);
+			}
+		}
+		
 		desc.setFields(result);
 		desc.setEntityName(entityName);
 		return desc;
@@ -442,6 +470,21 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				throw new RuntimeException("Failed to create CrudField", e);
 			}
 			desc.add(crudField);
+		}
+		// Find AdminLinks
+		for (Method method : clazz.getDeclaredMethods()) {
+			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
+			if (linkAnn != null) {
+				AdminLinkMethodField cf = new AdminLinkMethodField();
+				cf.setName(method.getName());
+				cf.setText(linkAnn.text());
+				try {
+					cf.setValue(method.invoke(entity));
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to invoke method", e);
+				}
+				desc.add(cf);
+			}
 		}
 		return desc;
 	}

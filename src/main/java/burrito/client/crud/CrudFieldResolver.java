@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import burrito.client.crud.generic.CrudField;
+import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
@@ -107,7 +108,7 @@ public class CrudFieldResolver {
 			}
 		}
 		// First handle specific cases:
-		if (field instanceof DisplayableMethodField) {
+		if (field instanceof DisplayableMethodField || field instanceof AdminLinkMethodField) {
 			//this field has no input
 			return null;
 		}
