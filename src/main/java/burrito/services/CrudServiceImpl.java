@@ -412,10 +412,12 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				if (privField.isAnnotationPresent(Unique.class)) {
 					privField.setAccessible(true);
 					Object value = privField.get(entity);
-					Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
-					if (existing != null) {
-						if (!existing.getClass().getField("id").get(existing).equals(id)) {
-							throw new FieldValueNotUniqueException(fieldName);
+					if (value != null) {
+						Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
+						if (existing != null) {
+							if (!existing.getClass().getField("id").get(existing).equals(id)) {
+								throw new FieldValueNotUniqueException(fieldName);
+							}
 						}
 					}
 				}

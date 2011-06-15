@@ -25,6 +25,7 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.widgets.form.EditForm;
+import burrito.client.widgets.form.EditFormMessages;
 import burrito.client.widgets.inputfield.InputField;
 
 import com.google.gwt.core.client.GWT;
@@ -42,6 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class CrudEntityEdit extends EditForm {
 
 	private CrudServiceAsync service = GWT.create(CrudService.class);
+	private EditFormMessages messages = GWT.create(EditFormMessages.class);
 	private List<CrudInputField<?>> fields = new ArrayList<CrudInputField<?>>();
 	private CrudEntityDescription desc;
 	private InputField<?> firstField;
@@ -102,9 +104,12 @@ public class CrudEntityEdit extends EditForm {
 	}
 
 	private String getDisplayLabel(CrudField field, String entityName) {
-		String fullFieldName = entityName.replace('.', '_') + "_"
-				+ field.getName();
-		return CrudLabelHelper.getString(fullFieldName, field.getName());
+		return getDisplayLabel(field.getName(), entityName);
+	}
+
+	private String getDisplayLabel(String fieldName, String entityName) {
+		String fullFieldName = entityName.replace('.', '_') + "_" + fieldName;
+		return CrudLabelHelper.getString(fullFieldName, fieldName);
 	}
 
 	@Override
@@ -131,7 +136,7 @@ public class CrudEntityEdit extends EditForm {
 			public void onFailure(Throwable caught) {
 				String errorMessage;
 				if (caught instanceof FieldValueNotUniqueException) {
-					errorMessage = "The value for the field " + ((FieldValueNotUniqueException) caught).getFieldName() + " must be unique, but the entered value already exists in another entity.";
+					errorMessage = messages.fieldValueNotUniqueError(getDisplayLabel(((FieldValueNotUniqueException) caught).getFieldName(), desc.getEntityName()));
 				}
 				else {
 					errorMessage = "Failed to save entity " + desc.getEntityName();
