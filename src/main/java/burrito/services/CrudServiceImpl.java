@@ -47,8 +47,10 @@ import burrito.annotations.Relation;
 import burrito.annotations.Required;
 import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
+import burrito.annotations.Unique;
 import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.CrudService;
+import burrito.client.crud.FieldValueNotUniqueException;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.generic.CrudEntityList;
@@ -345,10 +347,11 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	public Long save(CrudEntityDescription desc) {
+	public Long save(CrudEntityDescription desc) throws FieldValueNotUniqueException {
 		Class<? extends Model> clazz = extractClass(desc.getEntityName());
 		Model entity = extractEntity(desc.getId(), null, clazz);
 		updateEntityFromDescription(entity, desc, clazz);
+		validateEntityUniqueness(entity, desc, clazz);
 
 		if (desc.isNew()) {
 			entity.insert();
@@ -359,8 +362,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				prop.triggerRefreshAsync();
 			}
 		}
+
 		Long id = extractIDFromEntity(entity);
 		updateSearchIndicies(entity, id);
+
 		return id;
 	}
 
@@ -386,6 +391,40 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			} catch (Exception e) {
 				throw new RuntimeException("Failed to set field "
 						+ field.getName(), e);
+			}
+		}
+	}
+
+	private void validateEntityUniqueness(Model entity, CrudEntityDescription desc, Class<?> clazz) throws FieldValueNotUniqueException {
+		Object id;
+
+		try {
+			id = clazz.getDeclaredField("id").get(entity);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to get entity ID", e);
+		}
+
+		for (CrudField field : desc.getFields()) {
+			String fieldName = field.getName();
+			try {
+				Field privField = clazz.getDeclaredField(fieldName);
+				if (privField.isAnnotationPresent(Unique.class)) {
+					privField.setAccessible(true);
+					Object value = privField.get(entity);
+					Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
+					if (existing != null) {
+						if (!existing.getClass().getField("id").get(existing).equals(id)) {
+							throw new FieldValueNotUniqueException(fieldName);
+						}
+					}
+				}
+			}
+			catch (FieldValueNotUniqueException e) {
+				throw e; // pass it on
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Failed to validate uniqueness for field " + field.getName(), e);
 			}
 		}
 	}

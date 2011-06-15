@@ -129,8 +129,14 @@ public class CrudEntityEdit extends EditForm {
 			}
 
 			public void onFailure(Throwable caught) {
-				saveCallback.failed("Failed to save entity "
-						+ desc.getEntityName());
+				String errorMessage;
+				if (caught instanceof FieldValueNotUniqueException) {
+					errorMessage = "The value for the field " + ((FieldValueNotUniqueException) caught).getFieldName() + " must be unique, but the entered value already exists in another entity.";
+				}
+				else {
+					errorMessage = "Failed to save entity " + desc.getEntityName();
+				}
+				saveCallback.failed(errorMessage);
 			}
 		});
 	}

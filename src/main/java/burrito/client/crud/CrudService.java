@@ -54,7 +54,7 @@ public interface CrudService extends RemoteService {
 	 * @param updateCrudEntityDescription
 	 * @return the id of the created or updated entity
 	 */
-	Long save(CrudEntityDescription updateCrudEntityDescription);
+	Long save(CrudEntityDescription updateCrudEntityDescription) throws FieldValueNotUniqueException;
 
 	/**
 	 * Lists all database rows from a given entity.
