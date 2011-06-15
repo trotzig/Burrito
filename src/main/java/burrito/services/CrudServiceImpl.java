@@ -396,10 +396,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	}
 
 	private void validateEntityUniqueness(Model entity, CrudEntityDescription desc, Class<?> clazz) throws FieldValueNotUniqueException {
-		Object id;
+		Long id;
 
 		try {
-			id = clazz.getDeclaredField("id").get(entity);
+			id = extractIDFromEntity(entity);
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to get entity ID", e);
@@ -414,7 +414,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 					Object value = privField.get(entity);
 					Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
 					if (existing != null) {
-						if (!existing.getClass().getField("id").get(existing).equals(id)) {
+						if (!extractIDFromEntity(existing).equals(id)) {
 							throw new FieldValueNotUniqueException(fieldName);
 						}
 					}
