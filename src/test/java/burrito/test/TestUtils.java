@@ -33,7 +33,10 @@ public class TestUtils {
 			throw new RuntimeException("Failed to create router", e);
 		}
 		r.init();
-		PreparedFlow flow = r.execute(uri, requestParams);
+		
+		MockControllerRequest request = new MockControllerRequest(uri, requestParams);
+		//request.getParameterMap()
+		PreparedFlow flow = r.execute(request);
 		if (flow == null) {
 			return null;
 		}

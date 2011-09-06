@@ -25,17 +25,17 @@ import burrito.client.crud.generic.CrudField;
 
 
 @SuppressWarnings("serial")
-public class EnumField extends CrudField implements Serializable {
+public class ListedByEnumField extends CrudField implements Serializable {
 
 	private String value;
 	private String typeClassName;
 
-	public EnumField(String value, String typeClassName) {
+	public ListedByEnumField(String value, String typeClassName) {
 		this.value = value;
 		this.typeClassName = typeClassName;
 	}
 
-	public EnumField() {
+	public ListedByEnumField() {
 		// Default constructor
 	}
 

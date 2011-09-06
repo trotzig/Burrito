@@ -27,7 +27,7 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
-import burrito.client.crud.generic.fields.EnumField;
+import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.LinkListField;
 import burrito.client.crud.generic.fields.LinkedEntityField;
@@ -42,7 +42,7 @@ import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.input.CrudInputFieldImpl;
 import burrito.client.crud.input.DateCrudInputField;
 import burrito.client.crud.input.EmbeddedListInputField;
-import burrito.client.crud.input.EnumSelectionListField;
+import burrito.client.crud.input.ListedByEnumSelectionListField;
 import burrito.client.crud.input.ImageCrudInputField;
 import burrito.client.crud.input.IntegerInputField;
 import burrito.client.crud.input.LinkListInputField;
@@ -126,8 +126,8 @@ public class CrudFieldResolver {
 		if (field instanceof StringSelectionField) {
 			return new StringSelectionListField((StringSelectionField) field);
 		}
-		if (field instanceof EnumField) {
-			return new EnumSelectionListField((EnumField) field);
+		if (field instanceof ListedByEnumField) {
+			return new ListedByEnumSelectionListField((ListedByEnumField) field);
 		}
 		if (field instanceof LinkListField) {
 			return new LinkListInputField((LinkListField) field);
