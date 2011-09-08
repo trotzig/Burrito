@@ -60,12 +60,14 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
+import burrito.client.crud.generic.fields.IntegerListField;
 import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerField;
 import burrito.client.crud.generic.fields.LinkListField;
 import burrito.client.crud.generic.fields.LinkedEntityField;
 import burrito.client.crud.generic.fields.LongField;
+import burrito.client.crud.generic.fields.LongListField;
 import burrito.client.crud.generic.fields.ManyToManyRelationField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.generic.fields.RichTextField;
@@ -617,23 +619,34 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			ParameterizedType pType = (ParameterizedType) field
 					.getGenericType();
 			Type type = pType.getActualTypeArguments()[0];
+			
 			if (field.isAnnotationPresent(EmbeddedBy.class)) {
 				EmbeddedBy embeddedBy = field.getAnnotation(EmbeddedBy.class);
 				crud = createEmbeddedListField(embeddedBy.value(),
 						(List<String>) field.get(entity));
-			} else if (type.equals(Long.class)) {
+				
+			} else if (type.equals(Long.class) && field.isAnnotationPresent(Relation.class)) {
 				String relatedEntityClass = field.getAnnotation(Relation.class)
 						.value().getName();
 				crud = new ManyToManyRelationField(
 						(List<Long>) field.get(entity), relatedEntityClass);
-			} else if (type.equals(String.class)
-					&& field.isAnnotationPresent(Link.class)) {
+				
+			} else if (type.equals(String.class) && field.isAnnotationPresent(Link.class)) {
 				crud = new LinkListField((List<String>) field.get(entity));
+				
 			} else if (type.equals(String.class)) {
 				crud = new StringListField((List<String>) field.get(entity));
+				
+			} else if (type.equals(Integer.class)) {
+				crud = new IntegerListField((List<Integer>) field.get(entity));
+				
+			} else if (type.equals(Long.class)) {
+				crud = new LongListField((List<Long>) field.get(entity));
+				
 			} else {
 				throw new RuntimeException("Unknown list type: " + type);
 			}
+			
 		} else if (clazz == String.class
 				&& field.isAnnotationPresent(ReadOnly.class)) {
 			StringField stringCrud = new StringField((String) field.get(entity));
