@@ -27,10 +27,12 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
-import burrito.client.crud.generic.fields.EnumField;
+import burrito.client.crud.generic.fields.IntegerListField;
+import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.LinkListField;
 import burrito.client.crud.generic.fields.LinkedEntityField;
+import burrito.client.crud.generic.fields.LongListField;
 import burrito.client.crud.generic.fields.ManyToManyRelationField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.generic.fields.RichTextField;
@@ -42,12 +44,14 @@ import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.input.CrudInputFieldImpl;
 import burrito.client.crud.input.DateCrudInputField;
 import burrito.client.crud.input.EmbeddedListInputField;
-import burrito.client.crud.input.EnumSelectionListField;
+import burrito.client.crud.input.IntegerListInputField;
+import burrito.client.crud.input.ListedByEnumSelectionListField;
 import burrito.client.crud.input.ImageCrudInputField;
 import burrito.client.crud.input.IntegerInputField;
 import burrito.client.crud.input.LinkListInputField;
 import burrito.client.crud.input.LinkedEntityInputField;
 import burrito.client.crud.input.ListCrudInputField;
+import burrito.client.crud.input.LongListInputField;
 import burrito.client.crud.input.ReadOnlyTextCrudInputField;
 import burrito.client.crud.input.RichTextInputField;
 import burrito.client.crud.input.SelectionListField;
@@ -126,8 +130,8 @@ public class CrudFieldResolver {
 		if (field instanceof StringSelectionField) {
 			return new StringSelectionListField((StringSelectionField) field);
 		}
-		if (field instanceof EnumField) {
-			return new EnumSelectionListField((EnumField) field);
+		if (field instanceof ListedByEnumField) {
+			return new ListedByEnumSelectionListField((ListedByEnumField) field);
 		}
 		if (field instanceof LinkListField) {
 			return new LinkListInputField((LinkListField) field);
@@ -135,12 +139,19 @@ public class CrudFieldResolver {
 		if (field instanceof StringListField) {
 			return new StringListInputField((StringListField) field);
 		}
+		if (field instanceof LongListField) {
+			return new LongListInputField((LongListField)field);
+		}
+		if (field instanceof IntegerListField) {
+			return new IntegerListInputField((IntegerListField)field);
+		}
 		if (field instanceof LinkedEntityField) {
 			return new LinkedEntityInputField((LinkedEntityField) field);
 		}
 		if (field instanceof EmbeddedListField) {
 			return new EmbeddedListInputField((EmbeddedListField) field);
 		}
+		
 		
 		
 
