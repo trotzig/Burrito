@@ -34,7 +34,7 @@ public class ImageCrudInputField implements CrudInputField {
 	private Integer requiredWidth;
 	private Integer requiredHeight;
 	private BlobStoreImageField blobField;
-	private String url;
+	private String value;
 
 	public ImageCrudInputField(ImageField crudField) {
 		this.crudField = crudField;
@@ -67,38 +67,52 @@ public class ImageCrudInputField implements CrudInputField {
 	public Object getValue() {
 		String blobStoreKey = blobField.getValue();
 		if (blobStoreKey != null) {
-			url = "/blobstore/image?key=" + blobStoreKey;
+			if (crudField.isUrlMode()) {
+				value = "/blobstore/image?key=" + blobStoreKey;
+			}
+			else {
+				value = blobStoreKey;
+			}
 		}
-		return url;
+		return value;
 	}
 
-	public void load(Object value) {
-		url = (String) value;
+	public void load(Object valueObject) {
+		value = (String) valueObject;
 
-		String previewUrl = url;
-		String blobFieldValue = null;
+		String previewUrl;
+		String blobFieldValue;
 
-		if (url != null) {
-			if (url.startsWith("/blobstore/image")) {
-				int pos = url.indexOf("?key=");
-				if (pos < 0) pos = url.indexOf("&key=");
-				if (pos >= 0) {
-					String blobStoreKey = url.substring(pos + 5);
-					pos = blobStoreKey.indexOf('&');
-					if (pos >= 0) blobStoreKey = blobStoreKey.substring(0, pos);
+		if (crudField.isUrlMode()) {
+			previewUrl = value;
+			blobFieldValue = null;
 
-					previewUrl = null;
-					blobFieldValue = blobStoreKey;
+			if (value != null) {
+				if (value.startsWith("/blobstore/image")) {
+					int pos = value.indexOf("?key=");
+					if (pos < 0) pos = value.indexOf("&key=");
+					if (pos >= 0) {
+						String blobStoreKey = value.substring(pos + 5);
+						pos = blobStoreKey.indexOf('&');
+						if (pos >= 0) blobStoreKey = blobStoreKey.substring(0, pos);
+	
+						previewUrl = null;
+						blobFieldValue = blobStoreKey;
+					}
+				}
+
+				if (requiredWidth != null) {
+					if (previewUrl != null && previewUrl.startsWith("/images/view/")) {
+						if (previewUrl.indexOf('?') >= 0) previewUrl += '&';
+						else previewUrl += '?';
+						previewUrl += "width=217";
+					}
 				}
 			}
-
-			if (requiredWidth != null) {
-				if (previewUrl != null && previewUrl.startsWith("/images/view/")) {
-					if (previewUrl.indexOf('?') >= 0) previewUrl += '&';
-					else previewUrl += '?';
-					previewUrl += "width=217";
-				}
-			}
+		}
+		else {
+			previewUrl = null;
+			blobFieldValue = value;
 		}
 
 		oldImage.setUrl(previewUrl);

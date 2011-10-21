@@ -37,6 +37,7 @@ import burrito.annotations.DefaultSort;
 import burrito.annotations.Displayable;
 import burrito.annotations.EmbeddedBy;
 import burrito.annotations.Image;
+import burrito.annotations.ImageKey;
 import burrito.annotations.Link;
 import burrito.annotations.ListedBy;
 import burrito.annotations.ListedByEnum;
@@ -388,11 +389,13 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				}
 				
 				Field privField = clazz.getDeclaredField(field.getName());
+				@SuppressWarnings("rawtypes")
 				Class fieldType = privField.getType();
 				
 				if (field instanceof ListedByEnumField && (Enum.class.isAssignableFrom(fieldType))) {
 					ListedByEnumField fieldEnum = (ListedByEnumField) field;
 					String className = fieldEnum.getTypeClassName();
+					@SuppressWarnings("rawtypes")
 					Class enumClass = Class.forName(className);
 					
 					value = Enum.valueOf(enumClass, (String) value);
@@ -588,7 +591,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			throws IllegalAccessException {
 		CrudField crud = null;
 		
-		@SuppressWarnings("rawtypes")
 		Class clazz = field.getType();
 		
 		if (Enum.class.isAssignableFrom(clazz)) {
@@ -663,7 +665,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				&& field.isAnnotationPresent(Image.class)) {
 			Image image = field.getAnnotation(Image.class);
 			crud = new ImageField((String) field.get(entity), image.width(),
-					image.height());
+					image.height(), true);
+		} else if (clazz == String.class
+				&& field.isAnnotationPresent(ImageKey.class)) {
+			crud = new ImageField((String) field.get(entity), 0, 0, false);
 		} else if (clazz == String.class
 				&& field.isAnnotationPresent(RichText.class)) {
 			crud = new RichTextField((String) field.get(entity));

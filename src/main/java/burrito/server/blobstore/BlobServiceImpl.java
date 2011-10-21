@@ -30,6 +30,12 @@ public class BlobServiceImpl extends RemoteServiceServlet implements BlobService
 
 	@Override
 	public String getBlobStoreUploadURL() {
-		return blobstoreService.createUploadUrl("/admin/blobstore/upload");
+		String uploadUrl = blobstoreService.createUploadUrl("/admin/blobstore/upload");
+
+		if (uploadUrl.startsWith("http://0.0.0.0")) {
+			uploadUrl = "http://localhost" + uploadUrl.substring(14);
+		}
+
+		return uploadUrl;
 	}
 }
