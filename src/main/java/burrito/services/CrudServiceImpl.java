@@ -60,12 +60,14 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
-import burrito.client.crud.generic.fields.EnumField;
+import burrito.client.crud.generic.fields.IntegerListField;
+import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerField;
 import burrito.client.crud.generic.fields.LinkListField;
 import burrito.client.crud.generic.fields.LinkedEntityField;
 import burrito.client.crud.generic.fields.LongField;
+import burrito.client.crud.generic.fields.LongListField;
 import burrito.client.crud.generic.fields.ManyToManyRelationField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.generic.fields.RichTextField;
@@ -384,7 +386,19 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 							((EmbeddedListField) field).getEmbeddedClassName(),
 							(List<CrudEntityDescription>) field.getValue());
 				}
+				
 				Field privField = clazz.getDeclaredField(field.getName());
+				Class fieldType = privField.getType();
+				
+				if (field instanceof ListedByEnumField && (Enum.class.isAssignableFrom(fieldType))) {
+					ListedByEnumField fieldEnum = (ListedByEnumField) field;
+					String className = fieldEnum.getTypeClassName();
+					Class enumClass = Class.forName(className);
+					
+					value = Enum.valueOf(enumClass, (String) value);
+				}
+				
+				
 				privField.setAccessible(true);
 				privField.set(entity, value);
 
@@ -399,7 +413,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Object id;
 
 		try {
-			id = clazz.getDeclaredField("id").get(entity);
+			Field field = clazz.getDeclaredField("id");
+			field.setAccessible(true);
+			id = field.get(entity);
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to get entity ID", e);
@@ -567,17 +583,27 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		return crud;
 	}
 
-	@SuppressWarnings("unchecked")
-	private CrudField processStandardCrud(Field field, Object entity)
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public CrudField processStandardCrud(Field field, Object entity)
 			throws IllegalAccessException {
 		CrudField crud = null;
+		
 		@SuppressWarnings("rawtypes")
 		Class clazz = field.getType();
-		if (clazz == Date.class) {
+		
+		if (Enum.class.isAssignableFrom(clazz)) {
+			Enum value = (Enum) field.get(entity);
+			String clazzName = clazz.getName();
+			
+			crud = new ListedByEnumField((value == null) ? null : value.name(), clazzName);
+		
+		} else if (clazz == Date.class) {
 			crud = new DateField((Date) field.get(entity),
 					field.isAnnotationPresent(ReadOnly.class));
+			
 		} else if (clazz == Boolean.class) {
 			crud = new BooleanField((Boolean) field.get(entity));
+			
 		} else if (clazz == Long.class) {
 			if (field.isAnnotationPresent(Relation.class)) {
 				String relatedEntityClass = field.getAnnotation(Relation.class)
@@ -587,29 +613,42 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			} else {
 				crud = new LongField((Long) field.get(entity));
 			}
+			
 		} else if (clazz == Integer.class) {
 			crud = new IntegerField((Integer) field.get(entity));
+			
 		} else if (clazz == List.class) {
 			ParameterizedType pType = (ParameterizedType) field
 					.getGenericType();
 			Type type = pType.getActualTypeArguments()[0];
+			
 			if (field.isAnnotationPresent(EmbeddedBy.class)) {
 				EmbeddedBy embeddedBy = field.getAnnotation(EmbeddedBy.class);
 				crud = createEmbeddedListField(embeddedBy.value(),
 						(List<String>) field.get(entity));
-			} else if (type.equals(Long.class)) {
+				
+			} else if (type.equals(Long.class) && field.isAnnotationPresent(Relation.class)) {
 				String relatedEntityClass = field.getAnnotation(Relation.class)
 						.value().getName();
 				crud = new ManyToManyRelationField(
 						(List<Long>) field.get(entity), relatedEntityClass);
-			} else if (type.equals(String.class)
-					&& field.isAnnotationPresent(Link.class)) {
+				
+			} else if (type.equals(String.class) && field.isAnnotationPresent(Link.class)) {
 				crud = new LinkListField((List<String>) field.get(entity));
+				
 			} else if (type.equals(String.class)) {
 				crud = new StringListField((List<String>) field.get(entity));
+				
+			} else if (type.equals(Integer.class)) {
+				crud = new IntegerListField((List<Integer>) field.get(entity));
+				
+			} else if (type.equals(Long.class)) {
+				crud = new LongListField((List<Long>) field.get(entity));
+				
 			} else {
 				throw new RuntimeException("Unknown list type: " + type);
 			}
+			
 		} else if (clazz == String.class
 				&& field.isAnnotationPresent(ReadOnly.class)) {
 			StringField stringCrud = new StringField((String) field.get(entity));
@@ -618,7 +657,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		} else if (clazz == String.class
 				&& field.isAnnotationPresent(ListedByEnum.class)) {
 			ListedByEnum lenum = field.getAnnotation(ListedByEnum.class);
-			crud = new EnumField((String) field.get(entity), lenum.type()
+			crud = new ListedByEnumField((String) field.get(entity), lenum.type()
 					.getName());
 		} else if (clazz == String.class
 				&& field.isAnnotationPresent(Image.class)) {

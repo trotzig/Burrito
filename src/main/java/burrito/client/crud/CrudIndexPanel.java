@@ -62,21 +62,27 @@ public class CrudIndexPanel extends Composite {
 	}
 
 	protected void init(List<CrudEntityInfo> result) {
-		wrapper.add(new Label(messages.chooseEntity()));
+		Label descLabel;
+		wrapper.add((descLabel = new Label(messages.chooseEntity())));
 		if (result.isEmpty()) {
-			wrapper.add(new Label(messages.noEntitiesToEdit()));
+			wrapper.add((descLabel = new Label(messages.noEntitiesToEdit())));
 			wrapper.add(new VerticalSpacer(10));
 		}
+		descLabel.addStyleName("k5-CrudPanel-indexDesc");
 		for (CrudEntityInfo crudEntityInfo : result) {
 			HorizontalPanel fp = new HorizontalPanel();
 			String underscore = crudEntityInfo.getEntityName()
 					.replace('.', '_');
-			fp.add(new Hyperlink(CrudLabelHelper.getString(underscore),
-					crudEntityInfo.getEntityName()));
+			Hyperlink entityName = new Hyperlink(CrudLabelHelper.getString(underscore),
+					crudEntityInfo.getEntityName());
+			entityName.addStyleName("k5-CrudPanel-entityName");
+			fp.add(entityName);
 			String desc = CrudLabelHelper.getNullableString(underscore
 					+ "_desc");
 			if (desc != null) {
-				fp.add(new HTML("&nbsp;-&nbsp;" + desc));
+				HTML descHtml = new HTML("&nbsp;-&nbsp;" + desc);
+				descHtml.addStyleName("k5-CrudPanel-entityDesc");
+				fp.add(descHtml);
 			}
 			wrapper.add(fp);
 			wrapper.add(new VerticalSpacer(10));
