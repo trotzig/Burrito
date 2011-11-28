@@ -95,7 +95,12 @@ function BurritoFeeds() {
 	this.channelId = '';
 	this.subscriptionId = -1;
 	this.subscriptionRequestSent = false;
+	this.channelOpenCallback = function() {};
 
+	this.onChannelOpen = function(func) {
+		this.channelOpenCallback = func;
+	};
+	
 	/**
 	 * Registers a new feed handler
 	 */
@@ -248,6 +253,7 @@ function BurritoFeeds() {
 	this.openPollingChannel = function() {
 		var pollingChannel = new BurritoPollingChannel(object.subscriptionId, object.feedServer);
 		var socket = pollingChannel.open();
+		this.channelOpenCallback();
 		socket.onmessage = function(json) {
 			object.onMessageReceived(json);
 		}
@@ -259,7 +265,7 @@ function BurritoFeeds() {
 		var socket = channel.open();
 
 		socket.onopen = function() {
-			//do something?
+			object.channelOpenCallback();
 		}
 
 		socket.onclose = function(evt) {
