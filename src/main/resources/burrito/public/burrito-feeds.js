@@ -104,9 +104,14 @@ function BurritoFeeds() {
 	/**
 	 * Registers a new feed handler
 	 */
-	this.registerHandler = function(feedId, callback) {
+	this.registerHandler = function(feedId, onMessageReceived, onStarted) {
+		var handler = {
+			onMessageReceived: onMessageReceived,
+			onStarted: onStarted
+		};
+
 		if (object.subscriptionId < 0) {
-			object.pendingHandlers[feedId] = callback;
+			object.pendingHandlers[feedId] = handler;
 
 			if (!object.subscriptionRequestSent) {	
 				object.subscriptionRequestSent = true;
@@ -114,15 +119,15 @@ function BurritoFeeds() {
 			}
 		}
 		else {
-			object.registeredHandlers[feedId] = callback;
-			object.addFeedToSubscription(feedId);
+			object.registeredHandlers[feedId] = handler;
+			object.addFeedToSubscription(feedId, onStarted);
 		}
 	}
 
-	this.addFeedToSubscription = function(feedId) {
+	this.addFeedToSubscription = function(feedId, onStarted) {
 		if (object.addFeedToSubscriptionLock) {
 			setTimeout(function() {
-				object.addFeedToSubscription(feedId);
+				object.addFeedToSubscription(feedId, onStarted);
 			}, 200);
 		}
 		else {
@@ -134,8 +139,13 @@ function BurritoFeeds() {
 				dataType: "jsonp",
 				success: function(json) {
 					object.addFeedToSubscriptionLock = false;
+
 					if (json.status == 'error') {
 						throw("Error response from feed server: " + json.message);
+					}
+
+					if (onStarted) {
+						onStarted();
 					}
 				}
 			});
@@ -186,7 +196,8 @@ function BurritoFeeds() {
 
 				//iterate through all non-initialized handlers and make sure they are initialized
 				for (var feedId in object.pendingHandlers) {
-					object.registerHandler(feedId, object.pendingHandlers[feedId]);
+					var handler = object.pendingHandlers[feedId];
+					object.registerHandler(feedId, handler.onMessageReceived, handler.onStarted);
 					object.pendingHandlers[feedId] = null;
 				}
 
@@ -244,8 +255,8 @@ function BurritoFeeds() {
 		var targetFeedId = json.feedId;
 	 	for (var feedId in object.registeredHandlers) {
 	 		if (feedId == targetFeedId) {
-	 			var callback = object.registeredHandlers[feedId];
-	 			callback(json.message);
+	 			var onMessageReceived = object.registeredHandlers[feedId].onMessageReceived;
+	 			onMessageReceived(json.message);
 	 		}
 		}
 	}
