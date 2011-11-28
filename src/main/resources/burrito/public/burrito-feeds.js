@@ -120,7 +120,7 @@ function BurritoFeeds() {
 		}
 		else {
 			object.registeredHandlers[feedId] = handler;
-			object.addFeedToSubscription(feedId, onStarted);
+			object.addFeedToSubscription(feedId, handler);
 		}
 	}
 
