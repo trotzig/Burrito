@@ -28,7 +28,7 @@
  * @param feedServer
  * @returns {BurritoPollingChannel}
  */
-function BurritoPollingChannel(subscriptionId, feedServer) {
+function BurritoPollingChannel(subscriptionId, feedServer, onMessage) {
 	var object = this;
 
 	this.pollingIntervalSeconds = 45;
@@ -36,22 +36,21 @@ function BurritoPollingChannel(subscriptionId, feedServer) {
 	this.subscriptionId = subscriptionId;
 	this.currentTimeout = -1;
 	this.feedServer = feedServer;
-	
-	this.onmessage = function(json){}; //callback for messages
-	
-	this.open = function() {
+
+	this.onMessage = onMessage; //callback for messages
+
+	this.startPolling = function() {
 		object.triggerNewPoll();
-		return this;
 	}
 	
 	this.onMessages = function(json) {
 		if (!json.messages) {
 			return;
 		}
-		//loop through all messages received and call the onmessage callback
+		//loop through all messages received and call the onMessage callback
 		for (var i = 0; i < json.messages.length; i++) {
 			var msgJson = json.messages[i];
-			object.onmessage(msgJson);
+			object.onMessage(msgJson);
 		}
 	}
 	
@@ -93,6 +92,7 @@ function BurritoFeeds() {
 	this.feedServer = ''; //defaults to same domain as website
 	this.method = 'push';
 	this.channelId = '';
+	this.channelOpen = false;
 	this.subscriptionId = -1;
 	this.subscriptionRequestSent = false;
 	this.channelOpenCallback = function() {};
@@ -100,7 +100,7 @@ function BurritoFeeds() {
 	this.onChannelOpen = function(func) {
 		this.channelOpenCallback = func;
 	};
-	
+
 	/**
 	 * Registers a new feed handler
 	 */
@@ -124,10 +124,10 @@ function BurritoFeeds() {
 		}
 	}
 
-	this.addFeedToSubscription = function(feedId, onStarted) {
+	this.addFeedToSubscription = function(feedId, handler) {
 		if (object.addFeedToSubscriptionLock) {
 			setTimeout(function() {
-				object.addFeedToSubscription(feedId, onStarted);
+				object.addFeedToSubscription(feedId, handler);
 			}, 200);
 		}
 		else {
@@ -144,8 +144,12 @@ function BurritoFeeds() {
 						throw("Error response from feed server: " + json.message);
 					}
 
-					if (onStarted) {
-						onStarted();
+					if (object.channelOpen) {
+						var onStarted = handler.onStarted;
+						if (onStarted) {
+							handler.onStarted = null;
+							onStarted();
+						}
 					}
 				}
 			});
@@ -197,8 +201,10 @@ function BurritoFeeds() {
 				//iterate through all non-initialized handlers and make sure they are initialized
 				for (var feedId in object.pendingHandlers) {
 					var handler = object.pendingHandlers[feedId];
-					object.registerHandler(feedId, handler.onMessageReceived, handler.onStarted);
-					object.pendingHandlers[feedId] = null;
+					if (handler) {
+						object.pendingHandlers[feedId] = null;
+						object.registerHandler(feedId, handler.onMessageReceived, handler.onStarted);
+					}
 				}
 
 				object.startListeningToChannel(json.channelId);
@@ -251,23 +257,38 @@ function BurritoFeeds() {
 		}
 	}
 
+	this.handleChannelOpen = function() {
+		object.channelOpen = true;
+
+		object.channelOpenCallback();
+
+		for (var feedId in object.registeredHandlers) {
+	 		var handler = object.registeredHandlers[feedId];
+
+	 		var onStarted = handler.onStarted;
+			if (onStarted) {
+				handler.onStarted = null;
+				onStarted();
+			}
+		}
+	}
+
 	this.onMessageReceived = function(json) {
-		var targetFeedId = json.feedId;
-	 	for (var feedId in object.registeredHandlers) {
-	 		if (feedId == targetFeedId) {
-	 			var onMessageReceived = object.registeredHandlers[feedId].onMessageReceived;
-	 			onMessageReceived(json.message);
-	 		}
+		var handler = object.registeredHandlers[json.feedId];
+		if (handler) {
+ 			var onMessageReceived = handler.onMessageReceived;
+ 			onMessageReceived(json.message);
 		}
 	}
 	
 	this.openPollingChannel = function() {
-		var pollingChannel = new BurritoPollingChannel(object.subscriptionId, object.feedServer);
-		var socket = pollingChannel.open();
-		this.channelOpenCallback();
-		socket.onmessage = function(json) {
+		var pollingChannel = new BurritoPollingChannel(object.subscriptionId, object.feedServer, function(json) {
 			object.onMessageReceived(json);
-		}
+		});
+
+		object.handleChannelOpen();
+
+		pollingChannel.startPolling();
 	}
 
 	this.openGoogleChannel = function() {
@@ -276,7 +297,7 @@ function BurritoFeeds() {
 		var socket = channel.open();
 
 		socket.onopen = function() {
-			object.channelOpenCallback();
+			object.handleChannelOpen();
 		}
 
 		socket.onclose = function(evt) {
