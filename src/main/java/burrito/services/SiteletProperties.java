@@ -61,6 +61,8 @@ public class SiteletProperties extends Model implements Serializable {
 
 	public Date nextAutoRefresh;
 
+	public Boolean retired;
+	
 	public static Query<SiteletProperties> all() {
 		return Model.all(SiteletProperties.class);
 	}
@@ -205,8 +207,13 @@ public class SiteletProperties extends Model implements Serializable {
 	public String describe() {
 		return getAssociatedSitelet().describe();
 	}
-	
-	
-	
 
+	
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+	
+	public boolean isRetired() {
+		return (retired != null) ? retired.booleanValue() : false;
+	}
 }

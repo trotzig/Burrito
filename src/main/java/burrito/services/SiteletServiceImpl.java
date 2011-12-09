@@ -120,7 +120,7 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 	}
 
 	private void clearContainerCache(String containerName) {
-		Cache.delete(SiteletHelper.CACHE_PREFIX + containerName);
+		SiteletHelper.clearSiteletContainerCache(containerName);
 	}
 
 	public List<CrudEntityInfo> getSiteletTypes() {

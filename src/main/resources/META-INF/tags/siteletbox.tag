@@ -1,3 +1,6 @@
+<%@tag import="java.util.Date"%>
+<%@tag import="burrito.render.RefreshSiteletRenderer"%>
+<%@tag import="burrito.sitelet.Sitelet"%>
 <%@ tag isELIgnored="false" body-content="empty" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="burrito" uri="/burrito-tags" %>
@@ -19,12 +22,20 @@
 		String id = (String)jspContext.getAttribute("id");
 		List<SiteletProperties> sitelets = SiteletHelper.getSiteletProperties(id); 
 		for (SiteletProperties siteletProperties : sitelets) {
-			jspContext.setAttribute("siteletProperties", siteletProperties);
+			String html;
+			if (siteletProperties.isRetired()) {
+				//un-retire the sitelet:
+				RefreshSiteletRenderer.refreshSitelet(siteletProperties, false, request, response);
+			} 
+			html = siteletProperties.renderedHtml;
+			SiteletHelper.touchSiteletLastDisplayTime(siteletProperties.getId());
 			%>
 				<div class="sitelet sitelet-properties-id-${siteletProperties.id} sitelet-version-${empty siteletProperties.renderedVersion ? 0 : siteletProperties.renderedVersion}">
-					${siteletProperties.renderedHtml}
+				<%
+					out.write(html);
+				%>
 				</div>
-			<%
+			<% 
 		}
 	%>
 </div>

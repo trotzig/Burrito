@@ -34,14 +34,13 @@ import burrito.controller.RefreshSiteletController;
 import burrito.services.SiteletProperties;
 import burrito.sitelet.AutoRefresh;
 import burrito.sitelet.Sitelet;
-import burrito.util.Cache;
 import burrito.util.SiteletHelper;
 
 public class RefreshSiteletRenderer implements Renderer {
 
-	private Logger log = Logger.getLogger(RefreshSiteletRenderer.class.getName());
+	private static Logger log = Logger.getLogger(RefreshSiteletRenderer.class.getName());
 	
-	public class CharResponseWrapper extends
+	public static class CharResponseWrapper extends
 	   HttpServletResponseWrapper {
 	   private CharArrayWriter output;
 	   public String toString() {
@@ -60,13 +59,18 @@ public class RefreshSiteletRenderer implements Renderer {
 	public void render(Object result, Controller<?> controller,
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		SiteletProperties props = (SiteletProperties) result;
+		refreshSitelet((SiteletProperties) result, ((RefreshSiteletController) controller).getForce(), request, response);
+	}
+
+	public static void refreshSitelet(SiteletProperties props, Boolean force,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		Sitelet sitelet = props.getAssociatedSitelet();
-		String path = "/sitelets/" + sitelet.getClass().getSimpleName();
-		String newHTML = renderAndRecordJspOutput(path + "/render.jsp", request, response, sitelet);
+		
+		String newHTML = renderAndRecordJspOutput("render.jsp", request, response, sitelet);
 		String updateJsFunction = null;
 		try {
-			updateJsFunction = renderAndRecordJspOutput(path + "/update.jsp", request, response, sitelet).trim();
+			updateJsFunction = renderAndRecordJspOutput("update.jsp", request, response, sitelet).trim();
 		} catch (Exception e) {
 			log.info("No update.jsp found for " + sitelet.getClass().getSimpleName());
 		}
@@ -74,8 +78,6 @@ public class RefreshSiteletRenderer implements Renderer {
 		AutoRefresh autoRefresh = sitelet.getNextAutoRefresh();
 		props.setNextAutoRefresh(autoRefresh != null ? autoRefresh.getTime() : null);
 		
-		Boolean force = ((RefreshSiteletController) controller).getForce();
-
 		if ((force != null && force) || !newHTML.equals(props.getRenderedHtml())) {
 			props.setRenderedHtml(newHTML);
 			props.setRenderedUpdateFunction(updateJsFunction);
@@ -86,18 +88,20 @@ public class RefreshSiteletRenderer implements Renderer {
 			props.setRenderedVersion(version);
 
 			props.broadcastUpdate();
-			Cache.delete(SiteletHelper.CACHE_PREFIX + props.containerId);
+			SiteletHelper.clearSiteletContainerCache(props.containerId);
 		}
 
+		props.setRetired(false);
 		props.update();
 	}
-
-	private String renderAndRecordJspOutput(String jsp, HttpServletRequest request,
+	
+	public static String renderAndRecordJspOutput(String jspFileName, HttpServletRequest request,
 			HttpServletResponse response, Sitelet sitelet) throws ServletException, IOException {
+		String path = "/sitelets/" + sitelet.getClass().getSimpleName();
 		CharResponseWrapper recordingResponse = new CharResponseWrapper(response);
 		request.setAttribute("sitelet", sitelet);
 		request.setAttribute("doRecache", true);
-		RequestDispatcher dispatcher = request.getRequestDispatcher(jsp);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(path + "/" + jspFileName);
 		dispatcher.include(request, recordingResponse);
 		
 		String newHTML = recordingResponse.toString();

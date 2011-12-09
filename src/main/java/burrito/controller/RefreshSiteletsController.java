@@ -19,7 +19,10 @@ package burrito.controller;
 
 import java.util.List;
 
+import burrito.Configurator;
 import burrito.services.SiteletProperties;
+import burrito.util.Cache;
+import burrito.util.SiteletHelper;
 
 /**
  * Iterates through all sitelets needing a refresh and adds a background job
@@ -34,10 +37,24 @@ public class RefreshSiteletsController extends VoidController {
 	public Void execute() {
 		List<SiteletProperties> props = SiteletProperties
 				.getSiteletsNeedingRefresh();
+		long yesterday = System.currentTimeMillis() - (24 * 60 * 60 * 1000);
 		for (SiteletProperties prop : props) {
-			prop.triggerRefreshAsync();
+			if (Configurator.MAY_RETIRE_SITELETS) {
+				String cacheKey = "burrito:sitelet-last-display-time:" + prop.getId();
+				Long lastDisplayTime = (Long) Cache
+						.get(cacheKey );
+				if (lastDisplayTime == null || lastDisplayTime < yesterday) {
+					prop.setRetired(true);
+					prop.setNextAutoRefresh(null);
+					prop.update();
+					SiteletHelper.clearSiteletContainerCache(prop.containerId);
+				} else {
+					prop.triggerRefreshAsync();
+				}
+			}  else {
+				prop.triggerRefreshAsync();
+			}
 		}
 		return null;
 	}
-
 }

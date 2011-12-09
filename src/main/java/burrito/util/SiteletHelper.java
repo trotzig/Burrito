@@ -31,7 +31,9 @@ import burrito.services.SiteletProperties;
  */
 public class SiteletHelper {
 
-	public static final String CACHE_PREFIX = "sitelet-props-";
+	private static final String CACHE_PREFIX = "sitelet-props-";
+	private static final String SITELET_LAST_REFRESH_CACHE_PREFIX = "burrito:sitelet-last-display-time:";
+	
 	
 	@SuppressWarnings("unchecked")
 	public static List<SiteletProperties> getSiteletProperties(
@@ -50,5 +52,18 @@ public class SiteletHelper {
 		return cached;
 	}
 
-
+	
+	public static void clearSiteletContainerCache(String containerId) {
+		Cache.delete(SiteletHelper.CACHE_PREFIX + containerId);
+	}
+	
+	public static Long getSiteletLastDisplayTime(Long siteletPropertiesId) {
+		String cacheKey = SITELET_LAST_REFRESH_CACHE_PREFIX + siteletPropertiesId;
+		return (Long) Cache.get(cacheKey);
+	}
+	
+	public static void touchSiteletLastDisplayTime(Long siteletPropertiesId) {
+		String cacheKey = SITELET_LAST_REFRESH_CACHE_PREFIX + siteletPropertiesId;
+		Cache.put(cacheKey, System.currentTimeMillis());
+	}
 }

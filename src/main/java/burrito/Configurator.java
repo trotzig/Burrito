@@ -40,6 +40,7 @@ public abstract class Configurator implements ServletContextListener {
 	public static List<Class<? extends Model>> crudables = new ArrayList<Class<? extends Model>>();
 	public static List<Class<? extends Sitelet>> sitelets = new ArrayList<Class<? extends Sitelet>>();
 	public static List<Class<? extends burrito.links.Linkable>> linkables = new ArrayList<Class<? extends Linkable>>();
+	public static boolean MAY_RETIRE_SITELETS = false;
 	private static final String DEV_MODE_CONFIGURATION_SUFFIX = "-DEV-" + RandomStringUtils.randomAlphabetic(4);
 	private static String SITE_IDENTIFIER;
 	private static BroadcastSettings BROADCAST_SETTINGS;
@@ -91,6 +92,20 @@ public abstract class Configurator implements ServletContextListener {
 	 * @return
 	 */
 	protected abstract BroadcastSettings configureBroadcastSettings();
+	
+	
+	/**
+	 * Defines whether sitelets should go into retirement mode if they haven't
+	 * been displayed for a while (24 h). In retirement mode, sitelets need to be 
+	 * displayed in a page for it to be scheduled for refresh.   
+	 * 
+	 * default is false 
+	 */
+	protected boolean mayRetireSitelets() {
+		return false;
+	}
+	
+	
 
 	/**
 	 * Configures the admin protector. This protector is used to decide whether
@@ -111,6 +126,7 @@ public abstract class Configurator implements ServletContextListener {
 			}
 		};
 	}
+	
 	/**
 	 * Gets the site identifier configured for this Burrito instance.
 	 * 
@@ -119,6 +135,7 @@ public abstract class Configurator implements ServletContextListener {
 	public static String getSiteIdentifier() {
 		return SITE_IDENTIFIER;
 	}
+	
 
 	/**
 	 * Gets the broadcast settings
@@ -147,6 +164,7 @@ public abstract class Configurator implements ServletContextListener {
 		}
 		BROADCAST_SETTINGS = configureBroadcastSettings();
 		ADMIN_PROTECTOR = configureAdminProtector();
+		MAY_RETIRE_SITELETS = mayRetireSitelets();
 		
 		init();
 	}
