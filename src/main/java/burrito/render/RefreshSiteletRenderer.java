@@ -76,8 +76,13 @@ public class RefreshSiteletRenderer implements Renderer {
 		}
 		
 		AutoRefresh autoRefresh = sitelet.getNextAutoRefresh();
-		props.setNextAutoRefresh(autoRefresh != null ? autoRefresh.getTime() : null);
-		
+		if (autoRefresh != null) {
+			props.setNextAutoRefresh(autoRefresh.getTime());
+		}
+		else {
+			props.setNextAutoRefreshToFarIntoTheFuture();
+		}
+
 		if ((force != null && force) || !newHTML.equals(props.getRenderedHtml())) {
 			props.setRenderedHtml(newHTML);
 			props.setRenderedUpdateFunction(updateJsFunction);

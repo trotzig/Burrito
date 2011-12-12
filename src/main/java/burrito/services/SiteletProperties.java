@@ -35,6 +35,7 @@ import burrito.sitelet.SiteletBoxMemberMessage;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gson.Gson;
 
@@ -134,14 +135,17 @@ public class SiteletProperties extends Model implements Serializable {
 		return renderedVersion;
 	}
 
-	public void setNextAutoRefresh(Date nextAutoRefresh) {
-		this.nextAutoRefresh = nextAutoRefresh;
-	}
-
 	public Date getNextAutoRefresh() {
 		return nextAutoRefresh;
 	}
 
+	public void setNextAutoRefresh(Date nextAutoRefresh) {
+		this.nextAutoRefresh = nextAutoRefresh;
+	}
+
+	public void setNextAutoRefreshToFarIntoTheFuture() {
+		setNextAutoRefresh(new Date(9999999999999L));
+	}
 	
 	public String getRenderedUpdateFunction() {
 		return renderedUpdateFunction;
@@ -157,11 +161,23 @@ public class SiteletProperties extends Model implements Serializable {
 	 * when the sitelet is done refreshing.
 	 */
 	public void triggerRefreshAsync() {
+		triggerRefreshAsync(null);
+	}
+
+	public void triggerRefreshAsync(Long etaMillis) {
 		if (id == null) {
 			throw new IllegalStateException("The sitelet has no id. Must call insert() first");
 		}
+
 		Queue queue = QueueFactory.getQueue("burrito-sitelets");
-		queue.add(withUrl("/burrito/sitelets/refresh/sitelet").param("siteletPropertiesId", String.valueOf(id)));
+
+		TaskOptions options = withUrl("/burrito/sitelets/refresh/sitelet").param("siteletPropertiesId", String.valueOf(id));
+
+		if (etaMillis != null) {
+			options.etaMillis(etaMillis);
+		}
+
+		queue.add(options);
 	}
 
 	public static SiteletBoxFeedMessage getSiteletBoxFeedMessage(String containerId, SiteletProperties updatedSitelet, boolean includeAllHtml) {

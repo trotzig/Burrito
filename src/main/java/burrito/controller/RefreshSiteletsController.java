@@ -21,7 +21,6 @@ import java.util.List;
 
 import burrito.Configurator;
 import burrito.services.SiteletProperties;
-import burrito.util.Cache;
 import burrito.util.SiteletHelper;
 
 /**
@@ -35,26 +34,44 @@ public class RefreshSiteletsController extends VoidController {
 
 	@Override
 	public Void execute() {
-		List<SiteletProperties> props = SiteletProperties
-				.getSiteletsNeedingRefresh();
-		long yesterday = System.currentTimeMillis() - (24 * 60 * 60 * 1000);
+		List<SiteletProperties> props = SiteletProperties.getSiteletsNeedingRefresh();
+
+		long now = System.currentTimeMillis();
+		long yesterday = now - (24 * 60 * 60 * 1000);
+		int noProps = props.size();
+		int counter = 0;
+
 		for (SiteletProperties prop : props) {
+			boolean refresh;
+
 			if (Configurator.MAY_RETIRE_SITELETS) {
-				String cacheKey = "burrito:sitelet-last-display-time:" + prop.getId();
-				Long lastDisplayTime = (Long) Cache
-						.get(cacheKey );
+				Long lastDisplayTime = SiteletHelper.getSiteletLastDisplayTime(prop.getId());
+
 				if (lastDisplayTime == null || lastDisplayTime < yesterday) {
 					prop.setRetired(true);
-					prop.setNextAutoRefresh(null);
+					prop.setNextAutoRefreshToFarIntoTheFuture();
 					prop.update();
 					SiteletHelper.clearSiteletContainerCache(prop.containerId);
-				} else {
-					prop.triggerRefreshAsync();
+
+					refresh = false;
 				}
-			}  else {
-				prop.triggerRefreshAsync();
+				else {
+					refresh = true;
+				}
 			}
+			else {
+				refresh = true;
+			}
+
+			if (refresh) {
+				long etaMillis = now + ( 40000L * counter ) / noProps;
+
+				prop.triggerRefreshAsync(etaMillis);
+			}
+
+			counter++;
 		}
+
 		return null;
 	}
 }
