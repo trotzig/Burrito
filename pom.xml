@@ -80,11 +80,9 @@
 		              <!--inputDir>base directory for non absolute includes, default to parent dir of output</inputDir-->
 		              <includes>
 	                    <include>**/burrito-license.txt</include> 
-		                <include>**/burrito*min.js</include>
+		                <include>**/burrito-feeds.min.js</include>
+		                <include>**/burrito-sitelets.min.js</include>
 		              </includes>
-		              <excludes>
-		                <exclude>**/burrito-all.min.js</exclude>
-		              </excludes>
 		            </aggregation>
 		            
 		            <aggregation>
@@ -95,8 +93,6 @@
 		                <include>**/burrito-all.min.js</include>
 		              </includes>
 		            </aggregation>
-		            
-		            
 				  </aggregations>
 		        </configuration>
 			</plugin>
