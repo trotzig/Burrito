@@ -36,6 +36,7 @@ import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
 import burrito.annotations.Displayable;
 import burrito.annotations.EmbeddedBy;
+import burrito.annotations.Hidden;
 import burrito.annotations.Image;
 import burrito.annotations.ImageKey;
 import burrito.annotations.Link;
@@ -43,6 +44,7 @@ import burrito.annotations.ListedBy;
 import burrito.annotations.ListedByEnum;
 import burrito.annotations.LongText;
 import burrito.annotations.ReadOnly;
+import burrito.annotations.RedundantForPerformance;
 import burrito.annotations.RegexpValidation;
 import burrito.annotations.Relation;
 import burrito.annotations.Required;
@@ -61,12 +63,12 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
-import burrito.client.crud.generic.fields.IntegerListField;
-import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerField;
+import burrito.client.crud.generic.fields.IntegerListField;
 import burrito.client.crud.generic.fields.LinkListField;
 import burrito.client.crud.generic.fields.LinkedEntityField;
+import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.LongField;
 import burrito.client.crud.generic.fields.LongListField;
 import burrito.client.crud.generic.fields.ManyToManyRelationField;
@@ -562,6 +564,12 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			return false;
 		}
 		if (Modifier.isStatic(field.getModifiers())) {
+			return false;
+		}
+		if (field.isAnnotationPresent(Hidden.class)) {
+			return false;
+		}
+		if (field.isAnnotationPresent(RedundantForPerformance.class)) {
 			return false;
 		}
 		return true;
