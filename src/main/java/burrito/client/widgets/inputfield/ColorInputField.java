@@ -17,8 +17,6 @@
 
 package burrito.client.widgets.inputfield;
 
-import burrito.client.widgets.inputfield.StringInputField;
-import burrito.client.widgets.inputfield.ValidationMessages;
 import burrito.client.widgets.validation.InputFieldValidator;
 import burrito.client.widgets.validation.ValidationException;
 

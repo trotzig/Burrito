@@ -138,6 +138,9 @@ public class CrudEntityEdit extends EditForm {
 				if (caught instanceof FieldValueNotUniqueException) {
 					errorMessage = messages.fieldValueNotUniqueError(getDisplayLabel(((FieldValueNotUniqueException) caught).getFieldName(), desc.getEntityName()));
 				}
+				else if (caught instanceof CrudGenericException) {
+					errorMessage = ((CrudGenericException) caught).getMessage();
+				}
 				else {
 					errorMessage = "Failed to save entity " + desc.getEntityName();
 				}

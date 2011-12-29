@@ -30,7 +30,9 @@ import java.util.List;
 import siena.Id;
 import siena.Model;
 import siena.Query;
+import siena.SienaException;
 import burrito.Configurator;
+import burrito.ValidationException;
 import burrito.annotations.AdminLink;
 import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
@@ -51,6 +53,7 @@ import burrito.annotations.Required;
 import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
 import burrito.annotations.Unique;
+import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.CrudService;
 import burrito.client.crud.FieldValueNotUniqueException;
@@ -81,6 +84,7 @@ import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.links.Linkable;
 import burrito.sitelet.Sitelet;
+import burrito.util.ValidationUtil;
 
 import com.google.gson.Gson;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -352,26 +356,31 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	public Long save(CrudEntityDescription desc) throws FieldValueNotUniqueException {
+	public Long save(CrudEntityDescription desc) throws FieldValueNotUniqueException, CrudGenericException {
 		Class<? extends Model> clazz = extractClass(desc.getEntityName());
 		Model entity = extractEntity(desc.getId(), null, clazz);
 		updateEntityFromDescription(entity, desc, clazz);
 		validateEntityUniqueness(entity, desc, clazz);
 
-		if (desc.isNew()) {
-			entity.insert();
-		} else {
-			entity.update();
-			if (entity instanceof Sitelet) {
-				SiteletProperties prop = SiteletProperties.getByEntityId(desc.getId());
-				prop.triggerRefreshAsync();
+		try {
+			if (desc.isNew()) {
+				entity.insert();
+			} else {
+				entity.update();
+				if (entity instanceof Sitelet) {
+					SiteletProperties prop = SiteletProperties.getByEntityId(desc.getId());
+					prop.triggerRefreshAsync();
+				}
 			}
+	
+			Long id = extractIDFromEntity(entity);
+			updateSearchIndicies(entity, id);
+	
+			return id;
+		} catch (SienaException e) {
+			ValidationException ve = ValidationUtil.getValidationErrorOrRethrow(e);
+			throw new CrudGenericException(ve.getMessage());
 		}
-
-		Long id = extractIDFromEntity(entity);
-		updateSearchIndicies(entity, id);
-
-		return id;
 	}
 
 	private void updateSearchIndicies(Model entity, Long databaseId) {
