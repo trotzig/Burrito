@@ -38,6 +38,7 @@ import burrito.render.MessagesRenderer;
 import burrito.render.RefreshSiteletRenderer;
 import burrito.server.blobstore.BlobServiceImpl;
 import burrito.server.blobstore.BlobStoreServlet;
+import burrito.services.BBCodeServiceImpl;
 import burrito.services.CrudServiceImpl;
 import burrito.services.SiteletServiceImpl;
 
@@ -59,6 +60,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/sitelets/refresh/sitelet").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector); 
 		route("/burrito/sitelets/refresh/{siteletPropertiesId:long}").through(RefreshSiteletController.class).renderedBy(new RefreshSiteletRenderer()).protect(btProtector);
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class).protect(Configurator.getAdminProtector());
+		route("/burrito/bbCodeService").throughServlet(BBCodeServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/blobstore/image").throughServlet(BlobStoreServlet.class);
 
 		route("/burrito/sitelets/refresh").through(RefreshSiteletsController.class).renderAsJson().protect(btProtector);

@@ -23,6 +23,7 @@ import java.util.List;
 
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
+import burrito.client.crud.generic.fields.BBCodeField;
 import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
@@ -39,6 +40,7 @@ import burrito.client.crud.generic.fields.RichTextField;
 import burrito.client.crud.generic.fields.StringField;
 import burrito.client.crud.generic.fields.StringListField;
 import burrito.client.crud.generic.fields.StringSelectionField;
+import burrito.client.crud.input.BBCodeInputField;
 import burrito.client.crud.input.BooleanCrudInputField;
 import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.input.CrudInputFieldImpl;
@@ -126,6 +128,9 @@ public class CrudFieldResolver {
 		}
 		if (field instanceof RichTextField) {
 			return new RichTextInputField((RichTextField) field);
+		}
+		if (field instanceof BBCodeField) {
+			return new BBCodeInputField((BBCodeField) field);
 		}
 		if (field instanceof StringSelectionField) {
 			return new StringSelectionListField((StringSelectionField) field);

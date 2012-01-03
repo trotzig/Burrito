@@ -34,6 +34,7 @@ import siena.SienaException;
 import burrito.Configurator;
 import burrito.ValidationException;
 import burrito.annotations.AdminLink;
+import burrito.annotations.BBCode;
 import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
 import burrito.annotations.Displayable;
@@ -62,6 +63,7 @@ import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
+import burrito.client.crud.generic.fields.BBCodeField;
 import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
@@ -668,35 +670,36 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				throw new RuntimeException("Unknown list type: " + type);
 			}
 			
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(ReadOnly.class)) {
+		} else if (clazz == String.class && field.isAnnotationPresent(ReadOnly.class)) {
 			StringField stringCrud = new StringField((String) field.get(entity));
 			stringCrud.setReadOnly(true);
 			crud = stringCrud;
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(ListedByEnum.class)) {
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(ListedByEnum.class)) {
 			ListedByEnum lenum = field.getAnnotation(ListedByEnum.class);
-			crud = new ListedByEnumField((String) field.get(entity), lenum.type()
-					.getName());
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(Image.class)) {
+			crud = new ListedByEnumField((String) field.get(entity), lenum.type().getName());
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(Image.class)) {
 			Image image = field.getAnnotation(Image.class);
-			crud = new ImageField((String) field.get(entity), image.width(),
-					image.height(), true);
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(ImageKey.class)) {
+			crud = new ImageField((String) field.get(entity), image.width(), image.height(), true);
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(ImageKey.class)) {
 			crud = new ImageField((String) field.get(entity), 0, 0, false);
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(RichText.class)) {
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(RichText.class)) {
 			crud = new RichTextField((String) field.get(entity));
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(ListedBy.class)) {
+		
+		} else if (clazz == String.class && field.isAnnotationPresent(BBCode.class)) {
+			crud = new BBCodeField((String) field.get(entity));	
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(ListedBy.class)) {
 			ListedBy listedBy = field.getAnnotation(ListedBy.class);
 			String[] list = listedBy.value();
 			crud = new StringSelectionField((String) field.get(entity), list);
-		} else if (clazz == String.class
-				&& field.isAnnotationPresent(Link.class)) {
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(Link.class)) {
 			crud = new LinkedEntityField((String) field.get(entity));
+			
 		} else if (clazz == String.class) {
 			StringField stringCrud = new StringField((String) field.get(entity));
 			if (field.isAnnotationPresent(RegexpValidation.class)) {
@@ -709,6 +712,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				stringCrud.setRenderAsTextArea(true);
 			}
 			crud = stringCrud;
+			
 		} else {
 			throw new RuntimeException("No such field type: " + clazz.getName());
 		}
