@@ -32,7 +32,7 @@ import siena.Model;
 import siena.Query;
 import siena.SienaException;
 import burrito.Configurator;
-import burrito.ValidationException;
+import burrito.EntityValidationException;
 import burrito.annotations.AdminLink;
 import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
@@ -378,7 +378,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	
 			return id;
 		} catch (SienaException e) {
-			ValidationException ve = ValidationUtil.getValidationErrorOrRethrow(e);
+			EntityValidationException ve = ValidationUtil.getValidationErrorOrRethrow(e);
 			throw new CrudGenericException(ve.getMessage());
 		}
 	}

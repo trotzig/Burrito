@@ -8,9 +8,9 @@ package burrito;
  * 
  */
 @SuppressWarnings("serial")
-public class ValidationException extends RuntimeException {
+public class EntityValidationException extends RuntimeException {
 
-	public ValidationException(String message) {
+	public EntityValidationException(String message) {
 		super(message);
 	}
 
