@@ -1,6 +1,9 @@
 package burrito.client.crud.widgets;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import burrito.client.crud.widgets.SelectableTextArea.SelectedText;
 import burrito.client.widgets.services.BBCodeService;
 import burrito.client.widgets.services.BBCodeServiceAsync;
@@ -20,6 +23,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class BBCodeEditor extends VerticalPanel  {
 
+	public interface BBCodeEditorPlugin {
+		Button getButton();
+		void setTextArea(SelectableTextArea textArea);
+	}
+	
+	private static final List<BBCodeEditorPlugin> PLUGGED_IN_BUTTONS = new ArrayList<BBCodeEditorPlugin>();
+	
+	
 	private TabPanel tabPanel = new TabPanel();
 	
 	private VerticalPanel rawPanel = new VerticalPanel();
@@ -31,12 +42,12 @@ public class BBCodeEditor extends VerticalPanel  {
 	private BBCodeServiceAsync bbCodeService = GWT.create(BBCodeService.class);
 	
 	public BBCodeEditor(String value) {
-		initButtons();
+		//initButtons();
 		this.rawEditor.setText(value);
 	}
 	
 	public BBCodeEditor() {
-		initButtons();
+		//initButtons();
 	}
 	
 	private void initButtons() {
@@ -102,6 +113,10 @@ public class BBCodeEditor extends VerticalPanel  {
 		});
 		buttonPanel.add(buttonYoutube);
 		
+		for (BBCodeEditorPlugin plugin : PLUGGED_IN_BUTTONS) {
+			plugin.setTextArea(rawEditor);
+			buttonPanel.add(plugin.getButton());
+		}
 		
 		rawPanel.add(buttonPanel);
 		rawPanel.add(rawEditor);
@@ -133,6 +148,21 @@ public class BBCodeEditor extends VerticalPanel  {
 		});
 		
 		add(tabPanel);
+	}
+	
+	@Override
+	protected void onLoad() {
+		super.onLoad();
+		initButtons();
+	}
+	
+	/**
+	 * Adds a plugin
+	 * 
+	 * @param plugin
+	 */
+	public static void addPlugin(BBCodeEditorPlugin plugin) {
+		PLUGGED_IN_BUTTONS.add(plugin);
 	}
 
 	public void setText(String value) {

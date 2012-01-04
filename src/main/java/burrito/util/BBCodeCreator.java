@@ -3,7 +3,10 @@ package burrito.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BBCodeUtil {
+@SuppressWarnings("rawtypes")
+public class BBCodeCreator {
+	
+	private static Map<String, String> bbMapPlugins = new HashMap<String, String>();
 	
 	public static String generateHTML(String bbcode) {
 		String html = StringUtils.escapeHtml(bbcode);
@@ -17,7 +20,10 @@ public class BBCodeUtil {
         bbMap.put("\\[img\\](.+?)\\[/img\\]", "<img src=\"/blobstore/image?key=$1\" />");
         bbMap.put("\\[url=(.+?)\\](.+?)\\[/url\\]", "<a href=\"$1\">$2</a>");
         
-        for (@SuppressWarnings("rawtypes") Map.Entry entry : bbMap.entrySet()) {
+        for (Map.Entry entry : bbMap.entrySet()) {
+            html = html.replaceAll(entry.getKey().toString(), entry.getValue().toString());
+        }
+        for (Map.Entry entry : bbMapPlugins.entrySet()) {
             html = html.replaceAll(entry.getKey().toString(), entry.getValue().toString());
         }
         
@@ -34,5 +40,15 @@ public class BBCodeUtil {
 	
 	private static String youtubeEmbed() {
 		return "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
+	}
+
+	/**
+	 * Add BBCode generate html plugins
+	 * 
+	 * @param key ex \\[b\\](.+?)\\[/b\\]
+	 * @param value ex <span style=\"font-weight:bold;\">$1</span>
+	 */
+	public static void addPlugin(String key, String value) {
+		bbMapPlugins.put(key, value);
 	}
 }
