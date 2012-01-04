@@ -20,6 +20,7 @@ package burrito;
 import taco.Router;
 import burrito.controller.AddFeedsSubscriptionFeedController;
 import burrito.controller.AdminController;
+import burrito.controller.BBPreviewController;
 import burrito.controller.BroadcastMessageAsyncController;
 import burrito.controller.BroadcastMessageController;
 import burrito.controller.DropFeedsSubscriptionChannelController;
@@ -41,6 +42,7 @@ import burrito.server.blobstore.BlobStoreServlet;
 import burrito.services.BBCodeServiceImpl;
 import burrito.services.CrudServiceImpl;
 import burrito.services.SiteletServiceImpl;
+import burrito.util.BBCodeCreator;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -80,6 +82,7 @@ public class BurritoRouter extends Router {
 		BroadcastProtector bcProtector = new BroadcastProtector();
 		route("/burrito/feeds/{feedId}/broadcast/async").through(BroadcastMessageAsyncController.class).renderAsJson().protect(bcProtector);
 		route("/burrito/feeds/{feedId}/broadcast").through(BroadcastMessageController.class).renderAsJson().protect(bcProtector);
+		
+		route("/burrito/bbCodePreview").through(BBPreviewController.class).renderedBy(BBCodeCreator.getPreviewJspUrl());
 	}
-
 }

@@ -7,10 +7,11 @@ import java.util.Map;
 public class BBCodeCreator {
 	
 	private static Map<String, String> bbMapPlugins = new HashMap<String, String>();
+	private static String previewJspUrl = "/burrito/bbCodePreview.jsp";
 	
 	public static String generateHTML(String bbcode) {
 		String html = StringUtils.escapeHtml(bbcode);
-
+		
         Map<String, String> bbMap = new HashMap<String, String>();
 
         bbMap.put("(\r\n|\r|\n|\n\r)", "<br/>");
@@ -41,7 +42,7 @@ public class BBCodeCreator {
 	private static String youtubeEmbed() {
 		return "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
 	}
-
+	
 	/**
 	 * Add BBCode generate html plugins
 	 * 
@@ -51,4 +52,13 @@ public class BBCodeCreator {
 	public static void addPlugin(String key, String value) {
 		bbMapPlugins.put(key, value);
 	}
+
+	public static String getPreviewJspUrl() {
+		return previewJspUrl;
+	}
+	
+	public static void setPreviewJspUrl(String jspUrl) {
+		previewJspUrl = jspUrl;
+	}
+
 }

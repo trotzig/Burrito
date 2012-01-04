@@ -1,7 +1,8 @@
 package burrito.services;
 
 import burrito.client.widgets.services.BBCodeService;
-import burrito.util.BBCodeCreator;
+import burrito.util.Cache;
+import burrito.util.StringUtils;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -10,8 +11,11 @@ public class BBCodeServiceImpl extends RemoteServiceServlet implements BBCodeSer
 
 	@Override
 	public String generateBBCodePreview(String bbcode) {
-		String html = BBCodeCreator.generateHTML(bbcode);
-		return html;
+		String key = "bbcode:" + StringUtils.generateRandomString(10);
+		
+		Cache.put(key, bbcode);
+		
+		return key;
 	}
 
 }

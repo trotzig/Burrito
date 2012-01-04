@@ -16,7 +16,7 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -28,13 +28,12 @@ public class BBCodeEditor extends VerticalPanel  {
 		void setTextArea(SelectableTextArea textArea);
 	}
 	
-	private static final List<BBCodeEditorPlugin> PLUGGED_IN_BUTTONS = new ArrayList<BBCodeEditorPlugin>();
-	
+	private static final List<BBCodeEditorPlugin> pluggedInButtons = new ArrayList<BBCodeEditorPlugin>();
 	
 	private TabPanel tabPanel = new TabPanel();
 	
 	private VerticalPanel rawPanel = new VerticalPanel();
-	private HTML preview = new HTML();
+	private Frame preview = new Frame();
 	
 	private HorizontalPanel buttonPanel = new HorizontalPanel();
 	private SelectableTextArea rawEditor = new SelectableTextArea();
@@ -42,12 +41,10 @@ public class BBCodeEditor extends VerticalPanel  {
 	private BBCodeServiceAsync bbCodeService = GWT.create(BBCodeService.class);
 	
 	public BBCodeEditor(String value) {
-		//initButtons();
 		this.rawEditor.setText(value);
 	}
 	
 	public BBCodeEditor() {
-		//initButtons();
 	}
 	
 	private void initButtons() {
@@ -113,7 +110,7 @@ public class BBCodeEditor extends VerticalPanel  {
 		});
 		buttonPanel.add(buttonYoutube);
 		
-		for (BBCodeEditorPlugin plugin : PLUGGED_IN_BUTTONS) {
+		for (BBCodeEditorPlugin plugin : pluggedInButtons) {
 			plugin.setTextArea(rawEditor);
 			buttonPanel.add(plugin.getButton());
 		}
@@ -135,8 +132,8 @@ public class BBCodeEditor extends VerticalPanel  {
 				
 				bbCodeService.generateBBCodePreview(rawEditor.getText(), new AsyncCallback<String>() {
 					@Override
-					public void onSuccess(String html) {
-						preview.setHTML(html);					
+					public void onSuccess(String key) {
+						preview.setUrl("/burrito/bbCodePreview?key=" + key);
 					}
 					
 					@Override
@@ -162,7 +159,7 @@ public class BBCodeEditor extends VerticalPanel  {
 	 * @param plugin
 	 */
 	public static void addPlugin(BBCodeEditorPlugin plugin) {
-		PLUGGED_IN_BUTTONS.add(plugin);
+		pluggedInButtons.add(plugin);
 	}
 
 	public void setText(String value) {
