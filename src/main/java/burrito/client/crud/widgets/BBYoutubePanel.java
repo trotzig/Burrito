@@ -27,6 +27,7 @@ public class BBYoutubePanel extends BBPopupPanel {
 	}
 
 	private boolean validate(String url) {
+		
 		//http://youtu.be/R7J8FSBitWs  är 11 tecken 
 		boolean mached1 = url.matches("^http://youtu.be/.{8,15}$");
 		
@@ -40,6 +41,10 @@ public class BBYoutubePanel extends BBPopupPanel {
 	@Override
 	protected boolean onClose() {
 		String url = textBox.getText();
+		
+		if (!url.startsWith("http://")) {
+			url += "http://" + url;
+		}
 		
 		if (!validate(url)) {
 			Window.alert("Not valid youtube url!");

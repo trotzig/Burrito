@@ -35,7 +35,7 @@ public class BBCodeCreator {
 	
 	private static String generateYouTube(String bbcode) {
 		bbcode = bbcode.replaceAll("\\[video\\]http://youtu.be/(.+)\\[/video\\]", youtubeEmbed());
-		bbcode = bbcode.replaceAll("\\[video\\]http://www.youtube.com/watch\\?v=([A-Za-z0-9]+).*\\[/video\\]", youtubeEmbed());
+		bbcode = bbcode.replaceAll("\\[video\\]http://www.youtube.com/watch\\?v=([A-Za-z0-9]+)\\[/video\\]", youtubeEmbed());
 		return bbcode;
 	}
 	
