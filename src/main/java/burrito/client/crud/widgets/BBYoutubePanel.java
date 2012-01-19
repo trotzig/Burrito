@@ -28,7 +28,12 @@ public class BBYoutubePanel extends BBPopupPanel {
 
 	private boolean validate(String url) {
 		//http://youtu.be/R7J8FSBitWs  är 11 tecken 
-		return url.matches("^http://youtu.be/.{8,15}$");
+		boolean mached1 = url.matches("^http://youtu.be/.{8,15}$");
+		
+		//www.youtube.com/watch?v=CnICoibPGeI
+		boolean mached2 = url.matches("^http://www.youtube.com/watch?v=.{8,15}$");
+
+		return mached1 || mached2;
 	}
 	
 	
