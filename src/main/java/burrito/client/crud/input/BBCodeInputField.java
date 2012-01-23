@@ -13,7 +13,7 @@ public class BBCodeInputField implements CrudInputField<String> {
 
 	public BBCodeInputField(BBCodeField field) {
 		this.field = field;
-		this.codeEditor = new BBCodeEditor((String) field.getValue());
+		this.codeEditor = new BBCodeEditor((String) field.getValue(), field.isRequired());
 	}
 
 	@Override
