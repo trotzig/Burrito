@@ -17,14 +17,20 @@
 
 package burrito.util;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.google.gdata.util.common.base.CharEscapers;
+
 
 public class StringUtils {
 
+	public static final char[] randomStringAlphabet = "abcdefghjkmnpqrstuvwxy3456789".toCharArray();
+	
 	public static final String uniqueNameRegexp = "^[0-9a-z-]+$";
 	public static final String uniqueNameDescription = "Endast små bokstäver (a-z), siffror och bindestreck är tillåtna.";
 	private static Pattern scriptPattern = Pattern.compile("<script[^>]*>.*</script>", Pattern.DOTALL);
@@ -165,6 +171,38 @@ public class StringUtils {
 			sb.append(secs + " s");
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Tar en sträng och returnerar en där alla html-osäkra tecken har bytts ut
+	 * mot html-säkra varianter. Ex: &lt;b&gt; blir "&amp;lt;b&amp;gt;"
+	 * 
+	 * @param html
+	 * @return
+	 */
+	public static String escapeHtml(String html) {
+		return CharEscapers.htmlEscaper().escape(html);
+	}
+	
+	/**
+	 * Genererar en random sträng
+	 * @param length
+	 * @return
+	 */
+	public static String generateRandomString(int length) {
+		try {
+			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+			char[] chars = new char[length];
+
+			for (int i = 0; i < length; i++) {
+				chars[i] = randomStringAlphabet[random.nextInt(randomStringAlphabet.length)];
+			}
+
+			return String.valueOf(chars);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	
