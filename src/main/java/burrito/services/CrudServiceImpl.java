@@ -403,7 +403,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				@SuppressWarnings("rawtypes")
 				Class fieldType = privField.getType();
 				
-				if (field instanceof ListedByEnumField && (Enum.class.isAssignableFrom(fieldType))) {
+				if (value != null && field instanceof ListedByEnumField && (Enum.class.isAssignableFrom(fieldType))) {
 					ListedByEnumField fieldEnum = (ListedByEnumField) field;
 					String className = fieldEnum.getTypeClassName();
 					@SuppressWarnings("rawtypes")
