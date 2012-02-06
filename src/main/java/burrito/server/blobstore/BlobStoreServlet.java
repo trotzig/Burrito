@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import burrito.util.StringUtils;
+
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
@@ -49,7 +51,7 @@ public class BlobStoreServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		BlobKey blobKey = new BlobKey(req.getParameter("key"));
-		String s = req.getParameter("s");
+		String s = getSizeParam(req);
 		if (s == null) {
 			resp.setHeader("Cache-Control", "public, max-age=86400");
 			blobstoreService.serve(blobKey, resp);
@@ -59,5 +61,17 @@ public class BlobStoreServlet extends HttpServlet {
 			url += "=s" + s;
 			resp.sendRedirect(url);
 		}
+	}
+
+	private String getSizeParam(HttpServletRequest req) {
+		String trueParam = req.getParameter("s");
+		if (trueParam != null) {
+			return trueParam;
+		}
+		
+		String queryString = req.getQueryString();
+		
+		//&=s178 => s178
+		return StringUtils.substringAfter(queryString, "=s");
 	}
 }
