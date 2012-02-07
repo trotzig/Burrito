@@ -205,5 +205,22 @@ public class StringUtils {
 		}
 	}
 	
+	public static String substringBefore(String str, String delimiter) {
+		int indexOf = str.indexOf(delimiter);
+		return str.substring(0, indexOf);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param str "asdasd=qweqwe"
+	 * @param delimiter "="
+	 * @return "qweqwe"
+	 */
+	public static String substringAfter(String str, String delimiter) {
+		int indexOf = str.indexOf(delimiter);
+		return str.substring(indexOf + delimiter.length(), str.length());
+	}
+	
 	
 }
