@@ -47,7 +47,10 @@ public class JsonLinkParser {
 		Gson gson = new Gson();
 		LinkJsonOverlay overlay = gson.fromJson(json, LinkJsonOverlay.class);
 		Link link = new Link();
+		link.setTypeName(overlay.typeClassName);
+		link.setId(overlay.typeId);
 		link.setText(overlay.linkText);
+		
 		if (overlay.absoluteUrl != null) {
 			link.setUrl(overlay.absoluteUrl);
 			return link;

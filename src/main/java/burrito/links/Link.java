@@ -27,16 +27,29 @@ public class Link {
 
 	private String url;
 	private String text;
+	private String typeName;
+	private Long id;
 	
 	public Link() {
 		//default constructor
 	}
-	
+
 	public Link(String url, String text) {
 		this.url = url;
 		this.text = text;
 	}
-
+	public String getTypeName() {
+		return typeName;
+	}
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getUrl() {
 		return url;
 	}
@@ -49,7 +62,4 @@ public class Link {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
-	
-
 }
