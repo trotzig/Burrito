@@ -37,7 +37,7 @@ public interface CrudServiceAsync {
 	void describe(String entityName, Long id,
 			Long copyFromId, AsyncCallback<CrudEntityDescription> callback);
 
-	void save(CrudEntityDescription updateCrudEntityDescription,
+	void save(CrudEntityDescription updateCrudEntityDescription, Long copyFromId,
 			AsyncCallback<Long> asyncCallback);
 
 	void listEntities(String filter, String entityName, PageMetaData<String> p,

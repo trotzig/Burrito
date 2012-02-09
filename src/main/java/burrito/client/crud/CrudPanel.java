@@ -91,7 +91,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 				copyFromId = Long.parseLong(split[2]);
 			}
 			final SimplePanel sp = new SimplePanel();
-
+			final Long copyFromIdFinal = copyFromId;
 			// delay creation until entity has been fetched
 			CrudServiceAsync service = GWT.create(CrudService.class);
 			final CrudMessages messages = GWT.create(CrudMessages.class);
@@ -99,7 +99,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 					new AsyncCallback<CrudEntityDescription>() {
 
 						public void onSuccess(CrudEntityDescription result) {
-							sp.setWidget(new CrudEntityEdit(result));
+							sp.setWidget(new CrudEntityEdit(result, copyFromIdFinal));
 							// update top again, now when values have been
 							// fetched
 							String disp = result.getDisplayString();

@@ -360,9 +360,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	public Long save(CrudEntityDescription desc) throws FieldValueNotUniqueException, CrudGenericException {
+	public Long save(CrudEntityDescription desc, Long clonedFromId) throws FieldValueNotUniqueException, CrudGenericException {
 		Class<? extends Model> clazz = extractClass(desc.getEntityName());
-		Model entity = extractEntity(desc.getId(), null, clazz);
+		Model entity = extractEntity(desc.getId(), clonedFromId, clazz);
 		updateEntityFromDescription(entity, desc, clazz);
 		validateEntityUniqueness(entity, desc, clazz);
 

@@ -48,10 +48,16 @@ public class CrudEntityEdit extends EditForm {
 	private CrudEntityDescription desc;
 	private InputField<?> firstField;
 	private Long savedId;
+	private Long copyFromId;
 
 	public CrudEntityEdit(final CrudEntityDescription desc) {
+		this(desc, null);
+	}
+	
+	public CrudEntityEdit(final CrudEntityDescription desc, Long copyFromId) {
 		super();
 		this.desc = desc;
+		this.copyFromId = copyFromId;
 
 		init();
 		setSaveCancelListener(new SaveCancelListener() {
@@ -126,7 +132,7 @@ public class CrudEntityEdit extends EditForm {
 
 	@Override
 	public void doSave(final SaveCallback saveCallback) {
-		service.save(updateCrudEntityDescription(), new AsyncCallback<Long>() {
+		service.save(updateCrudEntityDescription(), copyFromId, new AsyncCallback<Long>() {
 
 			public void onSuccess(Long result) {
 				savedId = result;
