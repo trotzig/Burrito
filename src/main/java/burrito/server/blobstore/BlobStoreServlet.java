@@ -44,8 +44,18 @@ public class BlobStoreServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-	private ImagesService imagesService = ImagesServiceFactory.getImagesService();
+	private BlobstoreService blobstoreService;
+	private ImagesService imagesService;
+
+	public BlobStoreServlet() {
+		blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		imagesService = ImagesServiceFactory.getImagesService();
+	}
+	
+	public BlobStoreServlet(ImagesService imagesService2, BlobstoreService blobstoreService2) {
+		imagesService = imagesService2;
+		blobstoreService = blobstoreService2;
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -70,6 +80,9 @@ public class BlobStoreServlet extends HttpServlet {
 		}
 		
 		String queryString = req.getQueryString();
+		if (queryString == null || !queryString.contains("=s")) {
+			return null;
+		}
 		
 		//&=s178 => s178
 		return StringUtils.substringAfter(queryString, "=s");
