@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import siena.Id;
 import siena.Model;
 import siena.Query;
 import siena.SienaException;
+import burrito.CloneCreator;
 import burrito.Configurator;
 import burrito.EntityValidationException;
 import burrito.annotations.AdminLink;
@@ -748,6 +750,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				// the field values are to be copied from another object:
 				entity = (Model) Model.all(clazz).filter("id", copyFromId)
 						.get();
+				if (Arrays.asList(clazz.getInterfaces()).contains(CloneCreator.class)) {
+					entity = ((CloneCreator<?>)entity).createClone();
+				}
 				resetId(entity);
 			} else {
 				try {
@@ -767,7 +772,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	private void resetId(Model entity) {
 		// set the id field to null
 		try {
-			entity.getClass().getField("id").set(entity, null);
+			Field idField = entity.getClass().getDeclaredField("id");
+			idField.setAccessible(true);
+			idField.set(entity, null);
+			idField.setAccessible(false);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to set id to null", e);
 		}
