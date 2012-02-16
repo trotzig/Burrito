@@ -96,9 +96,19 @@ function BurritoFeeds() {
 	this.subscriptionId = -1;
 	this.subscriptionRequestSent = false;
 	this.channelOpenCallback = function() {};
+	this.channelErrorCallback = function() {};
+	this.channelRestartCallback = function() {};
 
 	this.onChannelOpen = function(func) {
 		this.channelOpenCallback = func;
+	};
+	
+	this.onChannelError = function(func) {
+		this.channelErrorCallback = func;
+	};
+	
+	this.onChannelRestart = function(func) {
+		this.channelRestartCallback = func;
 	};
 
 	/**
@@ -220,7 +230,9 @@ function BurritoFeeds() {
 			success: function(json) {
 				if (json.status == 'error') {
 					throw("Error response from feed server: " + json.message);
+					object.channelRestartCallback(false);
 				}
+				object.channelRestartCallback(true);
 				object.startListeningToChannel(json.channelId);
 			}
 		});
@@ -316,7 +328,7 @@ function BurritoFeeds() {
 		} 
 
 		socket.onerror = function(error) {
-			//do something!?
+			object.channelErrorCallback(error);
 		} 
 	}
 	
