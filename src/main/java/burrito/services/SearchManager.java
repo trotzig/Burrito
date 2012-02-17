@@ -34,6 +34,7 @@ import siena.Model;
 import burrito.annotations.SearchableField;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
+import burrito.util.EntityUtil;
 import burrito.util.StringUtils;
 
 
@@ -102,8 +103,7 @@ public class SearchManager {
 	private Set<String> getSearchableTextsFromEntity(
 			Class<? extends Model> ownerType, Model entity) {
 		Set<String> searchables = new HashSet<String>();
-		Field[] fields = ownerType.getDeclaredFields();
-		for (Field field : fields) {
+		for (Field field : EntityUtil.getFields(ownerType)) {
 			if (field.isAnnotationPresent(SearchableField.class)) {
 				try {
 					field.setAccessible(true);

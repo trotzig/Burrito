@@ -13,14 +13,13 @@ public class ParentEntity extends GrandParentEntity {
 	@Id(Generator.AUTO_INCREMENT)
 	private Long id;
 	
-	private String parentProperty;
-	
+	private Integer parentProperty;
 
-	public void setParentProperty(String parentProperty) {
+	public void setParentProperty(Integer parentProperty) {
 		this.parentProperty = parentProperty;
 	}
 
-	public String getParentProperty() {
+	public Integer getParentProperty() {
 		return parentProperty;
 	}
 	
@@ -50,7 +49,7 @@ public class ParentEntity extends GrandParentEntity {
 	@PreSave
 	@PreUpdate
 	public void beforeSave() {
-		parentProperty = "automatic";
+		parentProperty = 123;
 	}
 	
 	

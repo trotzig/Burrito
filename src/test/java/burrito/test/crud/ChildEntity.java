@@ -2,10 +2,12 @@ package burrito.test.crud;
 
 import burrito.annotations.AdminLink;
 import burrito.annotations.Displayable;
+import burrito.annotations.SearchableField;
 
 public class ChildEntity extends ParentEntity {
 
 	@Displayable
+	@SearchableField
 	private String childProperty;
 
 	public void setChildProperty(String childProperty) {

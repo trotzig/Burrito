@@ -2,6 +2,8 @@ package burrito.test.crud;
 
 import burrito.annotations.AdminLink;
 import burrito.annotations.Displayable;
+import burrito.annotations.Required;
+import burrito.annotations.SearchableField;
 import siena.Model;
 import siena.core.lifecycle.PreInsert;
 import siena.core.lifecycle.PreSave;
@@ -10,13 +12,15 @@ import siena.core.lifecycle.PreUpdate;
 public class GrandParentEntity extends Model {
 	
 	@Displayable
-	private Long grandParentProperty;
+	@SearchableField
+	@Required
+	private String grandParentProperty;
 
-	public void setGrandParentProperty(Long grandParentProperty) {
+	public void setGrandParentProperty(String grandParentProperty) {
 		this.grandParentProperty = grandParentProperty;
 	}
 
-	public Long getGrandParentProperty() {
+	public String getGrandParentProperty() {
 		return grandParentProperty;
 	}
 
@@ -39,6 +43,6 @@ public class GrandParentEntity extends Model {
 	@PreSave
 	@PreUpdate
 	public void beforeGrandparentSave() {
-		grandParentProperty = 123L;
+		grandParentProperty = "automatic";
 	}
 }

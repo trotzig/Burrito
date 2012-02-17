@@ -1,6 +1,7 @@
 package burrito.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.Assert;
 
@@ -12,6 +13,7 @@ import siena.PersistenceManager;
 import siena.PersistenceManagerFactory;
 import siena.core.PersistenceManagerLifeCycleWrapper;
 import siena.gae.GaePersistenceManager;
+import burrito.EntityValidationException;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudService;
 import burrito.client.crud.FieldValueNotUniqueException;
@@ -20,9 +22,12 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.services.CrudServiceImpl;
+import burrito.services.SearchEntry;
+import burrito.services.SearchManager;
 import burrito.test.crud.ChildEntity;
 import burrito.test.crud.GrandParentEntity;
 import burrito.test.crud.ParentEntity;
+import burrito.util.ValidationUtil;
 
 public class CrudTest extends TestBase {
 
@@ -73,19 +78,42 @@ public class CrudTest extends TestBase {
 		
 		//Verify pre-inserts
 		ChildEntity entity = Model.all(ChildEntity.class).get();
-		Assert.assertEquals("automatic", entity.getParentProperty());
-		Assert.assertEquals(Long.valueOf(123), entity.getGrandParentProperty());
+		Assert.assertEquals(Integer.valueOf(123), entity.getParentProperty());
+		Assert.assertEquals("automatic", entity.getGrandParentProperty());
 		
 		CrudEntityDescription copy = service.describe(ChildEntity.class.getName(), -1l, entity.getId());
 		cleanDescriptionFromMethods(copy);
 		service.save(copy, entity.getId());
 		
 		Assert.assertEquals(2, Model.all(ChildEntity.class).fetch().size());
-		
-		
+
+		entity.setChildProperty("This is a searchable value.");
+		entity.update();
+
+		SearchManager searchManager = SearchManager.get();
+		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
+		SearchEntry searchEntry = Model.all(SearchEntry.class).get();
+
+		String[] expectedTokens = {"searchabl", "is", "automatic", "a", "valu", "this"};
+		Assert.assertEquals(Arrays.asList(expectedTokens), searchEntry.tokens);
+
+		try {
+			ValidationUtil.assertNoMissingRequiredFields(entity);
+		}
+		catch (EntityValidationException e) {
+			Assert.fail();
+		}
+
+		entity.setGrandParentProperty(null);
+
+		try {
+			ValidationUtil.assertNoMissingRequiredFields(entity);
+			Assert.fail();
+		}
+		catch (EntityValidationException e) {
+			// all good
+		}
 	}
-	
-	
 
 	private void cleanDescriptionFromMethods(CrudEntityDescription desc) {
 		ArrayList<CrudField> cleaned = new ArrayList<CrudField>();
@@ -98,6 +126,4 @@ public class CrudTest extends TestBase {
 		}
 		desc.setFields(cleaned);
 	}
-	
-	
 }

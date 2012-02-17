@@ -88,6 +88,7 @@ import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.links.Linkable;
 import burrito.sitelet.Sitelet;
+import burrito.util.EntityUtil;
 import burrito.util.ValidationUtil;
 
 import com.google.gson.Gson;
@@ -149,7 +150,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		ArrayList<CrudField> result = new ArrayList<CrudField>();
 		ArrayList<CrudField> delayed = new ArrayList<CrudField>();
 		//find all Displayable methods
-		for (Method method : getMethods(clazz)) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			Displayable dispAnn = method.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				CrudField crudField = new DisplayableMethodField();
@@ -163,7 +164,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		//find all Displayable fields
-		for (Field field : getFields(clazz)) {
+		for (Field field : EntityUtil.getFields(clazz)) {
 			Displayable dispAnn = field.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				try {
@@ -183,7 +184,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		result.addAll(delayed);
 		
 		//find all AdminLinks
-		for (Method method : getMethods(clazz)) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
 			if (linkAnn != null) {
 				CrudField crudField = new AdminLinkMethodField();
@@ -352,7 +353,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	private Long extractIDFromEntity(Model entity) {
 		try {
-			Field id = getField(entity.getClass(), "id");
+			Field id = EntityUtil.getField(entity.getClass(), "id");
 			id.setAccessible(true);
 			return (Long) id.get(entity);
 		} catch (Exception e) {
@@ -403,7 +404,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 							(List<CrudEntityDescription>) field.getValue());
 				}
 				
-				Field privField = getField(clazz, field.getName());
+				Field privField = EntityUtil.getField(clazz, field.getName());
 				@SuppressWarnings("rawtypes")
 				Class fieldType = privField.getType();
 				
@@ -432,7 +433,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Object id;
 
 		try {
-			Field field = getField(clazz, "id");
+			Field field = EntityUtil.getField(clazz, "id");
 			field.setAccessible(true);
 			id = field.get(entity);
 		}
@@ -443,7 +444,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		for (CrudField field : desc.getFields()) {
 			String fieldName = field.getName();
 			try {
-				Field privField = getField(clazz, fieldName);
+				Field privField = EntityUtil.getField(clazz, fieldName);
 				if (privField.isAnnotationPresent(Unique.class)) {
 					privField.setAccessible(true);
 					Object value = privField.get(entity);
@@ -521,7 +522,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		desc.setId(id);
 		desc.setDisplayString(entity.toString());
 		
-		for (Method method : getMethods(clazz)) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			if (method.isAnnotationPresent(Displayable.class)) {
 				CrudField cf = new DisplayableMethodField();
 				cf.setName(method.getName());
@@ -533,7 +534,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				desc.add(cf);
 			}
 		}
-		List<Field> fields = getFields(clazz);
+		List<Field> fields = EntityUtil.getFields(clazz);
 		for (Field field : fields) {
 			if (!okField(field)) {
 				// skip the id field
@@ -549,7 +550,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			desc.add(crudField);
 		}
 		// Find AdminLinks
-		for (Method method : getMethods(clazz)) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
 			if (linkAnn != null) {
 				AdminLinkMethodField cf = new AdminLinkMethodField();
@@ -565,39 +566,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 		return desc;
 	}
-
-	private List<Method> getMethods(Class<?> clazz) {
-		List<Method> methods = new ArrayList<Method>();
-		while(clazz != Model.class) {
-			methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-			clazz = clazz.getSuperclass();
-		}
-		return methods;
-	}
-
-	private List<Field> getFields(Class<?> clazz) {
-		List<Field> fields = new ArrayList<Field>();
-		while(clazz != Model.class) {
-			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-			clazz = clazz.getSuperclass();
-		}
-		return fields;
-	}
-	
-
-	private Field getField(Class<?> clazz, String name) {
-		while(clazz != Model.class) {
-			try {
-				return clazz.getDeclaredField(name);
-			} catch (NoSuchFieldException e) {
-				//expected
-			}
-			clazz = clazz.getSuperclass();
-		}
-		return null;
-	}
-	
-	
 
 	private boolean okField(Field field) {
 		if ((field.getModifiers() & Modifier.TRANSIENT) == Modifier.TRANSIENT) {
@@ -807,7 +775,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	private void resetId(Model entity) {
 		// set the id field to null
 		try {
-			Field idField = getField(entity.getClass(), "id");
+			Field idField = EntityUtil.getField(entity.getClass(), "id");
 			idField.setAccessible(true);
 			idField.set(entity, null);
 			idField.setAccessible(false);
