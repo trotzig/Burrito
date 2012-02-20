@@ -17,8 +17,12 @@
 
 package burrito.server.blobstore;
 
+import burrito.client.dto.BlobInfoDTO;
 import burrito.client.widgets.services.BlobService;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -35,7 +39,29 @@ public class BlobServiceImpl extends RemoteServiceServlet implements BlobService
 		if (uploadUrl.startsWith("http://0.0.0.0")) {
 			uploadUrl = "http://localhost" + uploadUrl.substring(14);
 		}
-
+		
 		return uploadUrl;
+	}
+	
+	public BlobInfoDTO getFileInfo(String blobKeyString) {
+		BlobKey blobKey = new BlobKey(blobKeyString);
+		
+		
+		BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
+		BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
+		if (blobInfo != null) {
+			return createDTO(blobInfo);
+		}
+		return null;
+	}
+	
+	private BlobInfoDTO createDTO(BlobInfo blobInfo) {
+		BlobInfoDTO dto = new BlobInfoDTO();
+		dto.setFilename(blobInfo.getFilename());
+		dto.setContentType(blobInfo.getContentType());
+		dto.setSize(blobInfo.getSize());
+		dto.setCreation(blobInfo.getCreation());
+		dto.setBlobKey(blobInfo.getBlobKey().getKeyString());
+		return dto;
 	}
 }

@@ -17,6 +17,8 @@
 
 package burrito.client.widgets.services;
 
+import burrito.client.dto.BlobInfoDTO;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -24,4 +26,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface BlobService extends RemoteService {
 
 	String getBlobStoreUploadURL();
+	
+	BlobInfoDTO getFileInfo(String blobKeyString);
 }

@@ -28,6 +28,7 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
+import burrito.client.crud.generic.fields.FileField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerListField;
 import burrito.client.crud.generic.fields.LinkListField;
@@ -46,6 +47,7 @@ import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.input.CrudInputFieldImpl;
 import burrito.client.crud.input.DateCrudInputField;
 import burrito.client.crud.input.EmbeddedListInputField;
+import burrito.client.crud.input.FileCrudInputField;
 import burrito.client.crud.input.ImageCrudInputField;
 import burrito.client.crud.input.IntegerInputField;
 import burrito.client.crud.input.IntegerListInputField;
@@ -125,6 +127,9 @@ public class CrudFieldResolver {
 		}
 		if (field instanceof ImageField) {
 			return new ImageCrudInputField((ImageField) field);
+		}
+		if (field instanceof FileField) {
+			return new FileCrudInputField((FileField) field);
 		}
 		if (field instanceof RichTextField) {
 			return new RichTextInputField((RichTextField) field);

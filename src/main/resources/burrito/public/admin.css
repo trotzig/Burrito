@@ -232,3 +232,7 @@ a.k5-PageController-link:hover {
   	float: left;
   	max-width: 500px;
 }
+
+.k5-FileCrudInputField-fileInfo td {
+	padding: 3px 5px;
+}

@@ -17,9 +17,13 @@
 
 package burrito.client.widgets.services;
 
+import burrito.client.dto.BlobInfoDTO;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface BlobServiceAsync {
 
 	void getBlobStoreUploadURL(AsyncCallback<String> asyncCallback);
+	
+	void getFileInfo(String blobKeyString, AsyncCallback<BlobInfoDTO> asyncCallback);
 }

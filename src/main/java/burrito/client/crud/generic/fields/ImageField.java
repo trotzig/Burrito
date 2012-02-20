@@ -35,12 +35,11 @@ public class ImageField extends StringField {
 	int width;
 	int height;
 	boolean urlMode;
-
+	
 	public ImageField(String string, int width, int height, boolean urlMode) {
 		super(string);
 		this.width = width;
 		this.height = height;
-		this.urlMode = urlMode;
 	}
 
 	public ImageField() {
@@ -72,7 +71,7 @@ public class ImageField extends StringField {
 	public void setHeight(int height) {
 		this.height = height;
 	}
-
+	
 	/**
 	 * True if the field should store a relative URL
 	 * instead of a blob key

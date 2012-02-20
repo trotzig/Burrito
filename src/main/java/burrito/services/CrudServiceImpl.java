@@ -41,6 +41,7 @@ import burrito.annotations.Cloneable;
 import burrito.annotations.DefaultSort;
 import burrito.annotations.Displayable;
 import burrito.annotations.EmbeddedBy;
+import burrito.annotations.FileKey;
 import burrito.annotations.Hidden;
 import burrito.annotations.Image;
 import burrito.annotations.ImageKey;
@@ -70,6 +71,7 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
+import burrito.client.crud.generic.fields.FileField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerField;
 import burrito.client.crud.generic.fields.IntegerListField;
@@ -687,6 +689,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			
 		} else if (clazz == String.class && field.isAnnotationPresent(ImageKey.class)) {
 			crud = new ImageField((String) field.get(entity), 0, 0, false);
+			
+		} else if (clazz == String.class && field.isAnnotationPresent(FileKey.class)) {
+			crud = new FileField((String) field.get(entity));	
 			
 		} else if (clazz == String.class && field.isAnnotationPresent(RichText.class)) {
 			crud = new RichTextField((String) field.get(entity));

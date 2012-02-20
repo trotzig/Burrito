@@ -92,7 +92,7 @@ public class BlobStoreServletTest extends TestBase {
 		sizeParam = "200";
 		imageServingUrl = "http://0.0.0.0:8089/_ah/img/key=SHpWfKkdfe3-dqlZRDmNaA";
 		
-		BlobStoreServlet servlet = new BlobStoreServlet(imagesService, blobstoreService);
+		BlobStoreImageServlet servlet = new BlobStoreImageServlet(imagesService, blobstoreService);
 		servlet.doGet(req, resp);
 		
 		Assert.assertEquals("http://localhost:8089/_ah/img/key=SHpWfKkdfe3-dqlZRDmNaA=s200", locationResult);
@@ -104,7 +104,7 @@ public class BlobStoreServletTest extends TestBase {
 		queryString = "";
 		imageServingUrl = "http://0.0.0.0:8089/_ah/img/key=SHpWfKkdfe3-dqlZRDmNaA";
 		
-		BlobStoreServlet servlet = new BlobStoreServlet(imagesService, blobstoreService);
+		BlobStoreImageServlet servlet = new BlobStoreImageServlet(imagesService, blobstoreService);
 		servlet.doGet(req, resp);
 		
 		Assert.assertEquals(blobKey, servedBlobKeyResult);
@@ -117,7 +117,7 @@ public class BlobStoreServletTest extends TestBase {
 		queryString = "key=SHpWfKkdfe3-dqlZRDmNaA=s200";
 		imageServingUrl = "http://0.0.0.0:8089/_ah/img/key=SHpWfKkdfe3-dqlZRDmNaA";
 		
-		BlobStoreServlet servlet = new BlobStoreServlet(imagesService, blobstoreService);
+		BlobStoreImageServlet servlet = new BlobStoreImageServlet(imagesService, blobstoreService);
 		servlet.doGet(req, resp);
 		
 		Assert.assertEquals("http://localhost:8089/_ah/img/key=SHpWfKkdfe3-dqlZRDmNaA=s200", locationResult);
