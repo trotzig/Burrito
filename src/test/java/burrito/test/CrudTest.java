@@ -2,6 +2,7 @@ package burrito.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -13,6 +14,7 @@ import siena.PersistenceManager;
 import siena.PersistenceManagerFactory;
 import siena.core.PersistenceManagerLifeCycleWrapper;
 import siena.gae.GaePersistenceManager;
+import burrito.Configurator;
 import burrito.EntityValidationException;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudService;
@@ -36,10 +38,13 @@ public class CrudTest extends TestBase {
 		PersistenceManager pm = new GaePersistenceManager();
 		pm = new PersistenceManagerLifeCycleWrapper(pm);
 		pm.init(null);
+
 		PersistenceManagerFactory.install(pm, GrandParentEntity.class);
 		PersistenceManagerFactory.install(pm, ParentEntity.class);
 		PersistenceManagerFactory.install(pm, ChildEntity.class);
-		
+
+		Configurator.crudables.clear();
+		Configurator.crudables.add(ChildEntity.class);
 	}
 	
 	@Test
@@ -113,6 +118,25 @@ public class CrudTest extends TestBase {
 		catch (EntityValidationException e) {
 			// all good
 		}
+	}
+
+	@Test
+	public void testCascadeDeleteWithInheritance() {
+		ChildEntity entity1 = new ChildEntity();
+		entity1.insert();
+
+		ChildEntity entity2 = new ChildEntity();
+		entity2.setSomeChildId(entity1.getId());
+		entity2.insert();
+
+		CrudService service = new CrudServiceImpl();
+		CrudEntityDescription desc = service.describe(ChildEntity.class.getName(), entity1.getId(), null);
+		List<CrudEntityDescription> descList = Arrays.asList(new CrudEntityDescription[]{desc});
+		service.deleteEntities(descList);
+
+		entity2 = Model.all(ChildEntity.class).filter("id", entity2.getId()).get();
+
+		Assert.assertNull(entity2.getSomeChildId());
 	}
 
 	private void cleanDescriptionFromMethods(CrudEntityDescription desc) {

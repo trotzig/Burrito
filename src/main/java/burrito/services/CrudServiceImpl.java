@@ -116,7 +116,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Class<? extends Model> clazz = extractClass(entityName);
 		List<Model> all;
 		try {
-			all = (List<Model>) clazz.getMethod("listValues").invoke(null);
+			all = (List<Model>) clazz.getMethod("listValues").invoke(null); // for compatibility with old K9 code
 		} catch (Exception e) {
 			all = (List<Model>) Model.all(clazz).fetch();
 		}
@@ -239,7 +239,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		// deleted
 		Long toBeDeletedId = extractIDFromEntity(toBeDeleted);
 		for (Class<? extends Model> clazz : Configurator.crudables) {
-			for (Field field : clazz.getFields()) {
+			for (Field field : EntityUtil.getFields(clazz)) {
 				if (field.isAnnotationPresent(Relation.class)) {
 					Relation relation = field.getAnnotation(Relation.class);
 					boolean isCorrectClass = relation.value().equals(
@@ -252,7 +252,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 						for (Model related : relateds) {
 							try {
 								if (field.getType() == Long.class) {
+									field.setAccessible(true);
 									field.set(related, null);
+									field.setAccessible(false);
 									related.update();
 								} else if (field.getType() == List.class) {
 									@SuppressWarnings("unchecked")

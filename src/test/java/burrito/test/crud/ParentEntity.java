@@ -7,6 +7,7 @@ import siena.core.lifecycle.PreSave;
 import siena.core.lifecycle.PreUpdate;
 import burrito.annotations.AdminLink;
 import burrito.annotations.Displayable;
+import burrito.annotations.Relation;
 
 public class ParentEntity extends GrandParentEntity {
 
@@ -14,6 +15,9 @@ public class ParentEntity extends GrandParentEntity {
 	private Long id;
 	
 	private Integer parentProperty;
+
+	@Relation(ChildEntity.class)
+	private Long someChildId;
 
 	public void setParentProperty(Integer parentProperty) {
 		this.parentProperty = parentProperty;
@@ -50,6 +54,14 @@ public class ParentEntity extends GrandParentEntity {
 	@PreUpdate
 	public void beforeSave() {
 		parentProperty = 123;
+	}
+
+	public void setSomeChildId(Long someChildId) {
+		this.someChildId = someChildId;
+	}
+
+	public Long getSomeChildId() {
+		return someChildId;
 	}
 	
 	
