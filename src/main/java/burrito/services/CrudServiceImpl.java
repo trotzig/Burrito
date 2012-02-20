@@ -451,9 +451,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 					privField.setAccessible(true);
 					Object value = privField.get(entity);
 					if (value != null) {
-						Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
-						if (existing != null) {
-							if (!existing.getClass().getField("id").get(existing).equals(id)) {
+						Field idField = EntityUtil.getField(entity.getClass(), "id");
+						idField.setAccessible(true);
+						for (Model existing : Model.all(entity.getClass()).filter(fieldName, value).fetch()) {
+							if (!idField.get(existing).equals(id)) {
 								throw new FieldValueNotUniqueException(fieldName);
 							}
 						}

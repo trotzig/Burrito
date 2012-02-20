@@ -139,6 +139,30 @@ public class CrudTest extends TestBase {
 		Assert.assertNull(entity2.getSomeChildId());
 	}
 
+	@Test
+	public void testEntityUniquenessValidation() throws FieldValueNotUniqueException, CrudGenericException {
+		CrudService service = new CrudServiceImpl();
+
+		ChildEntity entity1 = new ChildEntity();
+		entity1.setUniqueValue(1L);
+		entity1.save();
+
+		ChildEntity entity2 = new ChildEntity();
+		entity2.setUniqueValue(1L);
+		entity2.save();
+
+		try {
+			CrudEntityDescription desc1 = service.describe(ChildEntity.class.getName(), entity1.getId(), null);
+			cleanDescriptionFromMethods(desc1);
+			service.save(desc1, null);
+
+			Assert.fail();
+		}
+		catch (FieldValueNotUniqueException e) {
+			// correct
+		}
+	}
+
 	private void cleanDescriptionFromMethods(CrudEntityDescription desc) {
 		ArrayList<CrudField> cleaned = new ArrayList<CrudField>();
 		for (CrudField field : desc.getFields()) {
