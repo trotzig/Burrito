@@ -57,7 +57,7 @@ public class ValidationUtil {
 	public static void assertNoMissingRequiredFields(Model entity) {
 		Class<?> clazz = entity.getClass();
 
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : EntityUtil.getFields(clazz)) {
 			if (field.isAnnotationPresent(Required.class)) {
 				try {
 					field.setAccessible(true);

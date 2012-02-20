@@ -90,6 +90,7 @@ import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.links.Linkable;
 import burrito.sitelet.Sitelet;
+import burrito.util.EntityUtil;
 import burrito.util.ValidationUtil;
 
 import com.google.gson.Gson;
@@ -117,7 +118,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Class<? extends Model> clazz = extractClass(entityName);
 		List<Model> all;
 		try {
-			all = (List<Model>) clazz.getMethod("listValues").invoke(null);
+			all = (List<Model>) clazz.getMethod("listValues").invoke(null); // for compatibility with old K9 code
 		} catch (Exception e) {
 			all = (List<Model>) Model.all(clazz).fetch();
 		}
@@ -151,7 +152,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		ArrayList<CrudField> result = new ArrayList<CrudField>();
 		ArrayList<CrudField> delayed = new ArrayList<CrudField>();
 		//find all Displayable methods
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			Displayable dispAnn = method.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				CrudField crudField = new DisplayableMethodField();
@@ -165,7 +166,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		//find all Displayable fields
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : EntityUtil.getFields(clazz)) {
 			Displayable dispAnn = field.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				try {
@@ -185,7 +186,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		result.addAll(delayed);
 		
 		//find all AdminLinks
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
 			if (linkAnn != null) {
 				CrudField crudField = new AdminLinkMethodField();
@@ -240,7 +241,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		// deleted
 		Long toBeDeletedId = extractIDFromEntity(toBeDeleted);
 		for (Class<? extends Model> clazz : Configurator.crudables) {
-			for (Field field : clazz.getFields()) {
+			for (Field field : EntityUtil.getFields(clazz)) {
 				if (field.isAnnotationPresent(Relation.class)) {
 					Relation relation = field.getAnnotation(Relation.class);
 					boolean isCorrectClass = relation.value().equals(
@@ -253,7 +254,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 						for (Model related : relateds) {
 							try {
 								if (field.getType() == Long.class) {
+									field.setAccessible(true);
 									field.set(related, null);
+									field.setAccessible(false);
 									related.update();
 								} else if (field.getType() == List.class) {
 									@SuppressWarnings("unchecked")
@@ -354,7 +357,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	private Long extractIDFromEntity(Model entity) {
 		try {
-			Field id = entity.getClass().getDeclaredField("id");
+			Field id = EntityUtil.getField(entity.getClass(), "id");
 			id.setAccessible(true);
 			return (Long) id.get(entity);
 		} catch (Exception e) {
@@ -405,7 +408,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 							(List<CrudEntityDescription>) field.getValue());
 				}
 				
-				Field privField = clazz.getDeclaredField(field.getName());
+				Field privField = EntityUtil.getField(clazz, field.getName());
 				@SuppressWarnings("rawtypes")
 				Class fieldType = privField.getType();
 				
@@ -429,11 +432,12 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
+
 	private void validateEntityUniqueness(Model entity, CrudEntityDescription desc, Class<?> clazz) throws FieldValueNotUniqueException {
 		Object id;
 
 		try {
-			Field field = clazz.getDeclaredField("id");
+			Field field = EntityUtil.getField(clazz, "id");
 			field.setAccessible(true);
 			id = field.get(entity);
 		}
@@ -444,14 +448,15 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		for (CrudField field : desc.getFields()) {
 			String fieldName = field.getName();
 			try {
-				Field privField = clazz.getDeclaredField(fieldName);
+				Field privField = EntityUtil.getField(clazz, fieldName);
 				if (privField.isAnnotationPresent(Unique.class)) {
 					privField.setAccessible(true);
 					Object value = privField.get(entity);
 					if (value != null) {
-						Model existing = Model.all(entity.getClass()).filter(fieldName, value).get();
-						if (existing != null) {
-							if (!existing.getClass().getField("id").get(existing).equals(id)) {
+						Field idField = EntityUtil.getField(entity.getClass(), "id");
+						idField.setAccessible(true);
+						for (Model existing : Model.all(entity.getClass()).filter(fieldName, value).fetch()) {
+							if (!idField.get(existing).equals(id)) {
 								throw new FieldValueNotUniqueException(fieldName);
 							}
 						}
@@ -516,13 +521,13 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	private CrudEntityDescription createEntityDescription(String entityName,
 			Long id, Class<?> clazz, Object entity) {
-		Field[] fields = clazz.getDeclaredFields();
 		CrudEntityDescription desc = new CrudEntityDescription();
 		desc.setCloneable(clazz.isAnnotationPresent((Class<? extends Annotation>) Cloneable.class));
 		desc.setEntityName(entityName);
 		desc.setId(id);
 		desc.setDisplayString(entity.toString());
-		for (Method method : clazz.getDeclaredMethods()) {
+		
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			if (method.isAnnotationPresent(Displayable.class)) {
 				CrudField cf = new DisplayableMethodField();
 				cf.setName(method.getName());
@@ -534,6 +539,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				desc.add(cf);
 			}
 		}
+		List<Field> fields = EntityUtil.getFields(clazz);
 		for (Field field : fields) {
 			if (!okField(field)) {
 				// skip the id field
@@ -549,7 +555,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			desc.add(crudField);
 		}
 		// Find AdminLinks
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (Method method : EntityUtil.getMethods(clazz)) {
 			AdminLink linkAnn = method.getAnnotation(AdminLink.class);
 			if (linkAnn != null) {
 				AdminLinkMethodField cf = new AdminLinkMethodField();
@@ -777,7 +783,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	private void resetId(Model entity) {
 		// set the id field to null
 		try {
-			Field idField = entity.getClass().getDeclaredField("id");
+			Field idField = EntityUtil.getField(entity.getClass(), "id");
 			idField.setAccessible(true);
 			idField.set(entity, null);
 			idField.setAccessible(false);
@@ -795,12 +801,25 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Class not found: " + entityName, e);
 		}
-		if (!(clazz.getSuperclass().equals(Model.class))) {
+		if (!classIsSubclassOfModel(clazz)) {
+		
 			throw new RuntimeException(
 					"Class must be subclass of siena.Model. The specified class is not: "
 							+ clazz.getName());
 		}
 		return clazz;
+	}
+
+	private boolean classIsSubclassOfModel(Class<?> clazz) {
+		if (clazz.equals(Model.class)) {
+			return true;
+		}
+		Class<?> superClass = clazz.getSuperclass();
+		if (superClass == null) {
+			return false;
+		}
+		return classIsSubclassOfModel(superClass);
+		
 	}
 
 }
