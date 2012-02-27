@@ -40,6 +40,7 @@ public class ImageField extends StringField {
 		super(string);
 		this.width = width;
 		this.height = height;
+		this.urlMode = urlMode;
 	}
 
 	public ImageField() {
