@@ -17,13 +17,16 @@
 
 package burrito.links;
 
+import java.io.Serializable;
+
 /**
  * Simple representation of a link
  * 
  * @author henper
  * 
  */
-public class Link {
+@SuppressWarnings("serial")
+public class Link implements Serializable {
 
 	private String url;
 	private String text;
