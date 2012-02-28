@@ -15,6 +15,7 @@ public class EntityUtil {
 		while(clazz != Model.class) {
 			methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 			clazz = clazz.getSuperclass();
+			if (clazz == null) return methods;
 		}
 		return methods;
 	}
@@ -24,6 +25,7 @@ public class EntityUtil {
 		while(clazz != Model.class) {
 			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
 			clazz = clazz.getSuperclass();
+			if (clazz == null) return fields;
 		}
 		return fields;
 	}

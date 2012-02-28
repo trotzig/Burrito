@@ -16,6 +16,7 @@ import siena.core.PersistenceManagerLifeCycleWrapper;
 import siena.gae.GaePersistenceManager;
 import burrito.Configurator;
 import burrito.EntityValidationException;
+import burrito.annotations.Displayable;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudService;
 import burrito.client.crud.FieldValueNotUniqueException;
@@ -46,6 +47,20 @@ public class CrudTest extends TestBase {
 		Configurator.crudables.clear();
 		Configurator.crudables.add(ChildEntity.class);
 	}
+	
+	public static class Embedded {
+		@Displayable protected String field;
+		@Displayable public String getValue() {return "value";}
+	}
+	
+	@Test
+	public void testEmbeddedField() {
+		CrudService service = new CrudServiceImpl();
+		CrudEntityDescription desc = service.describeEmbeddedObject(Embedded.class.getName());
+		Assert.assertNotNull(desc.getField("field"));
+		Assert.assertEquals("value", desc.getField("getValue").getValue());
+	}
+	
 	
 	@Test
 	public void testInheritance() throws FieldValueNotUniqueException, CrudGenericException {
