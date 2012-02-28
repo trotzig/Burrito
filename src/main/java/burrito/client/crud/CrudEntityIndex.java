@@ -42,7 +42,6 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -122,9 +121,11 @@ public class CrudEntityIndex extends Composite {
 			}
 			setRowEditHandler(new RowEditHandler<CrudEntityDescription>() {
 
-				public void onRowEditClicked(CrudEntityDescription obj) {
-					History.newItem(obj.getEntityName() + "/" + obj.getId());
+				@Override
+				public String getHref(CrudEntityDescription obj) {
+					return "#" + obj.getEntityName() + "/" + obj.getId();
 				}
+				
 			});
 			addBatchAction(new BatchAction<CrudEntityDescription>(messages
 					.delete(), messages.deleteDescription()) {
@@ -302,6 +303,10 @@ public class CrudEntityIndex extends Composite {
 		search.load();
 		table = new CrudEntityTable(entityName, result);
 		tablePlaceHolder.setWidget(table);
+	}
+
+	public void reload() {
+		table.reloadCurrentPage();
 	}
 
 }

@@ -95,6 +95,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 	private HorizontalPanel search = new HorizontalPanel();
 	private boolean searchable;
 	private CheckBox selectAll;
+	private int lastKnownPage = 0;
 	
 	
 	/**
@@ -352,6 +353,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 	}
 
 	private void load(int page) {
+		lastKnownPage = page;
 		String sortKey = null;
 		loadingLabel.setVisible(true);
 		table.setVisible(false);
@@ -473,13 +475,18 @@ public abstract class Table<T extends Serializable> extends Composite {
 			}
 			if (rowsEditable && rowEditHandler != null) {
 				Anchor edit = new Anchor(messages.edit());
-				edit.addClickHandler(new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						rowEditHandler.onRowEditClicked(obj);
-					}
-				});
+				String href = rowEditHandler.getHref(obj); 
+				if (href != null) {
+					edit.setHref(href);
+				} else {
+					edit.addClickHandler(new ClickHandler() {
+	
+						@Override
+						public void onClick(ClickEvent event) {
+							rowEditHandler.onRowEditClicked(obj);
+						}
+					});
+				}
 				table.setWidget(row, numberOfColumns - 1, edit);
 			}
 
@@ -594,6 +601,14 @@ public abstract class Table<T extends Serializable> extends Composite {
 	 */
 	public void reload() {
 		load(0);
+	}
+
+	/**
+	 * Reloads the current page in the table. Same as reload() but without going
+	 * back to the first page.
+	 */
+	public void reloadCurrentPage() {
+		load(lastKnownPage );
 	}
 
 	public void setSearchable(boolean searchable) {

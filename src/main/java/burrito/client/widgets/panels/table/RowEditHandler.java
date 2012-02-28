@@ -17,13 +17,23 @@
 
 package burrito.client.widgets.panels.table;
 
-public interface RowEditHandler<T> {
+public abstract class RowEditHandler<T> {
 
 	/**
 	 * Fired when a row has been clicked
 	 * 
 	 * @param obj
 	 */
-	void onRowEditClicked(T obj);
+	public void onRowEditClicked(T obj) {};
+
+	/**
+	 * Override this method instead of onRowEditClicked to get support for real
+	 * links.
+	 * 
+	 * @return
+	 */
+	public String getHref(T obj) {
+		return null;
+	}
 
 }

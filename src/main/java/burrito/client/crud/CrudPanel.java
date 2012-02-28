@@ -18,6 +18,9 @@
 package burrito.client.crud;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.labels.CrudMessages;
 
@@ -53,6 +56,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 	private SimplePanel content = new SimplePanel();
 	private DockPanel wrapper = new DockPanel();
 	private CrudPanelTop top = new CrudPanelTop();
+	private Map<String, CrudEntityIndex> loadedIndexPanels = new HashMap<String, CrudEntityIndex>();
 
 	public CrudPanel() {
 		History.addValueChangeHandler(this);
@@ -81,7 +85,14 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 		final String entityName = split[0];
 		if (split.length == 1) {
 			top.update(entityName, null);
-			return new CrudEntityIndex(entityName);
+			CrudEntityIndex index = loadedIndexPanels.get(entityName);
+			if (index == null) {
+				index = new CrudEntityIndex(entityName);
+				loadedIndexPanels.put(entityName, index);
+			} else {
+				index.reload();
+			}
+			return index;
 		}
 		if (split.length >= 2) {
 			String strId = split[1];
