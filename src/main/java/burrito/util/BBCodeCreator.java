@@ -17,9 +17,9 @@ public class BBCodeCreator {
         bbMap.put("(\r\n|\r|\n|\n\r)", "<br/>");
         bbMap.put("\\[b\\](.+?)\\[/b\\]", "<span style=\"font-weight:bold;\">$1</span>");
         bbMap.put("\\[i\\](.+?)\\[/i\\]", "<span style=\"font-style:italic;\">$1</span>");
-        bbMap.put("\\[url\\](.+?)\\[/url\\]", "<a href=\"$1\">$1</a>");
+        bbMap.put("\\[url\\](.+?)\\[/url\\]", "<a target=\"_blank\" href=\"$1\">$1</a>");
         bbMap.put("\\[img\\](.+?)\\[/img\\]", "<img src=\"/blobstore/image?key=$1\" />");
-        bbMap.put("\\[url=(.+?)\\](.+?)\\[/url\\]", "<a href=\"$1\">$2</a>");
+        bbMap.put("\\[url=(.+?)\\](.+?)\\[/url\\]", "<a target=\"_blank\" href=\"$1\">$2</a>");
         
         for (Map.Entry entry : bbMap.entrySet()) {
             html = html.replaceAll(entry.getKey().toString(), entry.getValue().toString());
