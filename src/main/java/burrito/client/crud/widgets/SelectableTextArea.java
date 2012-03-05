@@ -30,7 +30,13 @@ public class SelectableTextArea extends TextArea {
 		String beforeText = text.substring(0, startpos);
 		String afterText = text.substring(startpos + selectedText.originalText.length());
 		
+		
+		int top = this.getElement().getScrollTop();
+		
 		setText(beforeText + selectedText.text + afterText);
+		
+		//stops Firefox & IE to scroll to the top of the textarea.
+		this.getElement().setScrollTop(top); 
 	}
 	
 	public SelectedText getSelectedTextObj() {

@@ -58,7 +58,7 @@ public class BBCodeEditor extends VerticalPanel implements HasValidators {
 	}
 	
 	private void initButtons() {
-		Button buttonBold = new Button("Bold 2");
+		Button buttonBold = new Button("Bold");
 		buttonBold.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
