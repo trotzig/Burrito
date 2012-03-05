@@ -9,6 +9,8 @@ public class BBCodeCreator {
 	private static Map<String, String> bbMapPlugins = new HashMap<String, String>();
 	private static String previewJspUrl = "/burrito/bbCodePreview.jsp";
 	
+	private static BBCodeCreatorEndEvent endEvent;
+	
 	public static String generateHTML(String bbcode) {
 		String html = StringUtils.escapeHtml(bbcode);
 		
@@ -29,6 +31,10 @@ public class BBCodeCreator {
         }
         
         html = generateYouTube(html);
+        
+        if (endEvent != null) {
+        	html = endEvent.execute(html);
+        }
         
 		return html;
 	}
@@ -51,6 +57,10 @@ public class BBCodeCreator {
 	 */
 	public static void addPlugin(String key, String value) {
 		bbMapPlugins.put(key, value);
+	}
+	
+	public static void setEndEvent(BBCodeCreatorEndEvent endEvent2) {
+		endEvent = endEvent2;
 	}
 
 	public static String getPreviewJspUrl() {
