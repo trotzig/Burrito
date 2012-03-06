@@ -16,7 +16,7 @@ public class BBCodeCreator {
 		
         Map<String, String> bbMap = new HashMap<String, String>();
 
-        bbMap.put("(\r\n|\r|\n|\n\r)", "<br/>");
+        bbMap.put("(\r\n|\n\r|\r|\n)", "<br/>");
         bbMap.put("\\[b\\](.+?)\\[/b\\]", "<span style=\"font-weight:bold;\">$1</span>");
         bbMap.put("\\[i\\](.+?)\\[/i\\]", "<span style=\"font-style:italic;\">$1</span>");
         bbMap.put("\\[url\\](.+?)\\[/url\\]", "<a target=\"_blank\" href=\"$1\">$1</a>");

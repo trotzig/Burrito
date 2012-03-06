@@ -1,4 +1,4 @@
-package burrito.test;
+package burrito.util;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.junit.Test;
 import siena.Model;
 import burrito.EntityValidationException;
 import burrito.annotations.Required;
+import burrito.test.TestBase;
 import burrito.util.ValidationUtil;
 
 public class ValidationUtilTest extends TestBase {

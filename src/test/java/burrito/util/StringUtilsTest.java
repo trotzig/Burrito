@@ -1,4 +1,4 @@
-package burrito.test;
+package burrito.util;
 
 import static org.junit.Assert.assertEquals;
 
