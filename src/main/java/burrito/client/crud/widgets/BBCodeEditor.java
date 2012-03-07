@@ -99,7 +99,7 @@ public class BBCodeEditor extends VerticalPanel implements HasValidators {
 		});
 		buttonPanel.add(buttonImg);
 
-		Button buttonUrl = new Button("Url");
+		Button buttonUrl = new Button("External url");
 		buttonUrl.addClickHandler(new ClickHandler() {
 			
 			@Override

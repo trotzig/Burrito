@@ -32,7 +32,15 @@ public class BBUrlPanel extends BBPopupPanel {
 		srcPanel.add(srcTextBox);
 		addPanel(srcPanel);
 		
-		srcTextBox.setText(getSelectedText());
+		String selectedText2 = getSelectedText();
+		
+		titleTextBox.setText(selectedText2);
+		
+		if (!selectedText2.startsWith("http://")) {
+			selectedText2 = "http://" + selectedText2;
+		}
+		
+		srcTextBox.setText(selectedText2);
 	}
 
 	private boolean validate(String url) {
