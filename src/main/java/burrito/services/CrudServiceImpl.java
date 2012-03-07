@@ -25,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -328,7 +329,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	private CrudEntityList search(Class<? extends Model> clazz, String filter,
 			PageMetaData<String> p) {
-
+		
 		ItemCollection<SearchEntry> entries = searchManager.search(clazz,
 				filter, p);
 		List<Model> entities = new ArrayList<Model>();
@@ -337,6 +338,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			if (entity != null)
 				entities.add(entity);
 		}
+			
+		sortTable(entities, p);
+		
 		CrudEntityList collection = new CrudEntityList();
 		collection.setItems(convertEntitesToCrudEntityDescriptions(entities));
 		collection.setPage(p.getPage());
@@ -362,6 +366,15 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			return (Long) id.get(entity);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to get id field from entity", e);
+		}
+	}
+	
+	private void sortTable(List<Model> entities, PageMetaData<String> p){
+		
+		if(p.isAscending()){
+			Collections.sort(entities, new EntityComparator(p.getSortKey()));
+		}else{
+			Collections.sort(entities, Collections.reverseOrder(new EntityComparator(p.getSortKey())));
 		}
 	}
 
