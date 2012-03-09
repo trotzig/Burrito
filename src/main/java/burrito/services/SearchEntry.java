@@ -60,14 +60,11 @@ public class SearchEntry extends Model implements Serializable {
 		for (String token : tokens) {
 			query.filter("tokens", token);
 		}
+						
 		List<SearchEntry> entries = query.fetch(p.getItemsPerPage() + 1,
 				(int) p.getRangeStart());
 		boolean hasNext = false;
-		if (entries.size() > p.getItemsPerPage()) {
-			hasNext = true;
-			entries.remove(entries.size() - 1);
-		}
-		return new ItemCollection<SearchEntry>(entries, hasNext, p.getPage(), p.getItemsPerPage());
 
+		return new ItemCollection<SearchEntry>(entries, hasNext, p.getPage(), entries.size());
 	}
 }

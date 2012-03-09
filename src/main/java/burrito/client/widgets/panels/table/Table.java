@@ -90,7 +90,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 	private boolean rowsOrderable;
 	private InfoMessagePopup infoPopup = new InfoMessagePopup();
 	private PageController pageController = new PageController();
-	private int itemsPerPage = 20;
+	private int itemsPerPage = 100;
 	private StringInputField filterText = new StringInputField(false);;
 	private HorizontalPanel search = new HorizontalPanel();
 	private boolean searchable;
