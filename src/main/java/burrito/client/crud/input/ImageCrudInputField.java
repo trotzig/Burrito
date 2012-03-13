@@ -73,7 +73,10 @@ public class ImageCrudInputField implements CrudInputField {
 			else {
 				value = blobStoreKey;
 			}
+		} else {
+			value = blobStoreKey;
 		}
+		
 		return value;
 	}
 

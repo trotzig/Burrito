@@ -78,6 +78,8 @@ public interface CommonMessages extends Messages {
 	String validationTooLong(int maxLength);
 
 	String blobImageChange();
+	
+	String blobImageDelete();
 
 	String add();
 }

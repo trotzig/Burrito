@@ -52,13 +52,16 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 	private CommonMessages messages = GWT.create(CommonMessages.class);
 	private List<ChangeHandler> changeHandlers = new ArrayList<ChangeHandler>();
 	private SimplePanel imageWrapper = new SimplePanel();
-	private BlobStoreUploader uploader = null;
+	private BlobStoreUploader uploader = null;	
 	private Button changeImage = new Button(messages.blobImageChange());
+	private Button deleteImage = new Button(messages.blobImageDelete());
+	
 	
 	public BlobStoreImageField(boolean required, Integer requiredWidth, Integer requiredHeight) {
 		this.required = required;
 		this.requiredWidth = requiredWidth;
 		this.requiredHeight = requiredHeight;
+		
 		validationError.addStyleName("validationError");
 		validationError.setVisible(false);
 		wrapper.add(validationError);
@@ -77,6 +80,7 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 		desc.addStyleName("k5-BlobStoreImageField-desc");
 		wrapper.add(desc);
 		wrapper.add(imageWrapper);
+		
 		changeImage.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -87,6 +91,20 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 		});
 		wrapper.add(changeImage);
 		changeImage.setVisible(false);
+		
+		deleteImage.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				blobStoreKey = null;
+				updateImage();
+				fireChange();
+				updateDeleteButton();
+			}
+		});
+		wrapper.add(deleteImage);
+		
+		
+		updateDeleteButton();
 		createNewUploaderWidget();
 		initWidget(wrapper);
 		addStyleName("k5-BlobStoreImageField");
@@ -105,6 +123,7 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 						blobStoreKey = result;
 						updateImage();
 						fireChange();
+						updateDeleteButton();
 					}
 
 					@Override
@@ -132,6 +151,14 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 					+ blobStoreKey));
 			uploader.setVisible(false);
 			changeImage.setVisible(true);
+		}
+	}
+	
+	protected void updateDeleteButton() {
+		if (blobStoreKey == null) {
+			deleteImage.setVisible(false);
+		} else {
+			deleteImage.setVisible(true);
 		}
 	}
 
@@ -170,6 +197,7 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 		this.blobStoreKey = blobStoreKey;
 		createNewUploaderWidget();
 		updateImage();
+		updateDeleteButton();
 	}
 
 	@Override
