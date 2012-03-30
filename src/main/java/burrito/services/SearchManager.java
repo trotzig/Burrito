@@ -176,10 +176,10 @@ public class SearchManager {
 	 * @return
 	 */
 	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz,
-			String query, PageMetaData<String> p) {
+			String query) {
 		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils
 				.stripHTML(query), 20);
-		return SearchEntry.search(clazz, tokens, p);
+		return SearchEntry.search(clazz, tokens);
 	}
 
 }

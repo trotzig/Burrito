@@ -53,18 +53,16 @@ public class SearchEntry extends Model implements Serializable {
 	}
 
 	public static ItemCollection<SearchEntry> search(
-			Class<? extends Model> clazz, Set<String> tokens,
-			PageMetaData<String> p) {
+			Class<? extends Model> clazz, Set<String> tokens) {
 		Query<SearchEntry> query = all();
 		query.filter("ownerClassName", clazz.getName());
 		for (String token : tokens) {
 			query.filter("tokens", token);
 		}
 						
-		List<SearchEntry> entries = query.fetch(p.getItemsPerPage() + 1,
-				(int) p.getRangeStart());
+		List<SearchEntry> entries = query.fetch();
 		boolean hasNext = false;
 
-		return new ItemCollection<SearchEntry>(entries, hasNext, p.getPage(), entries.size());
+		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());
 	}
 }

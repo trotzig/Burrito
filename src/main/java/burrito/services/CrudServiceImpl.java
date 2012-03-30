@@ -331,7 +331,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			PageMetaData<String> p) {
 		
 		ItemCollection<SearchEntry> entries = searchManager.search(clazz,
-				filter, p);
+				filter);
 		List<Model> entities = new ArrayList<Model>();
 		for (SearchEntry entry : entries) {
 			Model entity = extractEntity(entry.ownerId, null, clazz);
