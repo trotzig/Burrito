@@ -58,6 +58,7 @@ import burrito.client.crud.input.ListedByEnumSelectionListField;
 import burrito.client.crud.input.LongListInputField;
 import burrito.client.crud.input.ReadOnlyTextCrudInputField;
 import burrito.client.crud.input.RichTextInputField;
+import burrito.client.crud.input.SearchListField;
 import burrito.client.crud.input.SelectionListField;
 import burrito.client.crud.input.StringListInputField;
 import burrito.client.crud.input.StringSelectionListField;
@@ -123,7 +124,13 @@ public class CrudFieldResolver {
 		
 		
 		if (field instanceof ManyToOneRelationField) {
-			return new SelectionListField((ManyToOneRelationField) field, service);
+			ManyToOneRelationField relationField = (ManyToOneRelationField) field;
+			
+			if (relationField.isDropDown()) {
+				return new SelectionListField(relationField, service);
+			} else {
+				return new SearchListField(relationField, service);
+			}
 		}
 		if (field instanceof ImageField) {
 			return new ImageCrudInputField((ImageField) field);

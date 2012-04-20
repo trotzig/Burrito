@@ -1,14 +1,13 @@
 package burrito.client.crud.input;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import com.google.gwt.user.client.ui.Widget;
 
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.LongListField;
 import burrito.client.crud.widgets.StringListWidget;
+
+import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("rawtypes")
 public class LongListInputField implements CrudInputField {

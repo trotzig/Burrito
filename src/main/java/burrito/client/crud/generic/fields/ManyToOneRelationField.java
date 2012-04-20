@@ -24,10 +24,14 @@ public class ManyToOneRelationField extends CrudField {
 
 	private Long id;
 	private String relatedEntityName;
+	private String modeValue;
+	private String searchSortField;
 
-	public ManyToOneRelationField(Long id, String relatedEntityName) {
+	public ManyToOneRelationField(Long id, String relatedEntityName, String modeValue, String searchSortField) {
 		this.id = id;
 		this.relatedEntityName = relatedEntityName;
+		this.modeValue = modeValue;
+		this.searchSortField = searchSortField;
 	}
 
 	public ManyToOneRelationField() {
@@ -48,7 +52,19 @@ public class ManyToOneRelationField extends CrudField {
 	public void setValue(Object value) {
 		this.id = (Long) value;
 	}
-
+	
+	public boolean isDropDown() {
+		return "dropdown".equalsIgnoreCase(modeValue);
+	}
+	
+	public String getSearchSortField() {
+		return searchSortField;
+	}
+	
+	/**
+	 *  Get namespace + class name
+	 * @return ex model.TestEntity
+	 */
 	public String getRelatedEntityName() {
 		return relatedEntityName;
 	}
@@ -56,5 +72,4 @@ public class ManyToOneRelationField extends CrudField {
 	public void setRelatedEntityName(String relatedEntityName) {
 		this.relatedEntityName = relatedEntityName;
 	}
-
 }

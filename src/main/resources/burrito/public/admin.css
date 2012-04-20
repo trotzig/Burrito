@@ -236,3 +236,50 @@ a.k5-PageController-link:hover {
 .k5-FileCrudInputField-fileInfo td {
 	padding: 3px 5px;
 }
+
+
+
+.searchList .entityInfo {
+	margin-right: 10px;	
+	border: 1px solid gray;
+}
+
+.searchList .searchListItem {
+	float: left;
+	padding-top: 3px;
+}
+
+.searchList .entityInfo td {
+	padding: 3px;
+}
+
+.searchList .error {
+	margin-left: 10px;
+	color: red;
+}
+
+.searchListSelect .searchResult tr {
+	cursor: pointer;
+}
+
+.searchListSelect .searchResult tr:nth-child(odd) { 
+	background-color: #E9E9E9; 
+}
+
+.searchListSelect .searchResult tr:nth-child(even) { 
+	background-color: white; 
+}
+
+.searchListSelect .searchResult td {
+	border-top: 1px solid #C5D7EF;
+	border-bottom: 1px solid #C5D7EF;
+	padding: 5px;
+}
+
+.searchListSelect .searchResult {
+	border: 1px solid #C5D7EF;
+}
+
+.searchListSelect .cancelButton {
+	margin-top: 10px;
+}

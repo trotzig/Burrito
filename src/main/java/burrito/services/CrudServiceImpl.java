@@ -54,6 +54,7 @@ import burrito.annotations.ReadOnly;
 import burrito.annotations.RedundantForPerformance;
 import burrito.annotations.RegexpValidation;
 import burrito.annotations.Relation;
+import burrito.annotations.Relation.RenderMode;
 import burrito.annotations.Required;
 import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
@@ -650,10 +651,17 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			
 		} else if (clazz == Long.class) {
 			if (field.isAnnotationPresent(Relation.class)) {
-				String relatedEntityClass = field.getAnnotation(Relation.class)
-						.value().getName();
-				crud = new ManyToOneRelationField((Long) field.get(entity),
-						relatedEntityClass);
+				Relation annotation = field.getAnnotation(Relation.class);
+				
+				Class<? extends Model> model = annotation.value();
+				String modelName = model.getName();
+				
+				RenderMode renderMode = annotation.renderMode();
+				String modeValue = renderMode.getValue();
+				
+				String searchSortField = annotation.searchSortField();
+				
+				crud = new ManyToOneRelationField((Long) field.get(entity), modelName, modeValue, searchSortField);
 			} else {
 				crud = new LongField((Long) field.get(entity));
 			}

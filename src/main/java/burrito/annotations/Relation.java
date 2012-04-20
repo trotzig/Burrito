@@ -47,4 +47,27 @@ public @interface Relation {
 	 * @return
 	 */
 	Class<? extends Model> value();
+
+	public enum RenderMode {
+		DROPDOWN("dropdown"),
+		SEARCH("search");
+		
+		private String value2;
+
+		RenderMode(String value) {
+			this.value2 = value;
+		}
+		
+		public String getValue() {
+			return value2;
+		}
+	}
+	 
+	RenderMode renderMode() default RenderMode.DROPDOWN;
+	
+	/**
+	 * Required if renderMode = SEARCH
+	 * @return
+	 */
+	String searchSortField() default "";
 }
