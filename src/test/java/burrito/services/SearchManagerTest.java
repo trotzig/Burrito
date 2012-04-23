@@ -15,19 +15,24 @@ public class SearchManagerTest extends TestBase {
 	@Override
 	public void setUp() {
 		super.setUp();
+		searchManager = SearchManager.get();
 		
 		SearchTestEntity entity = new SearchTestEntity();
 		entity.setName("hello world");
 		entity.save();
+		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 		
-		searchManager = SearchManager.get();
-		searchManager.insertOrUpdateSearchEntry(entity, 1L);
+		entity = new SearchTestEntity();
+		entity.setName("pizza hamburger");
+		entity.save();
+		
+		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 	}
 	
 	@Test
 	public void search() {
 		Query<SearchEntry> all = SearchEntry.all();
-		Assert.assertEquals(1, all.count());
+		Assert.assertEquals(2, all.count());
 		
 		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "hello world");
 		Assert.assertEquals(1, search.getItems().size());
@@ -46,9 +51,15 @@ public class SearchManagerTest extends TestBase {
 	}
 	
 	@Test
-	public void searchOnPartOfWord() {
-		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "he");
-		Assert.assertEquals("not possible today", 0, search.getItems().size());
+	public void searchStartsWith() {
+		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "he");
+		Assert.assertEquals(1, search.getItems().size());
+	}
+	
+	@Test
+	public void searchStartsWithWholeWord() {
+		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello");
+		Assert.assertEquals(1, search.getItems().size());
 	}
 	
 }

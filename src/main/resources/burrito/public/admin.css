@@ -277,7 +277,14 @@ a.k5-PageController-link:hover {
 }
 
 .searchListSelect .searchResult {
+	width: 100%;
+}
+
+.searchListSelect .searchResultWrapper {
 	border: 1px solid #C5D7EF;
+	height: 300px;
+	width: 300px;
+	overflow: auto;
 }
 
 .searchListSelect .cancelButton {

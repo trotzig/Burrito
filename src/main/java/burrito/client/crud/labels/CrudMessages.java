@@ -149,4 +149,6 @@ public interface CrudMessages extends Messages {
 	String confirmDeleteSitelet();
 
 	String selectOrChange(String entityType);
+
+	String selectEntity(String entityDisplayName);
 }

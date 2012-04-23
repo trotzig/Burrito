@@ -287,7 +287,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Class<? extends Model> clazz = extractClass(entityName);
 
 		if (filter != null) {
-			return search(clazz, filter, p);
+			return search(clazz, filter, p, false);
 		}
 
 		// Prepare query object
@@ -328,11 +328,22 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		return collection;
 	}
 
+	public CrudEntityList searchStartsWith(String searchString,
+			String entityName, PageMetaData<String> p) {
+		Class<? extends Model> clazz = extractClass(entityName);
+		return search(clazz, searchString, p, true);
+	}
+	
 	private CrudEntityList search(Class<? extends Model> clazz, String filter,
-			PageMetaData<String> p) {
+			PageMetaData<String> p, boolean doStartsWithSearch) {
 		
-		ItemCollection<SearchEntry> entries = searchManager.search(clazz,
-				filter);
+		ItemCollection<SearchEntry> entries;
+		if (doStartsWithSearch) {
+			entries = searchManager.searchStartsWith(clazz, filter);
+		} else {
+			entries = searchManager.search(clazz, filter);
+		}
+				
 		List<Model> entities = new ArrayList<Model>();
 		for (SearchEntry entry : entries) {
 			Model entity = extractEntity(entry.ownerId, null, clazz);

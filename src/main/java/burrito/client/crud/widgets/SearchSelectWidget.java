@@ -19,6 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -29,7 +30,7 @@ public class SearchSelectWidget extends DialogBox {
 	private static CrudMessages labels = GWT.create(CrudMessages.class);
 	
 	private List<CrudEntityDescription> items;
-	private CloseHandler onCloseHandler;
+	private SelectHandler onSelectHandler;
 	
 	private FlexTable searchResult;
 	private TextBox searchBox;
@@ -52,11 +53,9 @@ public class SearchSelectWidget extends DialogBox {
 		        
 		        CrudEntityDescription item = items.get(receiverRowIndex);
 		        
-		        if (onCloseHandler != null) {
-		        	onCloseHandler.onClose(item.getId());
+		        if (onSelectHandler != null) {
+		        	onSelectHandler.onSelect(item.getId());
 		        }
-				
-				hide();
 		    }
 		});
 		
@@ -67,11 +66,16 @@ public class SearchSelectWidget extends DialogBox {
 			public void onKeyUp(KeyUpEvent event) {
 				String searchValue = searchBox.getValue();
 				
+				if (searchValue.length() < 3) {
+					searchResult.removeAllRows();
+					return;
+				}
+				
 				PageMetaData<String> p = new PageMetaData<String>();
 				p.setItemsPerPage(1000000);
 				p.setSortKey(relationField.getSearchSortField());
 				
-				service.listEntities(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
+				service.searchStartsWith(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
 					
 					@Override
 					public void onSuccess(CrudEntityList result) {
@@ -104,18 +108,21 @@ public class SearchSelectWidget extends DialogBox {
 		});
 		
 		verticalPanel.add(searchBox);
-		verticalPanel.add(searchResult);
+		FlowPanel searchResultWrapper = new FlowPanel();
+		searchResultWrapper.addStyleName("searchResultWrapper");
+		searchResultWrapper.add(searchResult);
+		verticalPanel.add(searchResultWrapper);
 		verticalPanel.add(cancelButton);
 		
 		setWidget(verticalPanel);
 		addStyleName("searchListSelect");
 	}
 
-	public interface CloseHandler {
-		public void onClose(Long id);
+	public interface SelectHandler {
+		public void onSelect(Long id);
 	}
 	
-	public void setOnCloseHandler(CloseHandler onCloseHandler) {
-		this.onCloseHandler = onCloseHandler;
+	public void setSelectHandler(SelectHandler onSelectHandler) {
+		this.onSelectHandler = onSelectHandler;
 	}
 }

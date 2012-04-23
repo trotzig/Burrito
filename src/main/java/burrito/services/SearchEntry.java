@@ -21,13 +21,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import burrito.client.widgets.panels.table.ItemCollection;
-import burrito.client.widgets.panels.table.PageMetaData;
-
 import siena.Generator;
 import siena.Id;
 import siena.Model;
 import siena.Query;
+import burrito.client.widgets.panels.table.ItemCollection;
 
 public class SearchEntry extends Model implements Serializable {
 
@@ -65,4 +63,19 @@ public class SearchEntry extends Model implements Serializable {
 
 		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());
 	}
+	
+	public static ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, String searchString) {
+		Query<SearchEntry> query = all();
+		query.filter("ownerClassName", clazz.getName());
+			
+		query.filter("tokens >=", searchString);
+		query.filter("tokens <", searchString + Character.MAX_VALUE);
+						
+		query.limit(50);
+		List<SearchEntry> entries = query.fetch();
+		boolean hasNext = false;
+
+		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());
+	}
+
 }

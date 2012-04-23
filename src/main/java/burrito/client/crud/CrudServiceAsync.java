@@ -42,6 +42,9 @@ public interface CrudServiceAsync {
 
 	void listEntities(String filter, String entityName, PageMetaData<String> p,
 			AsyncCallback<CrudEntityList> asyncCallback);
+	
+	void searchStartsWith(String searchString, String entityName, PageMetaData<String> p,
+			AsyncCallback<CrudEntityList> asyncCallback);
 
 	void deleteEntities(List<CrudEntityDescription> selected,
 			AsyncCallback<Void> callback);

@@ -15,6 +15,10 @@ public class SearchTestEntity extends Model {
 
 	private String notSearchField;
 	
+	public Long getId() {
+		return id;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

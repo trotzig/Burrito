@@ -7,7 +7,7 @@ import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
 import burrito.client.crud.widgets.SearchSelectWidget;
-import burrito.client.crud.widgets.SearchSelectWidget.CloseHandler;
+import burrito.client.crud.widgets.SearchSelectWidget.SelectHandler;
 import burrito.client.widgets.validation.HasValidators;
 import burrito.client.widgets.validation.InputFieldValidator;
 
@@ -65,18 +65,20 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 		setDescribingLable(selectedId, entityDisplayName, relatedEntityName);
 		
 		
-		changeAnchor = new Anchor(labels.selectLinkToEntity(entityDisplayName));
+		changeAnchor = new Anchor(labels.selectEntity(entityDisplayName));
 		changeAnchor.addStyleName("searchListItem");
 		changeAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				final SearchSelectWidget popup = new SearchSelectWidget(service, relationField);
 				popup.setPopupPosition(Window.getClientWidth() / 2, Window.getClientHeight() /2);
-				popup.setOnCloseHandler(new CloseHandler() {
+				popup.setSelectHandler(new SelectHandler() {
 					@Override
-					public void onClose(Long id) {
+					public void onSelect(Long id) {
 						selectedId = id;
 						setDescribingLable(selectedId, entityDisplayName, relatedEntityName);
+						
+						popup.hide();
 					}
 				});
 				popup.show();

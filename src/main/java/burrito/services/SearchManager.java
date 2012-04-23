@@ -181,5 +181,9 @@ public class SearchManager {
 				.stripHTML(query), 20);
 		return SearchEntry.search(clazz, tokens);
 	}
+	
+	public ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, String searchString) {
+		return SearchEntry.searchStartsWith(clazz, searchString);
+	}
 
 }
