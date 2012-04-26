@@ -204,16 +204,20 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	public List<CrudEntityInfo> getAllEntities() {
 		List<CrudEntityInfo> result = new ArrayList<CrudEntityInfo>();
-		for (Class<? extends Model> clazz : Configurator.crudables) {
-			result.add(new CrudEntityInfo(clazz.getName()));
+		synchronized (Configurator.crudables) {
+			for (Class<? extends Model> clazz : Configurator.crudables) {
+				result.add(new CrudEntityInfo(clazz.getName()));
+			}
 		}
 		return result;
 	}
 
 	public Boolean isCrudEnabled(String className) {
-		for (Class<? extends Model> clazz : Configurator.crudables) {
-			if (clazz.getName().equals(className)) {
-				return Boolean.TRUE;
+		synchronized (Configurator.crudables) {
+			for (Class<? extends Model> clazz : Configurator.crudables) {
+				if (clazz.getName().equals(className)) {
+					return Boolean.TRUE;
+				}
 			}
 		}
 		return Boolean.FALSE;
@@ -221,8 +225,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	public List<String> getLinkableTypes() {
 		List<String> result = new ArrayList<String>();
-		for (Class<? extends Linkable> clazz : Configurator.linkables) {
-			result.add(clazz.getName());
+		synchronized (Configurator.linkables) {
+			for (Class<? extends Linkable> clazz : Configurator.linkables) {
+				result.add(clazz.getName());
+			}
 		}
 		return result;
 	}
@@ -242,41 +248,47 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		// Searches model entities to find relations to the object about to be
 		// deleted
 		Long toBeDeletedId = extractIDFromEntity(toBeDeleted);
-		for (Class<? extends Model> clazz : Configurator.crudables) {
-			for (Field field : EntityUtil.getFields(clazz)) {
-				if (field.isAnnotationPresent(Relation.class)) {
-					Relation relation = field.getAnnotation(Relation.class);
-					boolean isCorrectClass = relation.value().equals(
-							toBeDeleted.getClass());
-					if (isCorrectClass) {
-						// Get relateted class values based on the id from the
-						// deleted entity
-						List<? extends Model> relateds = Model.all(clazz)
-								.filter(field.getName(), toBeDeletedId).fetch();
-						for (Model related : relateds) {
-							try {
-								if (field.getType() == Long.class) {
-									field.setAccessible(true);
-									field.set(related, null);
-									field.setAccessible(false);
-									related.update();
-								} else if (field.getType() == List.class) {
-									@SuppressWarnings("unchecked")
-									List<Long> list = (List<Long>) field
-											.get(related);
-									if (list != null) {
-										list.remove(toBeDeletedId);
+		synchronized (Configurator.crudables) {
+
+			for (Class<? extends Model> clazz : Configurator.crudables) {
+				for (Field field : EntityUtil.getFields(clazz)) {
+					if (field.isAnnotationPresent(Relation.class)) {
+						Relation relation = field.getAnnotation(Relation.class);
+						boolean isCorrectClass = relation.value().equals(
+								toBeDeleted.getClass());
+						if (isCorrectClass) {
+							// Get relateted class values based on the id from
+							// the
+							// deleted entity
+							List<? extends Model> relateds = Model.all(clazz)
+									.filter(field.getName(), toBeDeletedId)
+									.fetch();
+							for (Model related : relateds) {
+								try {
+									if (field.getType() == Long.class) {
+										field.setAccessible(true);
+										field.set(related, null);
+										field.setAccessible(false);
 										related.update();
+									} else if (field.getType() == List.class) {
+										@SuppressWarnings("unchecked")
+										List<Long> list = (List<Long>) field
+												.get(related);
+										if (list != null) {
+											list.remove(toBeDeletedId);
+											related.update();
+										}
 									}
+								} catch (Exception e) {
+									throw new RuntimeException(
+											"Failed to update related entity. This could mean that the database is inconsistent. ",
+											e);
 								}
-							} catch (Exception e) {
-								throw new RuntimeException(
-										"Failed to update related entity. This could mean that the database is inconsistent. ",
-										e);
 							}
 						}
 					}
 				}
+
 			}
 		}
 

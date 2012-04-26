@@ -18,6 +18,7 @@
 package burrito;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -37,9 +38,9 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 public abstract class Configurator implements ServletContextListener {
 
-	public static List<Class<? extends Model>> crudables = new ArrayList<Class<? extends Model>>();
-	public static List<Class<? extends Sitelet>> sitelets = new ArrayList<Class<? extends Sitelet>>();
-	public static List<Class<? extends burrito.links.Linkable>> linkables = new ArrayList<Class<? extends Linkable>>();
+	public static List<Class<? extends Model>> crudables = Collections.synchronizedList(new ArrayList<Class<? extends Model>>());
+	public static List<Class<? extends Sitelet>> sitelets = Collections.synchronizedList(new ArrayList<Class<? extends Sitelet>>());
+	public static List<Class<? extends burrito.links.Linkable>> linkables = Collections.synchronizedList(new ArrayList<Class<? extends Linkable>>());
 	public static boolean MAY_RETIRE_SITELETS = false;
 	private static final String DEV_MODE_CONFIGURATION_SUFFIX = "-DEV-" + RandomStringUtils.randomAlphabetic(4);
 	private static String SITE_IDENTIFIER;

@@ -125,8 +125,10 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 
 	public List<CrudEntityInfo> getSiteletTypes() {
 		List<CrudEntityInfo> entities = new ArrayList<CrudEntityInfo>();
-		for (Class<? extends Sitelet> clazz : Configurator.sitelets) {
-			entities.add(new CrudEntityInfo(clazz.getName()));
+		synchronized (Configurator.sitelets) {
+			for (Class<? extends Sitelet> clazz : Configurator.sitelets) {
+				entities.add(new CrudEntityInfo(clazz.getName()));
+			}
 		}
 		return entities;
 	}
