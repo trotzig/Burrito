@@ -153,6 +153,10 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 
 	@Override
 	public boolean validate() {
+		if (!this.relationField.isRequired()) {
+			return true;
+		}
+		
 		boolean valid = selectedId != null;
 		if (valid) {
 			errorLabel.setVisible(false);
