@@ -151,4 +151,8 @@ public interface CrudMessages extends Messages {
 	String selectOrChange(String entityType);
 
 	String selectEntity(String entityDisplayName);
+
+	String searchListNoItemSelected();
+
+	String searchListHelpText(String entityDisplayName);
 }

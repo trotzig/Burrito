@@ -41,7 +41,7 @@ public class SearchSelectWidget extends DialogBox {
 		setText(labels.selectOrChange(entityDisplayName));
 		
 		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.add(new Label(labels.searchForEntity(entityDisplayName)));
+		verticalPanel.add(new Label(labels.searchListHelpText(entityDisplayName)));
 
 		
 		searchResult = new FlexTable();

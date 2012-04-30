@@ -105,7 +105,7 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 	
 	private void setDescribingLable(Long entityId, String entityDisplayName, String relatedEntityName) {
 		if (entityId == null) {
-			selectedLabel.setText(labels.noEmbeddedItemsAdded(entityDisplayName));
+			selectedLabel.setText(labels.searchListNoItemSelected());
 			clearAnchor.setVisible(false);
 			return;
 		}
