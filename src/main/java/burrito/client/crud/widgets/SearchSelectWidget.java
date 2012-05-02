@@ -15,6 +15,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -35,7 +36,16 @@ public class SearchSelectWidget extends DialogBox {
 	private FlexTable searchResult;
 	private TextBox searchBox;
 	
-	public SearchSelectWidget(final CrudServiceAsync service, final ManyToOneRelationField relationField) {
+	//Delayed search to fix server hammering.
+	private Timer searchTimer;
+
+	private final CrudServiceAsync service;
+	private final ManyToOneRelationField relationField;
+	
+	public SearchSelectWidget(CrudServiceAsync service, ManyToOneRelationField relationField) {
+		this.service = service;
+		this.relationField = relationField;
+		
 		String relatedEntityName = relationField.getRelatedEntityName();
 		final String entityDisplayName = CrudLabelHelper.getStringEntityNameSingular(relatedEntityName).toLowerCase();
 
@@ -65,37 +75,25 @@ public class SearchSelectWidget extends DialogBox {
 			
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				String searchValue = searchBox.getValue();
+				final String searchValue = searchBox.getValue();
 				
 				if (searchValue.length() < 3) {
 					searchResult.removeAllRows();
 					return;
 				}
 				
-				PageMetaData<String> p = new PageMetaData<String>();
-				p.setItemsPerPage(1000000);
-				p.setSortKey(relationField.getSearchSortField());
+				if (searchTimer != null) {
+					searchTimer.cancel();
+					searchTimer = null;
+				}
 				
-				service.searchStartsWith(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
-					
+				searchTimer = new Timer() {
 					@Override
-					public void onSuccess(CrudEntityList result) {
-						searchResult.removeAllRows();
-						
-						items = result.getItems();
-						for (CrudEntityDescription item : items) {
-							String displayString = item.getDisplayString();
-							
-							int count = searchResult.getRowCount();
-							searchResult.setText(count, 0, displayString);
-						}
+					public void run() {
+						searchFor(searchValue);
 					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						
-					}
-				});
+				};
+				searchTimer.schedule(500);
 			}
 		});
 		
@@ -119,6 +117,33 @@ public class SearchSelectWidget extends DialogBox {
 		addStyleName("searchListSelect");
 	}
 
+	private void searchFor(String searchValue) {
+		PageMetaData<String> p = new PageMetaData<String>();
+		p.setItemsPerPage(1000000);
+		p.setSortKey(relationField.getSearchSortField());
+		
+		service.searchStartsWith(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
+			
+			@Override
+			public void onSuccess(CrudEntityList result) {
+				searchResult.removeAllRows();
+				
+				items = result.getItems();
+				for (CrudEntityDescription item : items) {
+					String displayString = item.getDisplayString();
+					
+					int count = searchResult.getRowCount();
+					searchResult.setText(count, 0, displayString);
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				
+			}
+		});
+	}
+	
 	public interface SelectHandler {
 		public void onSelect(Long id);
 	}
