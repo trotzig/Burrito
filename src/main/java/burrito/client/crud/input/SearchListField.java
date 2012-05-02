@@ -44,7 +44,7 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 		this.selectedId = (Long) relationField.getValue();
 		
 		final String relatedEntityName = relationField.getRelatedEntityName();
-		entityDisplayName = CrudLabelHelper.getString(relatedEntityName.replace('.', '_')).toLowerCase();
+		entityDisplayName = CrudLabelHelper.getStringEntityNameSingular(relatedEntityName).toLowerCase();
 		
 		wrapper = new FlowPanel();
 		

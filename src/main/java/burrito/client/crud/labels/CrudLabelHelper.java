@@ -108,4 +108,16 @@ public class CrudLabelHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param relatedEntityName "se.company.Entity"
+	 * @return
+	 */
+	public static String getStringEntityNameSingular(String relatedEntityName) {
+		relatedEntityName = relatedEntityName.replace('.', '_') + "_singular";
+		return getString(relatedEntityName);
+	}
+	
+
 }

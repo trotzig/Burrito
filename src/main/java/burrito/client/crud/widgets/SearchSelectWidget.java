@@ -37,7 +37,8 @@ public class SearchSelectWidget extends DialogBox {
 	
 	public SearchSelectWidget(final CrudServiceAsync service, final ManyToOneRelationField relationField) {
 		String relatedEntityName = relationField.getRelatedEntityName();
-		final String entityDisplayName = CrudLabelHelper.getString(relatedEntityName.replace('.', '_')).toLowerCase();
+		final String entityDisplayName = CrudLabelHelper.getStringEntityNameSingular(relatedEntityName).toLowerCase();
+
 		setText(labels.selectOrChange(entityDisplayName));
 		
 		VerticalPanel verticalPanel = new VerticalPanel();
