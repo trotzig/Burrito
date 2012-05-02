@@ -30,10 +30,16 @@ public class SearchManagerTest extends TestBase {
 	}
 	
 	@Test
-	public void search() {
+	public void weHaveSearchEntries() {
 		Query<SearchEntry> all = SearchEntry.all();
 		Assert.assertEquals(2, all.count());
 		
+		Object[] expecteds = {"hello","world"};
+		Assert.assertArrayEquals(expecteds , all.get().tokens.toArray());
+	}
+	
+	@Test
+	public void search() {
 		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "hello world");
 		Assert.assertEquals(1, search.getItems().size());
 	}
@@ -60,6 +66,15 @@ public class SearchManagerTest extends TestBase {
 	public void searchStartsWithWholeWord() {
 		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello");
 		Assert.assertEquals(1, search.getItems().size());
+	}
+	
+	@Test
+	public void searchStartsWithPartOfSentence() {
+		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello worl");
+		Assert.assertEquals(1, search.getItems().size());
+		
+		search = searchManager.searchStartsWith(SearchTestEntity.class, "hello word");
+		Assert.assertEquals("not correct sentence", 0, search.getItems().size());
 	}
 	
 }

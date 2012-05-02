@@ -175,15 +175,14 @@ public class SearchManager {
 	 * @param p
 	 * @return
 	 */
-	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz,
-			String query) {
-		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils
-				.stripHTML(query), 20);
+	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query) {
+		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils.stripHTML(query), 20);
 		return SearchEntry.search(clazz, tokens);
 	}
 	
 	public ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, String searchString) {
-		return SearchEntry.searchStartsWith(clazz, searchString);
+		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils.stripHTML(searchString), 20);
+		return SearchEntry.searchStartsWith(clazz, tokens, 50);
 	}
 
 }

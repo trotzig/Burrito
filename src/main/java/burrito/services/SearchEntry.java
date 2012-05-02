@@ -18,6 +18,7 @@
 package burrito.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,10 +51,10 @@ public class SearchEntry extends Model implements Serializable {
 		return Model.all(SearchEntry.class);
 	}
 
-	public static ItemCollection<SearchEntry> search(
-			Class<? extends Model> clazz, Set<String> tokens) {
+	public static ItemCollection<SearchEntry> search(Class<? extends Model> clazz, Set<String> tokens) {
 		Query<SearchEntry> query = all();
 		query.filter("ownerClassName", clazz.getName());
+		
 		for (String token : tokens) {
 			query.filter("tokens", token);
 		}
@@ -64,14 +65,27 @@ public class SearchEntry extends Model implements Serializable {
 		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());
 	}
 	
-	public static ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, String searchString) {
+	public static ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, Set<String> tokens, int limit) {
 		Query<SearchEntry> query = all();
 		query.filter("ownerClassName", clazz.getName());
 			
-		query.filter("tokens >=", searchString);
-		query.filter("tokens <", searchString + Character.MAX_VALUE);
-						
-		query.limit(50);
+		String lastItem = "";
+		
+		ArrayList<String> list = new ArrayList<String>(tokens);
+		if (!list.isEmpty()) {
+			lastItem = list.remove(list.size()-1);
+		}
+		
+		for (String token : list) {
+			query.filter("tokens", token);
+		}
+		
+		if (!lastItem.equals("")) {
+			query.filter("tokens >=", lastItem);
+			query.filter("tokens <", lastItem + Character.MAX_VALUE);
+		}
+		
+		query.limit(limit);
 		List<SearchEntry> entries = query.fetch();
 		boolean hasNext = false;
 
