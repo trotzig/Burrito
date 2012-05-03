@@ -69,12 +69,12 @@ public class SearchManagerTest extends TestBase {
 	}
 	
 	@Test
-	public void searchStartsWithPartOfSentence() {
-		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello worl");
-		Assert.assertEquals(1, search.getItems().size());
+	public void searchStartsWithOnlyTheFirstWord() {
+		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello wor");
+		Assert.assertEquals(0, search.getItems().size());
 		
-		search = searchManager.searchStartsWith(SearchTestEntity.class, "hello word");
-		Assert.assertEquals("not correct sentence", 0, search.getItems().size());
+		search = searchManager.searchStartsWith(SearchTestEntity.class, "hello world");
+		Assert.assertEquals(1, search.getItems().size());
 	}
 	
 }

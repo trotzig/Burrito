@@ -73,19 +73,15 @@ public class SearchEntry extends Model implements Serializable {
 	public static ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, Set<String> tokens, int limit) {
 		Query<SearchEntry> query = all();
 		query.filter("ownerClassName", clazz.getName());
+		
+		if (tokens.size() > 1) {
+			for (String token : tokens) {
+				query.filter("tokens", token);
+			}
+		} else if (tokens.size() == 1) {
+			ArrayList<String> list = new ArrayList<String>(tokens);
+			String lastItem = list.remove(0);
 			
-		String lastItem = "";
-		
-		ArrayList<String> list = new ArrayList<String>(tokens);
-		if (!list.isEmpty()) {
-			lastItem = list.remove(list.size()-1);
-		}
-		
-		for (String token : list) {
-			query.filter("tokens", token);
-		}
-		
-		if (!lastItem.equals("")) {
 			query.filter("tokens >=", lastItem);
 			query.filter("tokens <", lastItem + Character.MAX_VALUE);
 		}
