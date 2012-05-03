@@ -58,6 +58,7 @@ import burrito.annotations.Relation.RenderMode;
 import burrito.annotations.Required;
 import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
+import burrito.annotations.SearchableMethod;
 import burrito.annotations.Unique;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudNameIdPair;
@@ -655,7 +656,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 		crud.setName(field.getName());
 		crud.setRequired(field.isAnnotationPresent(Required.class));
-		crud.setSearchable(field.isAnnotationPresent(SearchableField.class));
+		
+		boolean searchable = field.isAnnotationPresent(SearchableField.class) || field.isAnnotationPresent(SearchableMethod.class);
+		crud.setSearchable(searchable);
+		
 		if (field.isAnnotationPresent(DefaultSort.class)) {
 			crud.setDefaultSort(true);
 			crud.setSortAscending(field.getAnnotation(DefaultSort.class)

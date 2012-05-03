@@ -20,6 +20,7 @@ package burrito.services;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 
 import siena.Model;
 import burrito.annotations.SearchableField;
+import burrito.annotations.SearchableMethod;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
@@ -70,10 +72,10 @@ public class SearchManager {
 	public final static String[] stopWords = new String[] { "en", "ett", "i",
 			"och", "eller", "men", "den", "det", "att" };
 
-	public void insertOrUpdateSearchEntry(Model entity,
-			Long entityId) {
+	public void insertOrUpdateSearchEntry(Model entity, Long entityId) {
 		boolean update = true;
 		Class<? extends Model> ownerType = entity.getClass();
+		
 		SearchEntry entry = SearchEntry.getByOwner(ownerType, entityId);
 		if (entry == null) {
 			entry = new SearchEntry();
@@ -100,9 +102,9 @@ public class SearchManager {
 		if (entry != null) entry.delete();
 	}
 
-	private Set<String> getSearchableTextsFromEntity(
-			Class<? extends Model> ownerType, Model entity) {
+	private Set<String> getSearchableTextsFromEntity(Class<? extends Model> ownerType, Model entity) {
 		Set<String> searchables = new HashSet<String>();
+		
 		for (Field field : EntityUtil.getFields(ownerType)) {
 			if (field.isAnnotationPresent(SearchableField.class)) {
 				try {
@@ -116,6 +118,21 @@ public class SearchManager {
 				}
 			}
 		}
+		
+		for (Method method : EntityUtil.getMethods(ownerType)) {
+			if (method.isAnnotationPresent(SearchableMethod.class)) {
+				try {
+					method.setAccessible(true);
+					String text = (String) method.invoke(entity);
+					if (text != null) {
+						searchables.add(text);
+					}
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to get searchable texts from entity", e);
+				}
+			}
+		}  
+		
 		return searchables;
 	}
 

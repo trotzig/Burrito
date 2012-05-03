@@ -71,7 +71,7 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 			@Override
 			public void onClick(ClickEvent event) {
 				final SearchSelectWidget popup = new SearchSelectWidget(service, relationField);
-				popup.setPopupPosition(Window.getClientWidth() / 2, Window.getClientHeight() /2);
+				popup.setPopupPosition(Window.getClientWidth() / 2, 100);
 				popup.setSelectHandler(new SelectHandler() {
 					@Override
 					public void onSelect(Long id) {

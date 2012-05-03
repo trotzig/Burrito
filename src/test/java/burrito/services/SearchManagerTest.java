@@ -34,7 +34,7 @@ public class SearchManagerTest extends TestBase {
 		Query<SearchEntry> all = SearchEntry.all();
 		Assert.assertEquals(2, all.count());
 		
-		Object[] expecteds = {"hello","world"};
+		Object[] expecteds = {"hello","searchabl","world","function"};
 		Assert.assertArrayEquals(expecteds , all.get().tokens.toArray());
 	}
 	
@@ -74,6 +74,12 @@ public class SearchManagerTest extends TestBase {
 		Assert.assertEquals(0, search.getItems().size());
 		
 		search = searchManager.searchStartsWith(SearchTestEntity.class, "hello world");
+		Assert.assertEquals(1, search.getItems().size());
+	}
+	
+	@Test
+	public void searchOnFunction() {
+		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "searchable function hello");
 		Assert.assertEquals(1, search.getItems().size());
 	}
 	
