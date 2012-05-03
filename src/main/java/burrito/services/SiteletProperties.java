@@ -69,11 +69,15 @@ public class SiteletProperties extends Model implements Serializable {
 	}
 
 	public static SiteletProperties get(Long id) {
-		return all().filter("id", id).get();
+		synchronized (SiteletProperties.class) {
+			return all().filter("id", id).get();
+		}
 	}
 
 	public static List<SiteletProperties> getByContainerId(String containerId) {
-		return all().filter("containerId", containerId).order("order").fetch();
+		synchronized (SiteletProperties.class) {
+			return all().filter("containerId", containerId).order("order").fetch();
+		}
 	}
 
 	/**
@@ -86,16 +90,19 @@ public class SiteletProperties extends Model implements Serializable {
 	}
 
 	public static SiteletProperties getByEntityId(Long entityId) {
-		return all().filter("entityId", entityId).get();
+		synchronized (SiteletProperties.class) {
+			return all().filter("entityId", entityId).get();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Sitelet getAssociatedSitelet() {
 		try {
-			return (Sitelet) Model
-					.all((Class<? extends Model>) Class
-							.forName(this.entityTypeClassName))
-					.filter("id", entityId).get();
+			Class<? extends Model> clazz = (Class<? extends Model>) Class.forName(this.entityTypeClassName);
+
+			synchronized (clazz) {
+				return (Sitelet) Model.all(clazz).filter("id", entityId).get();
+			}
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Unknown class: " + entityTypeClassName,
 					e);
@@ -107,7 +114,9 @@ public class SiteletProperties extends Model implements Serializable {
 	 * nextAutoRefresh date in the past.
 	 */
 	public static List<SiteletProperties> getSiteletsNeedingRefresh() {
-		return all().filter("nextAutoRefresh<", new Date()).fetch();
+		synchronized (SiteletProperties.class) {
+			return all().filter("nextAutoRefresh<", new Date()).fetch();
+		}
 	}
 
 	public Long getId() {

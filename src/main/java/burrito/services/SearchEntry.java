@@ -41,10 +41,10 @@ public class SearchEntry extends Model implements Serializable {
 
 	public Long ownerId;
 
-	public static SearchEntry getByOwner(Class<? extends Model> ownerType,
-			Long ownerId) {
-		return all().filter("ownerClassName", ownerType.getName()).filter(
-				"ownerId", ownerId).get();
+	public static SearchEntry getByOwner(Class<? extends Model> ownerType, Long ownerId) {
+		synchronized (SearchEntry.class) {
+			return all().filter("ownerClassName", ownerType.getName()).filter("ownerId", ownerId).get();
+		}
 	}
 
 	public static Query<SearchEntry> all() {
@@ -59,7 +59,12 @@ public class SearchEntry extends Model implements Serializable {
 			query.filter("tokens", token);
 		}
 						
-		List<SearchEntry> entries = query.fetch();
+		List<SearchEntry> entries;
+
+		synchronized (SearchEntry.class) {
+			entries = query.fetch();
+		}
+
 		boolean hasNext = false;
 
 		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());
@@ -86,7 +91,13 @@ public class SearchEntry extends Model implements Serializable {
 		}
 		
 		query.limit(limit);
-		List<SearchEntry> entries = query.fetch();
+
+		List<SearchEntry> entries;
+
+		synchronized (SearchEntry.class) {
+			entries = query.fetch();
+		}
+
 		boolean hasNext = false;
 
 		return new ItemCollection<SearchEntry>(entries, hasNext, 0, entries.size());

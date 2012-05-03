@@ -62,8 +62,13 @@ public class JsonLinkParser {
 			throw new RuntimeException("No such class: "
 					+ overlay.typeClassName, e);
 		}
-		Linkable linkable = (Linkable) Model.all(clazz).filter("id",
-				overlay.typeId).get();
+
+		Linkable linkable;
+
+		synchronized (clazz) {
+			linkable = (Linkable) Model.all(clazz).filter("id", overlay.typeId).get();
+		}
+
 		link.setUrl(linkable.getUrl());
 		return link;
 	}

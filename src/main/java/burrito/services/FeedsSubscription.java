@@ -206,7 +206,9 @@ public class FeedsSubscription extends Model {
 	 * @return
 	 */
 	public static FeedsSubscription getById(Long id) {
-		return all().filter("id", id).get();
+		synchronized (FeedsSubscription.class) {
+			return all().filter("id", id).get();
+		}
 	}
 
 	/**
@@ -217,7 +219,10 @@ public class FeedsSubscription extends Model {
 	public static List<FeedsSubscription> getAllExpired() {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, -2);
-		return all().filter("timestamp <", cal.getTime()).fetch();
+
+		synchronized (FeedsSubscription.class) {
+			return all().filter("timestamp <", cal.getTime()).fetch();
+		}
 	}
 
 	/**
@@ -227,7 +232,9 @@ public class FeedsSubscription extends Model {
 	 * @return
 	 */
 	public static FeedsSubscription getByChannelId(String channelId) {
-		return all().filter("channelId", channelId).get();
+		synchronized (FeedsSubscription.class) {
+			return all().filter("channelId", channelId).get();
+		}
 	}
 
 	@Override
