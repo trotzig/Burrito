@@ -24,8 +24,10 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
+import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.form.EditForm;
 import burrito.client.widgets.layout.VerticalSpacer;
 import burrito.client.widgets.panels.table.BatchAction;
 import burrito.client.widgets.panels.table.CellRenderer;
@@ -40,6 +42,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -48,6 +52,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -106,6 +111,8 @@ public class CrudEntityIndex extends Composite {
 						if (field instanceof AdminLinkMethodField) {
 							AdminLinkMethodField linkField = (AdminLinkMethodField) field;
 							return new Anchor(linkField.getText(), linkField.getUrl());
+						} if (field instanceof ManyToOneRelationField) {
+							return lazyLoadRelation((ManyToOneRelationField)field);
 						}
 						return new Label(valueToString(field.getValue()));
 					}
@@ -144,6 +151,69 @@ public class CrudEntityIndex extends Composite {
 				}
 			});
 			render();
+		}
+
+		protected Widget lazyLoadRelation(final ManyToOneRelationField field) {
+			if (field.getValue() == null) {
+				return new Label();
+			}
+			final SimplePanel wrapper = new SimplePanel();
+			Label idLabel = new Label(field.getValue().toString() + " [?]");
+			wrapper.add(idLabel);
+			idLabel.addMouseOverHandler(new MouseOverHandler() {
+				
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					wrapper.setWidget(new Label("..."));
+					service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
+						@Override
+						public void onSuccess(final CrudEntityDescription result) {
+							final Label fieldLabel = new Label(result.getDisplayString());
+							Anchor linkToPopupEdit = new Anchor("[+]");
+							HorizontalPanel flow = new HorizontalPanel();
+							flow.add(fieldLabel);
+							flow.add(linkToPopupEdit);
+							linkToPopupEdit.addClickHandler(new ClickHandler() {
+								
+								@Override
+								public void onClick(ClickEvent event) {
+									new CrudEntityEditDialogBox(result.getDisplayString(), result.getEntityName(), result.getId(), new EditForm.SaveCancelListener() {
+										
+										@Override
+										public void onSave() {
+											service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
+												@Override
+												public void onSuccess(final CrudEntityDescription result) {
+													fieldLabel.setText(result.getDisplayString());
+												}
+												@Override
+												public void onFailure(Throwable caught) {
+													//do nothing
+												}
+											});
+										}
+										
+										@Override
+										public void onPartialSave(String warning) { throw new UnsupportedOperationException(); }
+										
+										@Override
+										public void onCancel() {
+											//do nothing
+										}
+									});
+								};
+							});
+							wrapper.setWidget(flow);
+						}
+						@Override
+						public void onFailure(Throwable caught) {
+							wrapper.setWidget(new Label("(failed to load)"));
+						}
+					});
+				}
+			});
+			return wrapper;
+			
 		}
 
 		protected String valueToString(Object value) {
