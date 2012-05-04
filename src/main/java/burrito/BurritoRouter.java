@@ -53,7 +53,7 @@ public class BurritoRouter extends Router {
 
 	UserService service = UserServiceFactory.getUserService();
 	
-	public static final CachePolicy ONE_HOUR_CACHE_POLICY = new CachePolicy(60 * 24);
+	public static final CachePolicy ONE_HOUR_CACHE_POLICY = new CachePolicy(60);
 	
 	@Override
 	public void init() {
