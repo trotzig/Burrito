@@ -377,12 +377,17 @@ a.k5-PageController-link:hover {
 	max-width: 450px;
 }
 
-.k5-ReadOnlyTextCrudInputField {
+.k5-EditForm .readOnly {
 	padding: 5px 0px;
 	color: #666;	
 }
 
-.k5-ImageCrudInputField {
+.k5-EditForm .k5-LinkedEntityWidget, .k5-EditForm .k5-DateTimePicker-wrapper  {
+	margin-top: 5px;	
+}
+	
+
+.k5-EditForm .k5-ImageCrudInputField {
 	margin-top: 5px;	
 }
 
@@ -391,7 +396,7 @@ a.k5-PageController-link:hover {
 }
 
 .k5-EditForm .gwt-CheckBox {
-	padding: 6px 1px;
+	padding: 7px 1px;
 	display: block;
 }
 
