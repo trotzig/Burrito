@@ -17,8 +17,12 @@
 
 package burrito.client.crud;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityList;
@@ -42,8 +46,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -153,67 +155,106 @@ public class CrudEntityIndex extends Composite {
 			render();
 		}
 
+		abstract class PostLoadRelationFiller {
+			private ManyToOneRelationField field;
+			public PostLoadRelationFiller(ManyToOneRelationField field) {
+				this.field = field;
+			}
+			abstract void onResultReady(CrudEntityReference ref);
+			public ManyToOneRelationField getField() {
+				return field;
+			}
+		}
+		
+		private HashMap<CrudEntityReference, List<PostLoadRelationFiller>> postLoadRelationFillers = new HashMap<CrudEntityReference, List<PostLoadRelationFiller>>(); 
+		
+		private void addPostLoadRelationFiller(PostLoadRelationFiller filler) {
+			CrudEntityReference reference = new CrudEntityReference();
+			reference.setEntityName(filler.getField().getRelatedEntityName());
+			reference.setId((Long)filler.getField().getValue());
+			List<PostLoadRelationFiller> fillers = postLoadRelationFillers.get(reference);
+			if (fillers == null) {
+				fillers = new ArrayList<CrudEntityIndex.CrudEntityTable.PostLoadRelationFiller>();
+				postLoadRelationFillers.put(reference, fillers);
+			}
+			fillers.add(filler);
+		}
+		
+		private void fillRelationFields() {
+			Set<CrudEntityReference> references = new HashSet<CrudEntityReference>(postLoadRelationFillers.keySet());
+			if (references.isEmpty()) {
+				return;
+			}
+			service.getDisplayNames(references, new AsyncCallback<List<CrudEntityReference>>() {
+				@Override
+				public void onSuccess(List<CrudEntityReference> result) {
+					for (CrudEntityReference ref : result) {
+						List<PostLoadRelationFiller> fillers = postLoadRelationFillers.get(ref);
+						for (PostLoadRelationFiller filler : fillers) {
+							filler.onResultReady(ref);
+						}
+					}
+					postLoadRelationFillers.clear();
+				}
+				@Override
+				public void onFailure(Throwable caught) {
+					throw new RuntimeException(caught);
+				}
+			});
+		}
+		
 		protected Widget lazyLoadRelation(final ManyToOneRelationField field) {
 			if (field.getValue() == null) {
 				return new Label();
 			}
 			final SimplePanel wrapper = new SimplePanel();
-			Label idLabel = new Label(field.getValue().toString() + " [?]");
-			wrapper.add(idLabel);
-			idLabel.addMouseOverHandler(new MouseOverHandler() {
+			wrapper.addStyleName("k5-CrudEntityIndex-relation");
+			wrapper.add(new Label("..."));
+			
+			this.addPostLoadRelationFiller(new PostLoadRelationFiller(field) {
 				
 				@Override
-				public void onMouseOver(MouseOverEvent event) {
-					wrapper.setWidget(new Label("..."));
-					service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
+				void onResultReady(final CrudEntityReference result) {
+					final Label fieldLabel = new Label(result.getDisplayString());
+					Anchor linkToPopupEdit = new Anchor("[+]");
+					HorizontalPanel flow = new HorizontalPanel();
+					flow.add(fieldLabel);
+					flow.add(linkToPopupEdit);
+					linkToPopupEdit.addClickHandler(new ClickHandler() {
+						
 						@Override
-						public void onSuccess(final CrudEntityDescription result) {
-							final Label fieldLabel = new Label(result.getDisplayString());
-							Anchor linkToPopupEdit = new Anchor("[+]");
-							HorizontalPanel flow = new HorizontalPanel();
-							flow.add(fieldLabel);
-							flow.add(linkToPopupEdit);
-							linkToPopupEdit.addClickHandler(new ClickHandler() {
+						public void onClick(ClickEvent event) {
+							new CrudEntityEditDialogBox(result.getDisplayString(), field.getRelatedEntityName(), result.getId(), new EditForm.SaveCancelListener() {
 								
 								@Override
-								public void onClick(ClickEvent event) {
-									new CrudEntityEditDialogBox(result.getDisplayString(), result.getEntityName(), result.getId(), new EditForm.SaveCancelListener() {
-										
+								public void onSave() {
+									service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
 										@Override
-										public void onSave() {
-											service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
-												@Override
-												public void onSuccess(final CrudEntityDescription result) {
-													fieldLabel.setText(result.getDisplayString());
-												}
-												@Override
-												public void onFailure(Throwable caught) {
-													//do nothing
-												}
-											});
+										public void onSuccess(final CrudEntityDescription result) {
+											fieldLabel.setText(result.getDisplayString());
 										}
-										
 										@Override
-										public void onPartialSave(String warning) { throw new UnsupportedOperationException(); }
-										
-										@Override
-										public void onCancel() {
+										public void onFailure(Throwable caught) {
 											//do nothing
 										}
 									});
-								};
+								}
+								
+								@Override
+								public void onPartialSave(String warning) { throw new UnsupportedOperationException(); }
+								
+								@Override
+								public void onCancel() {
+									//do nothing
+								}
 							});
-							wrapper.setWidget(flow);
-						}
-						@Override
-						public void onFailure(Throwable caught) {
-							wrapper.setWidget(new Label("(failed to load)"));
-						}
+						};
 					});
+					wrapper.setWidget(flow);
 				}
 			});
-			return wrapper;
 			
+			return wrapper;
 		}
 
 		protected String valueToString(Object value) {
@@ -240,6 +281,7 @@ public class CrudEntityIndex extends Composite {
 
 						public void onSuccess(CrudEntityList result) {
 							callback.onReady(result);
+							fillRelationFields();
 						}
 
 						public void onFailure(Throwable caught) {

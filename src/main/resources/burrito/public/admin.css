@@ -124,6 +124,12 @@ a.k5-PageController-link:hover {
 .k5-CrudEntityIndex-description {
 	font-style: italic;
 }
+.k5-CrudEntityIndex-relation td {
+	padding: 0px 3px 0px 0px;
+}
+.k5-CrudEntityIndex-relation a {
+	text-decoration: none;
+}
 
 .validationError {
 	color: red;
@@ -157,6 +163,16 @@ a.k5-PageController-link:hover {
 
 .k5-CrudEntityIndex-search .k5-SelectionBox, .k5-CrudEntityIndex-search input, .k5-CrudEntityIndex-search .gwt-HTML {
 	float: left;
+}
+
+.k5-CrudEntityIndex-search input[type="text"] {
+	border: 1px solid #CCC;
+	padding: 3px 3px 4px;
+	margin: 0px;	
+}
+
+.k5-CrudEntityIndex-search .gwt-HTML {
+	padding-top: 3px;
 }
 
 .k5-RelationSelectionListWrapper-entity-edit .dialogContent {
@@ -289,4 +305,32 @@ a.k5-PageController-link:hover {
 
 .searchListSelect .cancelButton {
 	margin-top: 10px;
+}
+
+.k5-EditForm-buttons {
+	background-color: #F0F0F0;
+	border-top: 1px solid #CCC;
+	padding: 20px 20px 20px 160px;
+}
+
+.k5-EditForm-buttons .gwt-Button {
+	padding: 5px 20px;
+	margin-right: 10px;
+}
+.k5-EditForm-button-save {
+	font-weight: bold;	
+}
+.k5-EditForm .cell-label, .k5-EditForm .cell-widget, .k5-EditForm .cell-description {
+	vertical-align: top;
+}
+.k5-EditForm .cell-label .k5-EditForm-label {
+	text-align: right;	
+	width: 140px;
+	margin-right: 20px;
+	overflow: hidden;
+	word-wrap: break-word;
+}
+
+.k5-EditForm .k5-EditForm-description {
+	max-width: 450px;
 }

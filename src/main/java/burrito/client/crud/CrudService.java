@@ -18,6 +18,7 @@
 package burrito.client.crud;
 
 import java.util.List;
+import java.util.Set;
 
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityInfo;
@@ -143,5 +144,13 @@ public interface CrudService extends RemoteService {
 	 * @return
 	 */
 	CrudEntityDescription describeEmbeddedObject(String embeddedClassName);
+	
+	/**
+	 * Gets display names for a number of entities
+	 * 
+	 * @param references
+	 * @return
+	 */
+	List<CrudEntityReference> getDisplayNames(Set<CrudEntityReference> references);
 
 }

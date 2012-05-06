@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import siena.Id;
 import siena.Model;
@@ -60,6 +61,7 @@ import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
 import burrito.annotations.SearchableMethod;
 import burrito.annotations.Unique;
+import burrito.client.crud.CrudEntityReference;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudNameIdPair;
 import burrito.client.crud.CrudService;
@@ -885,6 +887,19 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 		return classIsSubclassOfModel(superClass);
 		
+	}
+
+	@Override
+	public List<CrudEntityReference> getDisplayNames(
+			Set<CrudEntityReference> references) {
+		List<CrudEntityReference> result = new ArrayList<CrudEntityReference>();
+		for (CrudEntityReference ref : references) {
+			Class<? extends Model> clazz = extractClass(ref.getEntityName());
+			Model fromDatabase = Model.all(clazz).filter("id", ref.getId()).get();
+			ref.setDisplayString(fromDatabase.toString());
+			result.add(ref);
+		}
+		return result;
 	}
 
 }

@@ -41,9 +41,10 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("deprecation")
@@ -118,7 +119,8 @@ public abstract class EditForm extends Composite {
 
 	private EditFormMessages messages = GWT.create(EditFormMessages.class);
 	private DockPanel dock = new DockPanel();
-	private VerticalPanel main = new VerticalPanel();
+	private FlexTable main = new FlexTable();
+	private int currentRow = 0;
 	private DeckPanel wrapper = new DeckPanel();
 	private List<HasValidators> validateables = new ArrayList<HasValidators>();
 	private Label loading = new Label(messages.loading());
@@ -156,8 +158,12 @@ public abstract class EditForm extends Composite {
 	private boolean newForm = false;
 
 	public EditForm() {
+		save.addStyleName("k5-EditForm-button-save");
+		cancel.addStyleName("k5-EditForm-button-cancel");
 		dock.add(main, DockPanel.CENTER);
+		SimplePanel buttonWrapper = new SimplePanel();
 		HorizontalPanel hp = new HorizontalPanel();
+		buttonWrapper.addStyleName("k5-EditForm-buttons");
 		// start with save button disabled
 		save.setEnabled(false);
 		save.addClickHandler(new ClickHandler() {
@@ -176,12 +182,14 @@ public abstract class EditForm extends Composite {
 		});
 		hp.add(save);
 		hp.add(cancel);
-		dock.add(hp, DockPanel.SOUTH);
+		buttonWrapper.setWidget(hp);
+		dock.add(buttonWrapper, DockPanel.SOUTH);
 		dock.add(infoMessage, DockPanel.NORTH);
 		wrapper.add(dock);
 		wrapper.add(loading);
 		wrapper.showWidget(0);
 		initWidget(wrapper);
+		addStyleName("k5-EditForm");
 	}
 
 	/**
@@ -332,29 +340,31 @@ public abstract class EditForm extends Composite {
 		}
 
 		List<Widget> companionWidgets = new ArrayList<Widget>();
-
 		if (label != null) {
 			Label l = new Label(label);
 			l.addStyleName("k5-EditForm-label");
 			if (!widget.isVisible()) l.setVisible(false);
-			main.add(l);
+			main.setWidget(this.currentRow, 0, l);
 			companionWidgets.add(l);
 		}
-
+		main.setWidget(this.currentRow, 1, widget);
+		main.getCellFormatter().addStyleName(this.currentRow, 1, "cell-widget");
+		main.getCellFormatter().addStyleName(this.currentRow, 0, "cell-label");
 		if (description != null) {
+			this.currentRow++;
 			Label desc = new Label(description);
 			desc.addStyleName("k5-EditForm-description");
 			if (!widget.isVisible()) desc.setVisible(false);
-			main.add(desc);
+			main.setWidget(this.currentRow, 1, desc);
+			main.getCellFormatter().addStyleName(this.currentRow, 1, "cell-description");
 			companionWidgets.add(desc);
 		}
 
-		main.add(widget);
-
+		this.currentRow++;
 		VerticalSpacer spacer = new VerticalSpacer(10);
-		main.add(spacer);
+		main.setWidget(this.currentRow, 1, spacer);
 		companionWidgets.add(spacer);
-
+		this.currentRow++;
 		companionWidgetsMap.put(widget, companionWidgets);
 	}
 
