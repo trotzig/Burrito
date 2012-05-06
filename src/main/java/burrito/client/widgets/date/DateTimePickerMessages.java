@@ -30,4 +30,6 @@ public interface DateTimePickerMessages extends Messages{
 	String clear();
 	
 	String requiredError();
+
+	String invalidDateFormat();
 }

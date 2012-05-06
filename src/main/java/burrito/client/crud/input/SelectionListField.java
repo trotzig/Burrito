@@ -89,6 +89,11 @@ public class SelectionListField implements CrudInputField {
 		public void setValidationError(String validationError) {
 			selectionList.setValidationError(validationError);
 		}
+		
+		@Override
+		public void highlight() {
+			selectionList.highlight();
+		}
 
 		public boolean validate() {
 			return selectionList.validate();

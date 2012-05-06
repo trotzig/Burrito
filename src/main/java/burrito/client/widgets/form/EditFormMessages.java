@@ -32,4 +32,8 @@ public interface EditFormMessages extends Messages {
 	String cancel();
 
 	String fieldValueNotUniqueError(String field);
+
+	String saving();
+
+	String thereAreValidationErrors();
 }

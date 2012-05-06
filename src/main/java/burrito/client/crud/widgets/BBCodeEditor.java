@@ -213,4 +213,10 @@ public class BBCodeEditor extends VerticalPanel implements HasValidators {
 		}
 		
 	}
+	
+
+	@Override
+	public void highlight() {
+		rawEditor.setFocus(true);
+	}
 }

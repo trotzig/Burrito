@@ -32,6 +32,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -80,7 +81,7 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 		desc.addStyleName("k5-BlobStoreImageField-desc");
 		wrapper.add(desc);
 		wrapper.add(imageWrapper);
-		
+		HorizontalPanel buttons = new HorizontalPanel();
 		changeImage.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -89,7 +90,7 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 				changeImage.setVisible(false);
 			}
 		});
-		wrapper.add(changeImage);
+		buttons.add(changeImage);
 		changeImage.setVisible(false);
 		
 		deleteImage.addClickHandler(new ClickHandler() {
@@ -101,8 +102,8 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 				updateDeleteButton();
 			}
 		});
-		wrapper.add(deleteImage);
-		
+		buttons.add(deleteImage);
+		wrapper.add(buttons);
 		
 		updateDeleteButton();
 		createNewUploaderWidget();
@@ -214,5 +215,11 @@ public class BlobStoreImageField extends Composite implements HasValidators,
 	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
 		this.changeHandlers.add(handler);
 		return null;
+	}
+	
+
+	@Override
+	public void highlight() {
+		//
 	}
 }

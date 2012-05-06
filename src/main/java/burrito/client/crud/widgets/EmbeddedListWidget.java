@@ -67,6 +67,7 @@ public class EmbeddedListWidget extends Composite implements HasValidators {
 	private String embeddedClassName;
 	private CrudMessages labels = GWT.create(CrudMessages.class);
 	private String embeddedClassNameUnderscore;
+	private Anchor add;
 
 	public EmbeddedListWidget(String embeddedClassName, boolean required) {
 		this.embeddedClassNameUnderscore = embeddedClassName.replace('.', '_');
@@ -79,7 +80,7 @@ public class EmbeddedListWidget extends Composite implements HasValidators {
 		tablePlaceHolder.setWidget(new Label(labels
 				.noEmbeddedItemsAdded(CrudLabelHelper
 						.getString(embeddedClassNameUnderscore + "_plural"))));
-		Anchor add = new Anchor(CrudLabelHelper
+		add = new Anchor(CrudLabelHelper
 				.getString(embeddedClassNameUnderscore + "_new"));
 		add.addClickHandler(new ClickHandler() {
 
@@ -287,6 +288,12 @@ public class EmbeddedListWidget extends Composite implements HasValidators {
 		table.render();
 		tablePlaceHolder.setWidget(table);
 
+	}
+	
+
+	@Override
+	public void highlight() {
+		add.setFocus(true);
 	}
 
 }

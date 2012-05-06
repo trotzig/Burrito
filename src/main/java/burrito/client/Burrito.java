@@ -20,15 +20,25 @@ package burrito.client;
 
 import burrito.client.crud.CrudPanel;
 import burrito.client.sitelet.SiteletAdminPanel;
+import burrito.client.widgets.form.EditForm;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ScrollEvent;
+import com.google.gwt.user.client.Window.ScrollHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Burrito implements EntryPoint {
+	
+	private static EditForm currentEditForm;
 	
 	public void onModuleLoad() {
 		RootPanel adminPanel = RootPanel.get("burrito-admin");
@@ -38,12 +48,65 @@ public class Burrito implements EntryPoint {
 			if (siteletContainerId != null && !siteletContainerId.isEmpty()) {
 				SiteletAdminPanel siteletAdminPanel = new SiteletAdminPanel(siteletContainerId);
 				adminPanel.add(siteletAdminPanel);
-				return;
 			} else {
 				CrudPanel crud = new CrudPanel();
 				adminPanel.add(crud);
-				return;
+			}
+			Window.addWindowScrollHandler(new ScrollHandler() {
+				
+				@Override
+				public void onWindowScroll(ScrollEvent event) {
+					updateEditFormButtons();
+				}
+			});
+			Window.addResizeHandler(new ResizeHandler() {
+				
+				@Override
+				public void onResize(ResizeEvent event) {
+					updateEditFormButtons();
+				}
+			});
+			
+			Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+				
+				@Override
+				public void onPreviewNativeEvent(NativePreviewEvent event) {
+					if (currentEditForm == null) {
+						return;
+					}
+					if (event.getTypeInt() == Event.ONKEYDOWN) {
+						int sCharacterCode = 83;
+						if (event.getNativeEvent().getCtrlKey() && event.getNativeEvent().getKeyCode() == sCharacterCode) {
+							currentEditForm.getSaveButton().click();
+							event.cancel();
+						}
+					}
+				}
+			});
+		}		
+	}
+	
+	public static void setCurrentEditForm(EditForm current) {
+		currentEditForm = current;
+		Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+			
+			@Override
+			public void execute() {
+				updateEditFormButtons();
+			}
+		});
+	}
+
+	private static void updateEditFormButtons() {
+		if (currentEditForm != null) {
+			int bottomOfWindow = Window.getClientHeight() + Window.getScrollTop();
+			int bottomOfEditForm = currentEditForm.getAbsoluteTop() + currentEditForm.getOffsetHeight();
+			if (bottomOfEditForm > bottomOfWindow) {
+				currentEditForm.makeButtonsStick(true);
+			} else {
+				currentEditForm.makeButtonsStick(false);
 			}
 		}
 	}
+
 }

@@ -391,6 +391,7 @@ public class CrudEntityIndex extends Composite {
 		wrapper.add(new Hyperlink(CrudLabelHelper
 				.getString(underscoreEntityName + "_new"), entityName + "/-1"));
 		wrapper.add(new VerticalSpacer(10));
+		search.setVisible(false);
 		wrapper.add(search);
 
 		initWidget(wrapper);
@@ -399,6 +400,9 @@ public class CrudEntityIndex extends Composite {
 				new AsyncCallback<CrudEntityDescription>() {
 
 					public void onSuccess(CrudEntityDescription result) {
+						if (result.isSearchable()) {
+							search.setVisible(true);
+						}
 						loadTable(entityName, result);
 					}
 

@@ -25,11 +25,16 @@ body, table, input, select, textarea, iframe {
 	font-family: helvetica, arial, sans-serif;
 	font-size: 12px;
 }
-input[type=text], select, textarea {
+input, select, textarea, .gwt-TextBox, .gwt-SelectBox, .gwt-TextArea {
 	border-style: solid;
 	border-width: 1px;
-	border-color: #666;
-	padding: 1px 3px;
+	border-color: #CCC;
+	padding: 4px;
+	border-radius: 2px;	
+	margin: 0px;
+}
+input, textarea {
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 textarea {
 	width: 400px;
@@ -42,6 +47,7 @@ input[disabled='disabled'] {
 }
 table {
 	border-collapse: collapse;	
+	border-spacing: 0px;
 }
 
 .k5-PageController {
@@ -155,7 +161,7 @@ a.k5-PageController-link:hover {
 }
 
 .k5-InputField input {
-	width:300px;
+	width: 300px;
 }
 .gwt-DialogBox .dialogContent {
 	padding: 10px 20px 20px 20px;
@@ -257,7 +263,14 @@ a.k5-PageController-link:hover {
 
 .searchList .entityInfo {
 	margin-right: 10px;	
-	border: 1px solid gray;
+	border: 1px solid #CCC;
+}
+
+.searchList .entityInfo .selectedInfo {
+	padding-left: 4px;	
+}
+.searchList .entityInfo .clearButton {
+	padding-right: 4px;	
 }
 
 .searchList .searchListItem {
@@ -267,6 +280,10 @@ a.k5-PageController-link:hover {
 
 .searchList .entityInfo td {
 	padding: 3px;
+}
+
+.searchListSelect input {
+	width: 292px;	
 }
 
 .searchList .error {
@@ -310,11 +327,34 @@ a.k5-PageController-link:hover {
 .k5-EditForm-buttons {
 	background-color: #F0F0F0;
 	border-top: 1px solid #CCC;
-	padding: 20px 20px 20px 160px;
+	padding: 20px 20px 20px 163px;
+}
+
+.k5-Table .batchJobs {
+	margin-top: 20px;
+	border-top: 1px solid #CCC;
+	padding: 0px 20px 20px;
+	background-color: #F0F0F0;
+}
+
+.batchJobs .gwt-Label {
+	color: #999;
+}
+
+.gwt-Button {
+	padding: 5px 20px;
+}
+
+.k5-CrudEntityIndex-search .gwt-Button, .k5-StringListWidget-AddButton {
+	padding: 3px 5px;	
+}
+
+.k5-BlobStoreImageField .gwt-Button {
+	padding: 2px 4px;	
+	font-size: 10px;
 }
 
 .k5-EditForm-buttons .gwt-Button {
-	padding: 5px 20px;
 	margin-right: 10px;
 }
 .k5-EditForm-button-save {
@@ -327,10 +367,38 @@ a.k5-PageController-link:hover {
 	text-align: right;	
 	width: 140px;
 	margin-right: 20px;
+	padding: 5px 0px;
 	overflow: hidden;
 	word-wrap: break-word;
+	line-height: 15px;
 }
 
 .k5-EditForm .k5-EditForm-description {
 	max-width: 450px;
+}
+
+.k5-ReadOnlyTextCrudInputField {
+	padding: 5px 0px;
+	color: #666;	
+}
+
+.k5-ImageCrudInputField {
+	margin-top: 5px;	
+}
+
+.gwt-TabBar .gwt-TabBarItem { 
+	min-width: 100px;
+}
+
+.k5-EditForm .gwt-CheckBox {
+	padding: 6px 1px;
+	display: block;
+}
+
+.k5-EditForm-fixedButtons {
+	box-shadow: 0px -2px 5px #F0F0F0;
+}
+
+td.datePickerMonth {
+	font-size: 90%;
 }

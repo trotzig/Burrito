@@ -81,7 +81,9 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 						popup.hide();
 					}
 				});
+				popup.center();
 				popup.show();
+				popup.focus();
 			}
 		});
 		
@@ -170,5 +172,11 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 	@Override
 	public void setValidationError(String validationError) {
 		//
+	}
+	
+
+	@Override
+	public void highlight() {
+		changeAnchor.setFocus(true);
 	}
 }

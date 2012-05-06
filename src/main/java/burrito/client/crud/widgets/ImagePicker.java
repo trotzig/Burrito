@@ -148,7 +148,11 @@ public class ImagePicker extends Composite implements HasChangeHandlers, HasVali
 		return true;
 	}
 	
-	
+
+	@Override
+	public void highlight() {
+		
+	}
 
 
 }

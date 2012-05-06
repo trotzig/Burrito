@@ -172,4 +172,10 @@ public class LinkedEntityWidget extends Composite implements HasValidators {
 		return result;
 	}
 
+
+	@Override
+	public void highlight() {
+		add.setFocus(true);
+	}
+	
 }

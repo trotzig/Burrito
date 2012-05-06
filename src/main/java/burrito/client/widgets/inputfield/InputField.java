@@ -236,5 +236,10 @@ public abstract class InputField<T> extends Composite implements
 		field.setEnabled(enabled);
 		requiredStar.setVisible(enabled);
 	}
-
+	
+	@Override
+	public void highlight() {
+		setFocus(true);
+	};
+	
 }

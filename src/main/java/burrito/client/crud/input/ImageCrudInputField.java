@@ -42,6 +42,7 @@ public class ImageCrudInputField implements CrudInputField {
 		panel = new VerticalPanel();
 
 		oldImage = new Image();
+		oldImage.setVisible(false);
 		panel.add(oldImage);
 
 		requiredWidth = crudField.getWidth();
@@ -53,6 +54,7 @@ public class ImageCrudInputField implements CrudInputField {
 		panel.add(blobField);
 
 		load(crudField.getValue());
+		panel.addStyleName("k5-ImageCrudInputField");
 	}
 
 	public CrudField getCrudField() {
@@ -119,6 +121,7 @@ public class ImageCrudInputField implements CrudInputField {
 		}
 
 		oldImage.setUrl(previewUrl);
+		oldImage.setVisible(previewUrl != null);
 		blobField.setValue(blobFieldValue);
 	}
 }

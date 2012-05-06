@@ -25,6 +25,9 @@ import burrito.client.widgets.layout.VerticalSpacer;
 import burrito.client.widgets.validation.HasValidators;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,10 +45,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 
 @SuppressWarnings("deprecation")
 public abstract class EditForm extends Composite {
@@ -156,14 +161,19 @@ public abstract class EditForm extends Composite {
 	};
 
 	private boolean newForm = false;
+	private SimplePanel buttonWrapper;
 
 	public EditForm() {
 		save.addStyleName("k5-EditForm-button-save");
 		cancel.addStyleName("k5-EditForm-button-cancel");
 		dock.add(main, DockPanel.CENTER);
-		SimplePanel buttonWrapper = new SimplePanel();
+		buttonWrapper = new SimplePanel();
+		SimplePanel buttonWrapperInner = new SimplePanel();
+		buttonWrapper.add(buttonWrapperInner);
 		HorizontalPanel hp = new HorizontalPanel();
-		buttonWrapper.addStyleName("k5-EditForm-buttons");
+		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		buttonWrapperInner.addStyleName("k5-EditForm-buttons");
+		
 		// start with save button disabled
 		save.setEnabled(false);
 		save.addClickHandler(new ClickHandler() {
@@ -182,9 +192,9 @@ public abstract class EditForm extends Composite {
 		});
 		hp.add(save);
 		hp.add(cancel);
-		buttonWrapper.setWidget(hp);
+		hp.add(infoMessage);
+		buttonWrapperInner.setWidget(hp);
 		dock.add(buttonWrapper, DockPanel.SOUTH);
-		dock.add(infoMessage, DockPanel.NORTH);
 		wrapper.add(dock);
 		wrapper.add(loading);
 		wrapper.showWidget(0);
@@ -265,16 +275,21 @@ public abstract class EditForm extends Composite {
 		infoMessage.setText(null);
 		for (HasValidators v : validateables) {
 			if (!v.validate()) {
+				v.highlight();
+				infoMessage.setText(messages.thereAreValidationErrors());
 				return;
 			}
 		}
 		save.addStyleName("saving");
 		save.setEnabled(false);
+		save.setText(messages.saving());
 		SaveCallback callback = new SaveCallback() {
 
 			@Override
 			public void success() {
+				save.setText(messages.save());
 				save.removeStyleName("saving");
+				save.setEnabled(true);
 				// infoMessage.setText(messages.yourChangesHaveBeenSaved());
 				if (saveCancelListener != null) {
 					saveCancelListener.onSave();
@@ -283,6 +298,7 @@ public abstract class EditForm extends Composite {
 
 			@Override
 			public void partialSuccess(String warning) {
+				save.setText(messages.save());
 				save.setEnabled(true);
 				save.removeStyleName("saving");
 				if (saveCancelListener != null) {
@@ -292,6 +308,7 @@ public abstract class EditForm extends Composite {
 
 			@Override
 			public void failed(String message) {
+				save.setText(messages.save());
 				save.setEnabled(true);
 				save.removeStyleName("saving");
 				infoMessage.setText(messages.anErrorHasOccured(message));
@@ -415,6 +432,24 @@ public abstract class EditForm extends Composite {
 				h.onChange();
 			}
 		}
+	}
+
+	public void makeButtonsStick(boolean stick) {
+		getElement().getStyle().setPropertyPx("minHeight", getOffsetHeight());
+		Style style = buttonWrapper.getElement().getStyle();
+		buttonWrapper.addStyleName("k5-EditForm-fixedButtons");
+		if (stick) {
+			style.setPosition(Position.FIXED);
+			style.setBottom(0, Unit.PX);
+			style.setLeft(getAbsoluteLeft(), Unit.PX);
+			style.setWidth(getOffsetWidth(), Unit.PX);
+		} else {
+			style.clearPosition();
+			style.clearBottom();
+			style.clearLeft();
+			style.clearWidth();
+		}
+		
 	}
 
 }

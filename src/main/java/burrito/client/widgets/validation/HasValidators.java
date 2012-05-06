@@ -43,4 +43,9 @@ public interface HasValidators {
 	 */
 	void setValidationError(String validationError);
 
+	/**
+	 * Called when there is a validation error. Should focus the widget holding the error. 
+	 */
+	void highlight();
+
 }

@@ -257,4 +257,10 @@ public class SelectionList<T> extends Composite implements HasChangeHandlers,
 		}
 		return true;
 	}
+	
+
+	@Override
+	public void highlight() {
+		listBox.setFocus(true);
+	}
 }

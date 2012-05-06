@@ -160,6 +160,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		ArrayList<CrudField> delayed = new ArrayList<CrudField>();
 		//find all Displayable methods
 		for (Method method : EntityUtil.getMethods(clazz)) {
+			if (method.isAnnotationPresent(SearchableMethod.class)) {
+				desc.setSearchable(true);
+			}
 			Displayable dispAnn = method.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				CrudField crudField = new DisplayableMethodField();
@@ -174,6 +177,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 		//find all Displayable fields
 		for (Field field : EntityUtil.getFields(clazz)) {
+			if (field.isAnnotationPresent(SearchableField.class)) {
+				desc.setSearchable(true);
+			}
 			Displayable dispAnn = field.getAnnotation(Displayable.class);
 			if (dispAnn != null) {
 				try {
