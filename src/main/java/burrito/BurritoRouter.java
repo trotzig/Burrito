@@ -17,7 +17,6 @@
 
 package burrito;
 
-import taco.CachePolicy;
 import taco.Router;
 import burrito.controller.AddFeedsSubscriptionFeedController;
 import burrito.controller.AdminController;
@@ -53,8 +52,6 @@ public class BurritoRouter extends Router {
 
 	UserService service = UserServiceFactory.getUserService();
 	
-	public static final CachePolicy ONE_HOUR_CACHE_POLICY = new CachePolicy(60);
-	
 	@Override
 	public void init() {
 		
@@ -68,8 +65,7 @@ public class BurritoRouter extends Router {
 		route("/burrito/blobService").throughServlet(BlobServiceImpl.class).protect(Configurator.getAdminProtector());
 		route("/burrito/bbCodeService").throughServlet(BBCodeServiceImpl.class).protect(Configurator.getAdminProtector());
 		
-		//Change to one year? Is there any problem doing so?
-		route("/blobstore/image").throughServlet(BlobStoreImageServlet.class).setCachePolicy(ONE_HOUR_CACHE_POLICY);
+		route("/blobstore/image").throughServlet(BlobStoreImageServlet.class);
 		route("/blobstore/serve").throughServlet(BlobStoreServlet.class);
 
 		route("/burrito/sitelets/refresh").through(RefreshSiteletsController.class).renderAsJson().protect(btProtector);
