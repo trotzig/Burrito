@@ -166,7 +166,9 @@ public abstract class EditForm extends Composite {
 	public EditForm() {
 		save.addStyleName("k5-EditForm-button-save");
 		cancel.addStyleName("k5-EditForm-button-cancel");
-		dock.add(main, DockPanel.CENTER);
+		SimplePanel mainWrapper = new SimplePanel();
+		mainWrapper.add(main);
+		dock.add(mainWrapper, DockPanel.CENTER);
 		buttonWrapper = new SimplePanel();
 		SimplePanel buttonWrapperInner = new SimplePanel();
 		buttonWrapper.add(buttonWrapperInner);
@@ -200,6 +202,7 @@ public abstract class EditForm extends Composite {
 		wrapper.showWidget(0);
 		initWidget(wrapper);
 		addStyleName("k5-EditForm");
+		mainWrapper.addStyleName("k5-EditForm-main");
 	}
 
 	/**

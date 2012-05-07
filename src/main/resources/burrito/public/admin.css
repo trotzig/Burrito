@@ -407,3 +407,8 @@ a.k5-PageController-link:hover {
 td.datePickerMonth {
 	font-size: 90%;
 }
+
+.k5-CrudEntityEditDialogBox .k5-EditForm-main {
+	height: 400px;
+	overflow: auto;	
+}
