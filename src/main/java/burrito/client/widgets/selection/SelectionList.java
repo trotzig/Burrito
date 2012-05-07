@@ -68,7 +68,7 @@ public class SelectionList<T> extends Composite implements HasChangeHandlers,
 			wrapper.setWidget(0, 1, requiredStar);
 		}
 		initWidget(wrapper);
-		setStyleName("k5-SelectionBox");
+		addStyleName("k5-SelectionBox");
 	}
 
 	private ListBox createListBox() {

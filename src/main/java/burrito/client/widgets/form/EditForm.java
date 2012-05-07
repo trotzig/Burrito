@@ -360,29 +360,36 @@ public abstract class EditForm extends Composite {
 		}
 
 		List<Widget> companionWidgets = new ArrayList<Widget>();
-		if (label != null) {
-			Label l = new Label(label);
-			l.addStyleName("k5-EditForm-label");
-			if (!widget.isVisible()) l.setVisible(false);
-			main.setWidget(this.currentRow, 0, l);
-			companionWidgets.add(l);
+		if (label == null) {
+			label = "";
 		}
+		Label l = new Label(label);
+		l.addStyleName("k5-EditForm-label");
+		if (!widget.isVisible()) l.setVisible(false);
+		main.getFlexCellFormatter().setRowSpan(this.currentRow, 0, 2);
+		main.setWidget(this.currentRow, 0, l);
+		companionWidgets.add(l);
+		
 		main.setWidget(this.currentRow, 1, widget);
+		widget.addStyleName("cell-widget-inner");
 		main.getCellFormatter().addStyleName(this.currentRow, 1, "cell-widget");
 		main.getCellFormatter().addStyleName(this.currentRow, 0, "cell-label");
-		if (description != null) {
-			this.currentRow++;
-			Label desc = new Label(description);
-			desc.addStyleName("k5-EditForm-description");
-			if (!widget.isVisible()) desc.setVisible(false);
-			main.setWidget(this.currentRow, 1, desc);
-			main.getCellFormatter().addStyleName(this.currentRow, 1, "cell-description");
-			companionWidgets.add(desc);
+		
+		if (description == null) {
+			description = "";
 		}
+		
+		this.currentRow++;
+		Label desc = new Label(description);
+		desc.addStyleName("k5-EditForm-description");
+		if (!widget.isVisible()) desc.setVisible(false);
+		main.setWidget(this.currentRow, 0, desc);
+		main.getCellFormatter().addStyleName(this.currentRow, 0, "cell-description");
+		companionWidgets.add(desc);
 
 		this.currentRow++;
 		VerticalSpacer spacer = new VerticalSpacer(10);
-		main.setWidget(this.currentRow, 1, spacer);
+		main.setWidget(this.currentRow, 0, spacer);
 		companionWidgets.add(spacer);
 		this.currentRow++;
 		companionWidgetsMap.put(widget, companionWidgets);

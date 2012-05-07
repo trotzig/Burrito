@@ -181,10 +181,6 @@ a.k5-PageController-link:hover {
 	padding-top: 3px;
 }
 
-.k5-RelationSelectionListWrapper-entity-edit .dialogContent {
-	max-height: 400px;
-	overflow: auto;
-}
 
 .k5-StringListWidget-TagPanel {
 	margin-top: 4px;
@@ -377,18 +373,27 @@ a.k5-PageController-link:hover {
 	max-width: 450px;
 }
 
+.k5-EditForm .cell-widget-inner {
+	margin-top: 5px;	
+}
+
+.k5-EditForm .k5-InputField, 
+.k5-EditForm .k5-StringListWidget, 
+.k5-EditForm .searchList, 
+.k5-EditForm .k5-RelationSelectionListWrapper,
+.k5-EditForm .k5-SelectionBox.cell-widget-inner {
+	margin-top: 2px;	/* less than default, to align label better with text in box */
+}
+
 .k5-EditForm .readOnly {
-	padding: 5px 0px;
 	color: #666;	
 }
 
 .k5-EditForm .k5-LinkedEntityWidget, .k5-EditForm .k5-DateTimePicker-wrapper  {
-	margin-top: 5px;	
 }
 	
 
 .k5-EditForm .k5-ImageCrudInputField {
-	margin-top: 5px;	
 }
 
 .gwt-TabBar .gwt-TabBarItem { 
@@ -396,7 +401,7 @@ a.k5-PageController-link:hover {
 }
 
 .k5-EditForm .gwt-CheckBox {
-	padding: 7px 1px;
+	padding: 2px 1px;
 	display: block;
 }
 

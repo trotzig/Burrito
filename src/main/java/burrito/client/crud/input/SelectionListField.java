@@ -76,6 +76,7 @@ public class SelectionListField implements CrudInputField {
 			});
 
 			initWidget(wrapper);
+			addStyleName("k5-RelationSelectionListWrapper");
 		}
 
 		public HandlerRegistration addChangeHandler(ChangeHandler handler) {
