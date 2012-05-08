@@ -17,15 +17,21 @@
 
 package burrito.client.crud;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
+import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.form.EditForm;
 import burrito.client.widgets.layout.VerticalSpacer;
 import burrito.client.widgets.panels.table.BatchAction;
 import burrito.client.widgets.panels.table.CellRenderer;
@@ -48,6 +54,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -106,6 +113,8 @@ public class CrudEntityIndex extends Composite {
 						if (field instanceof AdminLinkMethodField) {
 							AdminLinkMethodField linkField = (AdminLinkMethodField) field;
 							return new Anchor(linkField.getText(), linkField.getUrl());
+						} if (field instanceof ManyToOneRelationField) {
+							return lazyLoadRelation((ManyToOneRelationField)field);
 						}
 						return new Label(valueToString(field.getValue()));
 					}
@@ -146,6 +155,108 @@ public class CrudEntityIndex extends Composite {
 			render();
 		}
 
+		abstract class PostLoadRelationFiller {
+			private ManyToOneRelationField field;
+			public PostLoadRelationFiller(ManyToOneRelationField field) {
+				this.field = field;
+			}
+			abstract void onResultReady(CrudEntityReference ref);
+			public ManyToOneRelationField getField() {
+				return field;
+			}
+		}
+		
+		private HashMap<CrudEntityReference, List<PostLoadRelationFiller>> postLoadRelationFillers = new HashMap<CrudEntityReference, List<PostLoadRelationFiller>>(); 
+		
+		private void addPostLoadRelationFiller(PostLoadRelationFiller filler) {
+			CrudEntityReference reference = new CrudEntityReference();
+			reference.setEntityName(filler.getField().getRelatedEntityName());
+			reference.setId((Long)filler.getField().getValue());
+			List<PostLoadRelationFiller> fillers = postLoadRelationFillers.get(reference);
+			if (fillers == null) {
+				fillers = new ArrayList<CrudEntityIndex.CrudEntityTable.PostLoadRelationFiller>();
+				postLoadRelationFillers.put(reference, fillers);
+			}
+			fillers.add(filler);
+		}
+		
+		private void fillRelationFields() {
+			Set<CrudEntityReference> references = new HashSet<CrudEntityReference>(postLoadRelationFillers.keySet());
+			if (references.isEmpty()) {
+				return;
+			}
+			service.getDisplayNames(references, new AsyncCallback<List<CrudEntityReference>>() {
+				@Override
+				public void onSuccess(List<CrudEntityReference> result) {
+					for (CrudEntityReference ref : result) {
+						List<PostLoadRelationFiller> fillers = postLoadRelationFillers.get(ref);
+						for (PostLoadRelationFiller filler : fillers) {
+							filler.onResultReady(ref);
+						}
+					}
+					postLoadRelationFillers.clear();
+				}
+				@Override
+				public void onFailure(Throwable caught) {
+					throw new RuntimeException(caught);
+				}
+			});
+		}
+		
+		protected Widget lazyLoadRelation(final ManyToOneRelationField field) {
+			if (field.getValue() == null) {
+				return new Label();
+			}
+			final SimplePanel wrapper = new SimplePanel();
+			wrapper.addStyleName("k5-CrudEntityIndex-relation");
+			wrapper.add(new Label("..."));
+			
+			this.addPostLoadRelationFiller(new PostLoadRelationFiller(field) {
+				
+				@Override
+				void onResultReady(final CrudEntityReference result) {
+					final Label fieldLabel = new Label(result.getDisplayString());
+					Anchor linkToPopupEdit = new Anchor("[+]");
+					HorizontalPanel flow = new HorizontalPanel();
+					flow.add(fieldLabel);
+					flow.add(linkToPopupEdit);
+					linkToPopupEdit.addClickHandler(new ClickHandler() {
+						
+						@Override
+						public void onClick(ClickEvent event) {
+							new CrudEntityEditDialogBox(result.getDisplayString(), field.getRelatedEntityName(), result.getId(), new EditForm.SaveCancelListener() {
+								
+								@Override
+								public void onSave() {
+									service.describe(field.getRelatedEntityName(), (Long) field.getValue(), null, new AsyncCallback<CrudEntityDescription>() {
+										@Override
+										public void onSuccess(final CrudEntityDescription result) {
+											fieldLabel.setText(result.getDisplayString());
+										}
+										@Override
+										public void onFailure(Throwable caught) {
+											//do nothing
+										}
+									});
+								}
+								
+								@Override
+								public void onPartialSave(String warning) { throw new UnsupportedOperationException(); }
+								
+								@Override
+								public void onCancel() {
+									//do nothing
+								}
+							});
+						};
+					});
+					wrapper.setWidget(flow);
+				}
+			});
+			
+			return wrapper;
+		}
+
 		protected String valueToString(Object value) {
 			if (value == null) {
 				return null;
@@ -170,6 +281,7 @@ public class CrudEntityIndex extends Composite {
 
 						public void onSuccess(CrudEntityList result) {
 							callback.onReady(result);
+							fillRelationFields();
 						}
 
 						public void onFailure(Throwable caught) {
@@ -279,6 +391,7 @@ public class CrudEntityIndex extends Composite {
 		wrapper.add(new Hyperlink(CrudLabelHelper
 				.getString(underscoreEntityName + "_new"), entityName + "/-1"));
 		wrapper.add(new VerticalSpacer(10));
+		search.setVisible(false);
 		wrapper.add(search);
 
 		initWidget(wrapper);
@@ -287,6 +400,9 @@ public class CrudEntityIndex extends Composite {
 				new AsyncCallback<CrudEntityDescription>() {
 
 					public void onSuccess(CrudEntityDescription result) {
+						if (result.isSearchable()) {
+							search.setVisible(true);
+						}
 						loadTable(entityName, result);
 					}
 

@@ -32,7 +32,9 @@ public class ReadOnlyTextCrudInputField implements CrudInputField<String> {
 	public ReadOnlyTextCrudInputField(StringField field) {
 		this.field = field;
 		String value = (String) field.getValue();
-		label = new Label(value != null ? value : "Not set");
+		label = new Label(value != null ? value : "(Not set)");
+		label.addStyleName("k5-ReadOnlyTextCrudInputField");
+		label.addStyleName("readOnly");
 	}
 
 	@Override

@@ -37,8 +37,6 @@ public class BetterDateBox extends DateBox implements HasChangeHandlers {
 	public BetterDateBox() {
 		super();
 
-		getTextBox().setReadOnly(true);
-
 		setFormat(new Format() {
 			@Override
 			public void reset(DateBox dateBox, boolean abandon) {
@@ -75,5 +73,13 @@ public class BetterDateBox extends DateBox implements HasChangeHandlers {
 	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
 		changeHandlers.add(handler);
 		return null;
+	}
+	
+	public boolean hasInvalidInputInTextBox() {
+		if ("".equals(getTextBox().getValue())) {
+			return false;
+		}
+		//if textbox has input but date is null, the input is invalid.
+		return getValue() == null; 
 	}
 }

@@ -231,6 +231,10 @@ public class DateTimePickerWidget extends Composite implements HasChangeHandlers
 
 	@Override
 	public boolean validate() {
+		if (dateBox.hasInvalidInputInTextBox()) {
+			setValidationError(messages.invalidDateFormat());
+			return false;
+		}
 		if(required && date == null) {
 			setValidationError(messages.requiredError());
 			return false;
@@ -238,5 +242,11 @@ public class DateTimePickerWidget extends Composite implements HasChangeHandlers
 			setValidationError(null);
 			return true;
 		}
+	}
+	
+
+	@Override
+	public void highlight() {
+		dateBox.setFocus(true);
 	}
 }

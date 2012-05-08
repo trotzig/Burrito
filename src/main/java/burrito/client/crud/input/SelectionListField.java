@@ -76,6 +76,7 @@ public class SelectionListField implements CrudInputField {
 			});
 
 			initWidget(wrapper);
+			addStyleName("k5-RelationSelectionListWrapper");
 		}
 
 		public HandlerRegistration addChangeHandler(ChangeHandler handler) {
@@ -88,6 +89,11 @@ public class SelectionListField implements CrudInputField {
 
 		public void setValidationError(String validationError) {
 			selectionList.setValidationError(validationError);
+		}
+		
+		@Override
+		public void highlight() {
+			selectionList.highlight();
 		}
 
 		public boolean validate() {

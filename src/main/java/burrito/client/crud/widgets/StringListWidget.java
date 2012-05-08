@@ -59,6 +59,7 @@ public class StringListWidget extends Composite {
 		
 		load(strings);
 		initWidget(wrapper);
+		addStyleName("k5-StringListWidget");
 	}
 
 	private void load(List<String> values) {

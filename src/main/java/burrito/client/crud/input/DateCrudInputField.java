@@ -37,7 +37,8 @@ public class DateCrudInputField implements CrudInputField<Date> {
 		this.field = field;
 		Date value = (Date) field.getValue();
 		if (field.isReadOnly()) {
-			label = new Label(value != null ? value.toString() : "Not set");
+			label = new Label(value != null ? value.toString() : "(Not set)");
+			label.addStyleName("readOnly");
 		}
 		else {
 			datePicker = new DateTimePickerWidget(field.isRequired());

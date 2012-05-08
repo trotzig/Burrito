@@ -36,6 +36,7 @@ public class CrudEntityDescription implements Serializable {
 	private Long id;
 	private String displayString;
 	private boolean cloneable = false;
+	private boolean searchable = false;
 
 	public CrudEntityDescription() {
 		fields = new ArrayList<CrudField>();
@@ -171,5 +172,13 @@ public class CrudEntityDescription implements Serializable {
 	
 	public boolean isCloneable() {
 		return cloneable;
+	}
+	
+	public void setSearchable(boolean searchable) {
+		this.searchable = searchable;
+	}
+	
+	public boolean isSearchable() {
+		return searchable;
 	}
 }

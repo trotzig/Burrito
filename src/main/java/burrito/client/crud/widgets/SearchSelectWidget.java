@@ -96,6 +96,7 @@ public class SearchSelectWidget extends DialogBox {
 				searchTimer.schedule(500);
 			}
 		});
+		searchBox.addStyleName("k5-SearchSelectWidget-searchbox");
 		
 		Button cancelButton = new Button(labels.cancel());
 		cancelButton.addStyleName("cancelButton");
@@ -151,4 +152,10 @@ public class SearchSelectWidget extends DialogBox {
 	public void setSelectHandler(SelectHandler onSelectHandler) {
 		this.onSelectHandler = onSelectHandler;
 	}
+
+	public void focus() {
+		this.searchBox.setFocus(true);
+	}
+	
+	
 }

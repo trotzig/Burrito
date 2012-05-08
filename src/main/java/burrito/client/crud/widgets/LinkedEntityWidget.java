@@ -79,6 +79,7 @@ public class LinkedEntityWidget extends Composite implements HasValidators {
 		});
 		wrapper.add(add);
 		initWidget(wrapper);
+		addStyleName("k5-LinkedEntityWidget");
 	}
 
 	public void addInputFieldValidator(InputFieldValidator validator) {
@@ -172,4 +173,10 @@ public class LinkedEntityWidget extends Composite implements HasValidators {
 		return result;
 	}
 
+
+	@Override
+	public void highlight() {
+		add.setFocus(true);
+	}
+	
 }

@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import burrito.client.widgets.InfoMessagePopup;
 import burrito.client.widgets.layout.VerticalSpacer;
@@ -96,6 +97,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 	private boolean searchable;
 	private CheckBox selectAll;
 	private int lastKnownPage = 0;
+	private SimplePanel batchJobsWrapper = new SimplePanel();
 	
 	
 	/**
@@ -180,10 +182,11 @@ public abstract class Table<T extends Serializable> extends Composite {
 		search.setVisible(false);
 		centerWrapper.add(search);
 		
-		
+		batchJobsWrapper.addStyleName("batchJobs");
 		dock.add(pageController, DockPanel.NORTH);
 		dock.add(centerWrapper, DockPanel.CENTER);
-		dock.add(batchJobs, DockPanel.SOUTH);
+		batchJobsWrapper.add(batchJobs);
+		dock.add(batchJobsWrapper, DockPanel.SOUTH);
 
 		pageController.addPageControllerHandler(new PageControllerHandler() {
 
@@ -357,7 +360,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 		String sortKey = null;
 		loadingLabel.setVisible(true);
 		table.setVisible(false);
-		batchJobs.setVisible(false);
+		batchJobsWrapper.setVisible(false);
 		if (rowsSelectable) {
 			selectAll.setValue(false);
 		}
@@ -376,7 +379,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 				renderTable();
 				loadingLabel.setVisible(false);
 				table.setVisible(true);
-				batchJobs.setVisible(true);
+				batchJobsWrapper.setVisible(true);
 			}
 		});
 	}

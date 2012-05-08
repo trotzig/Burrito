@@ -35,7 +35,6 @@ import siena.Model;
 import burrito.annotations.SearchableField;
 import burrito.annotations.SearchableMethod;
 import burrito.client.widgets.panels.table.ItemCollection;
-import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
 import burrito.util.StringUtils;
 
@@ -109,9 +108,9 @@ public class SearchManager {
 			if (field.isAnnotationPresent(SearchableField.class)) {
 				try {
 					field.setAccessible(true);
-					String text = (String) field.get(entity);
-					if (text != null) {
-						searchables.add(text);
+					Object obj = field.get(entity);
+					if (obj != null) {
+						searchables.add(obj.toString());
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to get searchable texts from entity", e);
@@ -123,9 +122,9 @@ public class SearchManager {
 			if (method.isAnnotationPresent(SearchableMethod.class)) {
 				try {
 					method.setAccessible(true);
-					String text = (String) method.invoke(entity);
-					if (text != null) {
-						searchables.add(text);
+					Object obj = method.invoke(entity);
+					if (obj != null) {
+						searchables.add(obj.toString());
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to get searchable texts from entity", e);

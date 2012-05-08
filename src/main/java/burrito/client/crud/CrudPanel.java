@@ -21,6 +21,7 @@ package burrito.client.crud;
 import java.util.HashMap;
 import java.util.Map;
 
+import burrito.client.Burrito;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.labels.CrudMessages;
 
@@ -73,6 +74,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 	public void onValueChange(ValueChangeEvent<String> event) {
 		// history has changed
 		String token = event.getValue();
+		Burrito.setCurrentEditForm(null);
 		content.setWidget(getPanelBasedOnHistoryToken(token));
 	}
 
@@ -110,7 +112,9 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 					new AsyncCallback<CrudEntityDescription>() {
 
 						public void onSuccess(CrudEntityDescription result) {
-							sp.setWidget(new CrudEntityEdit(result, copyFromIdFinal));
+							CrudEntityEdit editForm = new CrudEntityEdit(result, copyFromIdFinal);
+							Burrito.setCurrentEditForm(editForm);
+							sp.setWidget(editForm);
 							// update top again, now when values have been
 							// fetched
 							String disp = result.getDisplayString();
