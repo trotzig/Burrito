@@ -187,11 +187,10 @@
 			<version>0.2.2-SNAPSHOT</version>
 		</dependency>
 
-		<!-- https://github.com/AnderScore/siena/tree/1.0.0-b5-cherry-pick-IllegalAccessException -->
 		<dependency>
 			<groupId>siena</groupId>
 			<artifactId>siena</artifactId>
-			<version>1.0.0-b5-cherry-pick-IllegalAccessException</version>
+			<version>1.0.0-b5</version>
 		</dependency>
 		
 		<dependency>
