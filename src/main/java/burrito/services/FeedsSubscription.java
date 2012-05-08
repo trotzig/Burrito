@@ -137,7 +137,7 @@ public class FeedsSubscription extends Model {
 			clientId = UUID.randomUUID().toString();
 			channelId = service.createChannel(clientId);
 		}
-		catch (ChannelFailureException e) {
+		catch (Exception e) {
 			dropChannel(); // we got no channel, so the subscription will use polling instead
 		}
 	}
