@@ -64,6 +64,7 @@ import burrito.annotations.Unique;
 import burrito.client.crud.CrudEntityReference;
 import burrito.client.crud.CrudGenericException;
 import burrito.client.crud.CrudNameIdPair;
+import burrito.client.crud.CrudPreviewPayload;
 import burrito.client.crud.CrudService;
 import burrito.client.crud.FieldValueNotUniqueException;
 import burrito.client.crud.generic.CrudEntityDescription;
@@ -93,6 +94,7 @@ import burrito.client.crud.generic.fields.StringListField;
 import burrito.client.crud.generic.fields.StringSelectionField;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
+import burrito.interfaces.Previewable;
 import burrito.links.Linkable;
 import burrito.sitelet.Sitelet;
 import burrito.util.EntityUtil;
@@ -207,9 +209,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				result.add(crudField);
 			}
 		}
-		
+
 		desc.setFields(result);
 		desc.setEntityName(entityName);
+
 		return desc;
 	}
 
@@ -627,6 +630,14 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				desc.add(cf);
 			}
 		}
+
+		//scan through interfaces
+		for (Class<?> interfaze : EntityUtil.getInterfaces(clazz)) {
+			if (interfaze.equals(Previewable.class)) {
+				desc.setPreviewable(true);
+			}
+		}
+
 		return desc;
 	}
 
@@ -837,13 +848,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				}
 				resetId(entity);
 			} else {
-				try {
-					entity = (Model) clazz.newInstance();
-				} catch (Exception e) {
-					throw new RuntimeException(
-							"Failed to construct an object of type "
-									+ clazz.getName(), e);
-				}
+				entity = createNewEntity(clazz);
 			}
 		} else {
 			synchronized (clazz) {
@@ -851,6 +856,14 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		return entity;
+	}
+
+	private Model createNewEntity(Class<? extends Model> clazz) {
+		try {
+			return (Model) clazz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to construct an object of type " + clazz.getName(), e);
+		}
 	}
 
 	private void resetId(Model entity) {
@@ -908,4 +921,13 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		return result;
 	}
 
+	@Override
+	public CrudPreviewPayload getPreviewPayload(CrudEntityDescription desc) {
+		Class<? extends Model> clazz = extractClass(desc.getEntityName());
+		Model entity = createNewEntity(clazz);
+		updateEntityFromDescription(entity, desc, clazz);
+
+		Previewable previewable = (Previewable) entity;
+		return new CrudPreviewPayload(previewable.getPreviewData(), previewable.getPreviewUrl());
+	}
 }

@@ -24,14 +24,18 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.labels.CrudLabelHelper;
+import burrito.client.util.WindowRequest;
 import burrito.client.widgets.form.EditForm;
 import burrito.client.widgets.form.EditFormMessages;
 import burrito.client.widgets.inputfield.InputField;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -56,10 +60,12 @@ public class CrudEntityEdit extends EditForm {
 	
 	public CrudEntityEdit(final CrudEntityDescription desc, Long copyFromId) {
 		super();
+
 		this.desc = desc;
 		this.copyFromId = copyFromId;
 
 		init();
+
 		setSaveCancelListener(new SaveCancelListener() {
 
 			public void onSave() {
@@ -74,9 +80,33 @@ public class CrudEntityEdit extends EditForm {
 				History.newItem(desc.getEntityName());
 			}
 		});
-		getSaveButton().setEnabled(true);
-		focus();
 
+		getSaveButton().setEnabled(true);
+
+		if (desc.isPreviewable()) {
+			Button previewButton = new Button(messages.preview());
+
+			previewButton.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					service.getPreviewPayload(updateCrudEntityDescription(), new AsyncCallback<CrudPreviewPayload>() {
+						public void onSuccess(CrudPreviewPayload payload) {
+							WindowRequest request = new WindowRequest(payload.getPreviewUrl());
+							request.addParam("data", payload.getPreviewData());
+							request.post();
+						}
+
+						public void onFailure(Throwable caught) {
+							displayErrorMessage(messages.previewFailed());
+						}
+					});
+				}
+			});
+
+			addExtraButton(previewButton);
+		}
+
+		focus();
 	}
 
 	private void init() {

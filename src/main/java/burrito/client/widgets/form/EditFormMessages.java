@@ -36,4 +36,8 @@ public interface EditFormMessages extends Messages {
 	String saving();
 
 	String thereAreValidationErrors();
+
+	String preview();
+
+	String previewFailed();
 }

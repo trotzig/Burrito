@@ -50,7 +50,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 
 @SuppressWarnings("deprecation")
 public abstract class EditForm extends Composite {
@@ -130,6 +129,7 @@ public abstract class EditForm extends Composite {
 	private List<HasValidators> validateables = new ArrayList<HasValidators>();
 	private Label loading = new Label(messages.loading());
 	private Button save = new Button(messages.save());
+	private HorizontalPanel extraButtonsPanel = new HorizontalPanel();
 	private Button cancel = new Button(messages.cancel());
 	private InfoMessage infoMessage = new InfoMessage();
 	private SaveCancelListener saveCancelListener;
@@ -179,23 +179,25 @@ public abstract class EditForm extends Composite {
 		// start with save button disabled
 		save.setEnabled(false);
 		save.addClickHandler(new ClickHandler() {
-
 			@Override
 			public void onClick(ClickEvent event) {
 				save();
 			}
 		});
-		cancel.addClickHandler(new ClickHandler() {
 
+		cancel.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				saveCancelListener.onCancel();
 			}
 		});
+
 		hp.add(save);
+		hp.add(extraButtonsPanel);
 		hp.add(cancel);
 		hp.add(infoMessage);
 		buttonWrapperInner.setWidget(hp);
+
 		dock.add(buttonWrapper, DockPanel.SOUTH);
 		wrapper.add(dock);
 		wrapper.add(loading);
@@ -462,4 +464,11 @@ public abstract class EditForm extends Composite {
 		
 	}
 
+	public void addExtraButton(Button button) {
+		extraButtonsPanel.add(button);
+	}
+
+	public void displayErrorMessage(String message) {
+		infoMessage.setText(messages.anErrorHasOccured(message));
+	}
 }

@@ -41,4 +41,14 @@ public class EntityUtil {
 		}
 		return null;
 	}
+
+	public static List<Class<?>> getInterfaces(Class<?> clazz) {
+		List<Class<?>> interfaces = new ArrayList<Class<?>>();
+		while(clazz != Model.class) {
+			interfaces.addAll(Arrays.asList(clazz.getInterfaces()));
+			clazz = clazz.getSuperclass();
+			if (clazz == null) return interfaces;
+		}
+		return interfaces;
+	}
 }

@@ -72,4 +72,5 @@ public interface CrudServiceAsync {
 	void getDisplayNames(Set<CrudEntityReference> references,
 			AsyncCallback<List<CrudEntityReference>> asyncCallback);
 
+	void getPreviewPayload(CrudEntityDescription desc, AsyncCallback<CrudPreviewPayload> asyncCallback);
 }

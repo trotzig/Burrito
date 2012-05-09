@@ -37,6 +37,7 @@ public class CrudEntityDescription implements Serializable {
 	private String displayString;
 	private boolean cloneable = false;
 	private boolean searchable = false;
+	private boolean previewable = false;
 
 	public CrudEntityDescription() {
 		fields = new ArrayList<CrudField>();
@@ -180,5 +181,13 @@ public class CrudEntityDescription implements Serializable {
 	
 	public boolean isSearchable() {
 		return searchable;
+	}
+
+	public void setPreviewable(boolean previewable) {
+		this.previewable = previewable;
+	}
+
+	public boolean isPreviewable() {
+		return previewable;
 	}
 }

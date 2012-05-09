@@ -153,4 +153,11 @@ public interface CrudService extends RemoteService {
 	 */
 	List<CrudEntityReference> getDisplayNames(Set<CrudEntityReference> references);
 
+	/**
+	 * Gets the data required for an entity preview
+	 * 
+	 * @param references
+	 * @return
+	 */
+	CrudPreviewPayload getPreviewPayload(CrudEntityDescription desc);
 }
