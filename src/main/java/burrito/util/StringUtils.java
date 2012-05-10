@@ -205,6 +205,13 @@ public class StringUtils {
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param str "asdasd=qweqwe"
+	 * @param delimiter "="
+	 * @return "asdasd"
+	 */
 	public static String substringBefore(String str, String delimiter) {
 		int indexOf = str.indexOf(delimiter);
 		return str.substring(0, indexOf);
