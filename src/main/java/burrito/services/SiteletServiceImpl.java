@@ -51,12 +51,13 @@ public class SiteletServiceImpl extends RemoteServiceServlet implements SiteletS
 	}
 
 	@SuppressWarnings("unchecked")
-	private Model getSiteletEntity(SiteletProperties siteletProperties) throws ClassNotFoundException {
-		Class<? extends Model> clazz = (Class<? extends Model>) Class.forName(siteletProperties.entityTypeClassName);
-
-		synchronized (clazz) {
-			return Model.all(clazz).filter("id", siteletProperties.entityId).get();
-		}
+	private Model getSiteletEntity(SiteletProperties siteletProperties)
+			throws ClassNotFoundException {
+		Model m = Model.all(
+				(Class<? extends Model>) Class
+						.forName(siteletProperties.entityTypeClassName)).filter("id",
+				siteletProperties.entityId).get();
+		return m;
 	}
 
 	public void addSitelet(String containerName, String entityName,

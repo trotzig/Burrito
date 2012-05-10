@@ -83,9 +83,7 @@ public class FeedsSubscriptionMessage extends Model {
 	}
 
 	public static List<FeedsSubscriptionMessage> fetchBySubscriptionId(Long subscriptionId) {
-		synchronized (FeedsSubscriptionMessage.class) {
-			return all().filter("subscriptionId", subscriptionId).order("timestamp").fetch();
-		}
+		return all().filter("subscriptionId", subscriptionId).order("timestamp").fetch();
 	}
 	
 }

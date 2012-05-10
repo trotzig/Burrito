@@ -34,15 +34,12 @@ public class RefreshAllSiteletsController extends VoidController {
 	@Override
 	public Void execute() {
 		List<SiteletProperties> props;
-
-		synchronized (SiteletProperties.class) {
-			if (type == null) {
-				props = SiteletProperties.all().fetch();
-			} else {
-				props = SiteletProperties.all().filter("entityTypeClassName", type).fetch();
-			}
+		if (type == null) {
+			props = SiteletProperties.all().fetch();
+		} else {
+			props = SiteletProperties.all().filter("entityTypeClassName", type)
+					.fetch();
 		}
-
 		for (SiteletProperties prop : props) {
 			prop.triggerRefreshAsync();
 		}

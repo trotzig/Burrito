@@ -127,9 +127,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		try {
 			all = (List<Model>) clazz.getMethod("listValues").invoke(null); // for compatibility with old K9 code
 		} catch (Exception e) {
-			synchronized(clazz) {
-				all = (List<Model>) Model.all(clazz).fetch();
-			}
+			all = (List<Model>) Model.all(clazz).fetch();
 		}
 		List<CrudNameIdPair> result = new ArrayList<CrudNameIdPair>(all.size());
 		for (Model entity : all) {
@@ -274,12 +272,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 							// Get relateted class values based on the id from
 							// the
 							// deleted entity
-							List<? extends Model> relateds;
-
-							synchronized (clazz) {
-								relateds = Model.all(clazz).filter(field.getName(), toBeDeletedId).fetch();
-							}
-
+							List<? extends Model> relateds = Model.all(clazz)
+									.filter(field.getName(), toBeDeletedId)
+									.fetch();
 							for (Model related : relateds) {
 								try {
 									if (field.getType() == Long.class) {
@@ -509,14 +504,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 					if (value != null) {
 						Field idField = EntityUtil.getField(entity.getClass(), "id");
 						idField.setAccessible(true);
-
-						List<? extends Model> existingModels;
-
-						synchronized (entity.getClass()) {
-							existingModels = Model.all(entity.getClass()).filter(fieldName, value).fetch();
-						}
-
-						for (Model existing : existingModels) {
+						for (Model existing : Model.all(entity.getClass()).filter(fieldName, value).fetch()) {
 							if (!idField.get(existing).equals(id)) {
 								throw new FieldValueNotUniqueException(fieldName);
 							}
@@ -838,11 +826,8 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			// Id -1 means get a description for a new object of the type
 			if (copyFromId != null) {
 				// the field values are to be copied from another object:
-
-				synchronized (clazz) {
-					entity = (Model) Model.all(clazz).filter("id", copyFromId).get();
-				}
-
+				entity = (Model) Model.all(clazz).filter("id", copyFromId)
+						.get();
 				if (Arrays.asList(clazz.getInterfaces()).contains(CloneCreator.class)) {
 					entity = ((CloneCreator<?>)entity).createClone();
 				}
@@ -851,9 +836,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				entity = createNewEntity(clazz);
 			}
 		} else {
-			synchronized (clazz) {
-				entity = (Model) Model.all(clazz).filter("id", id).get();
-			}
+			entity = (Model) Model.all(clazz).filter("id", id).get();
 		}
 		return entity;
 	}

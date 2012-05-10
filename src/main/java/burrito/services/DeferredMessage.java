@@ -41,11 +41,8 @@ public class DeferredMessage extends Model {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
 	public static DeferredMessage get(Long deferredMessageId) {
-		synchronized (DeferredMessage.class) {
-			return Model.all(DeferredMessage.class).filter("id", deferredMessageId).get();
-		}
+		return Model.all(DeferredMessage.class).filter("id", deferredMessageId).get();
 	}
 	
 	public Date getCreated() {
