@@ -546,7 +546,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Class<? extends Model> clazz = extractClass(entityName);
 		Object entity = extractEntity(id, copyFromId, clazz);
 
-		return createEntityDescription(entityName, id, clazz, entity);
+		CrudEntityDescription desc = createEntityDescription(entityName, id, clazz, entity);
+		desc.setClonedFromId(copyFromId);
+		return desc;
 	}
 
 	public CrudEntityDescription describeEmbeddedObject(String embeddedClassName) {

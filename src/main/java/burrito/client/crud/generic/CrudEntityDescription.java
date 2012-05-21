@@ -38,6 +38,7 @@ public class CrudEntityDescription implements Serializable {
 	private boolean cloneable = false;
 	private boolean searchable = false;
 	private boolean previewable = false;
+	private Long clonedFromId = null;
 
 	public CrudEntityDescription() {
 		fields = new ArrayList<CrudField>();
@@ -190,4 +191,14 @@ public class CrudEntityDescription implements Serializable {
 	public boolean isPreviewable() {
 		return previewable;
 	}
+
+	public Long getClonedFromId() {
+		return clonedFromId;
+	}
+
+	public void setClonedFromId(Long clonedFromId) {
+		this.clonedFromId = clonedFromId;
+	}
+	
+	
 }

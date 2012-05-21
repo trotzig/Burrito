@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import burrito.client.Burrito;
+import burrito.client.crud.custom.CrudCustomEditFormHandler;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.labels.CrudMessages;
 
@@ -51,9 +52,11 @@ import com.google.gwt.user.client.ui.Widget;
  * @author henper
  * 
  */
-@SuppressWarnings("deprecation")
 public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 
+	private static Map<String, CrudCustomEditFormHandler> customEntityHandlers = new HashMap<String, CrudCustomEditFormHandler>();
+	
+	
 	private SimplePanel content = new SimplePanel();
 	private DockPanel wrapper = new DockPanel();
 	private CrudPanelTop top = new CrudPanelTop();
@@ -103,37 +106,58 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 			if (split.length == 3) {
 				copyFromId = Long.parseLong(split[2]);
 			}
-			final SimplePanel sp = new SimplePanel();
-			final Long copyFromIdFinal = copyFromId;
-			// delay creation until entity has been fetched
-			CrudServiceAsync service = GWT.create(CrudService.class);
-			final CrudMessages messages = GWT.create(CrudMessages.class);
-			service.describe(entityName, id, copyFromId,
-					new AsyncCallback<CrudEntityDescription>() {
-
-						public void onSuccess(CrudEntityDescription result) {
-							CrudEntityEdit editForm = new CrudEntityEdit(result, copyFromIdFinal);
-							Burrito.setCurrentEditForm(editForm);
-							sp.setWidget(editForm);
-							// update top again, now when values have been
-							// fetched
-							String disp = result.getDisplayString();
-							if (result.isNew()) {
-								disp = messages.newEntity();
-							}
-							top.update(entityName, disp);
-						}
-
-						public void onFailure(Throwable caught) {
-							throw new RuntimeException(
-									"Failed to get description of "
-											+ entityName, caught);
-						}
-					});
+			
 			top.update(entityName, null);
-			return sp;
+			return createEditForm(entityName, id, copyFromId);
 		}
 		return new Label("Failed to parse token");
+	}
+
+	private Widget createEditForm(final String entityName, Long id, final Long copyFromId) {
+		// delay creation until entity has been fetched
+		final SimplePanel sp = new SimplePanel();
+		CrudServiceAsync service = GWT.create(CrudService.class);
+		final CrudMessages messages = GWT.create(CrudMessages.class);
+		service.describe(entityName, id, copyFromId,
+				new AsyncCallback<CrudEntityDescription>() {
+
+					public void onSuccess(CrudEntityDescription result) {
+						CrudCustomEditFormHandler customHandler = customEntityHandlers.get(entityName);
+						if (customHandler != null) {
+							sp.setWidget(customHandler.createEditForm(result));
+						} else {
+							CrudEntityEdit editForm = new CrudEntityEdit(result, copyFromId);
+							Burrito.setCurrentEditForm(editForm);
+							sp.setWidget(editForm);
+						}
+						// update top again, now when values have been
+						// fetched
+						String disp = result.getDisplayString();
+						if (result.isNew()) {
+							disp = messages.newEntity();
+						}
+						top.update(entityName, disp);
+					}
+
+					public void onFailure(Throwable caught) {
+						throw new RuntimeException(
+								"Failed to get description of "
+										+ entityName, caught);
+					}
+				});
+		return sp;
+	}
+
+	/**
+	 * Registers a custom entitym edit form that is to be used instead of the
+	 * standard CRUD edit form.
+	 * 
+	 * @param entityName
+	 * @param registration
+	 */
+	public static void registerCustomEditForm(String entityName,
+			CrudCustomEditFormHandler registration) {
+		customEntityHandlers.put(entityName, registration);
 	}
 
 }
