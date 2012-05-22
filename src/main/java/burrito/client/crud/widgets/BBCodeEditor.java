@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burrito.client.crud.widgets.SelectableTextArea.SelectedText;
+import burrito.client.dto.LinkJavaScriptObject;
+import burrito.client.util.LinkJavaScriptObjectFactory;
 import burrito.client.widgets.messages.CommonMessages;
 import burrito.client.widgets.services.BBCodeService;
 import burrito.client.widgets.services.BBCodeServiceAsync;
@@ -99,16 +101,44 @@ public class BBCodeEditor extends VerticalPanel implements HasValidators {
 		});
 		buttonPanel.add(buttonImg);
 
-		Button buttonUrl = new Button("External url");
-		buttonUrl.addClickHandler(new ClickHandler() {
-			
+		Button buttonLink = new Button("Link");
+		buttonLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				BBUrlPanel urlPanel = new BBUrlPanel(rawEditor);
-				urlPanel.show();
+				LinkedEntityWidgetPopup popup = new LinkedEntityWidgetPopup(
+					new LinkedEntityWidgetPopup.SaveHandler() {
+						public void saved(String json) {
+
+							SelectedText selectedText = rawEditor.getSelectedTextObj();
+							LinkJavaScriptObject link = LinkJavaScriptObjectFactory.fromJson(json);
+
+							String linkText = link.getLinkText();
+							String absoluteUrl = link.getAbsoluteUrl();
+
+							if (absoluteUrl != null) {
+								if (linkText.isEmpty()) {
+									selectedText.text = "[url]" + absoluteUrl + "[/url]";
+								}
+								else {
+									selectedText.text = "[url=" + absoluteUrl + "]" + linkText + "[/url]";
+								}
+							}
+							else {
+								selectedText.text = "[linkable=" + link.getTypeClassName() + ":" + ((long) link.getTypeId()) + "]" + linkText + "[/linkable]";
+							}
+
+							rawEditor.setSelectedText(selectedText);
+						}
+					}
+				);
+
+				popup.setLinkText(rawEditor.getSelectedTextObj().text);
+
+				popup.center();
+				popup.show();
 			}
 		});
-		buttonPanel.add(buttonUrl);
+		buttonPanel.add(buttonLink);
 		
 		Button buttonYoutube = new Button("Youtube");
 		buttonYoutube.addClickHandler(new ClickHandler() {

@@ -222,4 +222,7 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 		handleTypeChange();
 	}
 
+	public void setLinkText(String text) {
+		linkText.setValue(text);
+	}
 }
