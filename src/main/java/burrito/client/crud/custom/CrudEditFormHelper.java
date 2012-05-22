@@ -98,6 +98,7 @@ public class CrudEditFormHelper {
 	 */
 	public void save(final SaveCallback saveCallback) {
 		if (!validate()) {
+			saveCallback.failed(messages.thereAreValidationErrors());
 			return;
 		}
 		updateCrudDescription();
@@ -138,6 +139,7 @@ public class CrudEditFormHelper {
 	private boolean validate() {
 		for (CrudInputFieldWrapper field : inputFields) {
 			if (!field.validate()) {
+				field.highlight();
 				return false;
 			}
 		}
