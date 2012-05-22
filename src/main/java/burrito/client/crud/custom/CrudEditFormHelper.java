@@ -83,9 +83,11 @@ public class CrudEditFormHelper {
 	}
 
 	private void updateCrudDescription() {
+		desc.getFields().clear();
 		for(CrudInputFieldWrapper field : inputFields) {
-			CrudField cf = desc.getField(field.getFieldName());
+			CrudField cf = field.getCrudField();
 			cf.setValue(field.getValue());
+			desc.add(cf);
 		}
 	}
 

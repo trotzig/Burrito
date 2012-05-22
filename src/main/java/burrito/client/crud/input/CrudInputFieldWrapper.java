@@ -1,5 +1,6 @@
 package burrito.client.crud.input;
 
+import burrito.client.crud.generic.CrudField;
 import burrito.client.widgets.inputfield.InputField;
 import burrito.client.widgets.validation.HasValidators;
 
@@ -57,6 +58,10 @@ public class CrudInputFieldWrapper extends SimplePanel {
 			return ((InputField<?>) widget).getValue();
 		}
 		return inputField.getValue();
+	}
+
+	public CrudField getCrudField() {
+		return inputField.getCrudField();
 	}
 	
 	
