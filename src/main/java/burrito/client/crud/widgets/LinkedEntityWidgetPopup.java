@@ -20,14 +20,15 @@ package burrito.client.crud.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import burrito.client.crud.CrudService;
 import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.dto.LinkJavaScriptObject;
+import burrito.client.util.LinkJavaScriptObjectFactory;
 import burrito.client.widgets.inputfield.StringInputField;
 import burrito.client.widgets.inputfield.URLInputfield;
+import burrito.client.widgets.layout.VerticalSpacer;
 import burrito.client.widgets.selection.SelectionList;
 import burrito.client.widgets.selection.SelectionListLabelCreator;
 
@@ -36,6 +37,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -43,15 +45,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import burrito.client.widgets.layout.VerticalSpacer;
 
 public class LinkedEntityWidgetPopup extends DialogBox {
 	public static interface SaveHandler {
 		void saved(String json);
 	}
 
-	private LinkedEntityJsonMessages jsonMessages = GWT
-			.create(LinkedEntityJsonMessages.class);
 	public static final String TYPE_ABSOLUTE_URL = "link_absolute";
 
 	private VerticalPanel wrapper = new VerticalPanel();
@@ -179,24 +178,36 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 
 	public String toJson() {
 		String typeValue = type.getValue();
-		if (type.getValue() == null) {
+
+		if (typeValue == null) {
 			return null;
 		}
+
 		String linkText = this.linkText.getValue();
+
 		if (linkText == null || linkText.isEmpty()) {
 			return null;
 		}
-		if (relationSelectionList != null) {
-			Long typeId = (Long) relationSelectionList.getValue();
-			return jsonMessages.createJsonForType(linkText, typeValue, typeId);
-		}
-		String strUrl = url.getValue();
-		if (strUrl == null) {
-			return null;
-		}
-		return jsonMessages.createJsonForAbsoluteLink(linkText,
-				TYPE_ABSOLUTE_URL, strUrl);
 
+		LinkJavaScriptObject link = LinkJavaScriptObjectFactory.fromJson("{\"typeClassName\": \"\", \"typeId\": -1, \"absoluteUrl\": null, \"linkText\": null}");
+		link.setLinkText(linkText);
+
+		if (relationSelectionList != null) {
+			link.setTypeClassName(typeValue);
+			link.setTypeId(relationSelectionList.getValue());
+		}
+		else {
+			String absoluteUrl = url.getValue();
+
+			if (absoluteUrl == null) {
+				return null;
+			}
+
+			link.setTypeClassName(TYPE_ABSOLUTE_URL);
+			link.setAbsoluteUrl(absoluteUrl);
+		}
+
+		return new JSONObject(link).toString();
 	}
 
 	private final native LinkedEntityJsonOverlay asLinkedEntity(String json) /*-{
