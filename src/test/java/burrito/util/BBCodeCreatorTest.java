@@ -44,12 +44,12 @@ public class BBCodeCreatorTest extends TestBase {
 		String bbcode = "[url=http://test/url?x=1&y=2]1 < 2[/url]";
 		String html = BBCodeCreator.generateHTML(bbcode);
 
-		assertEquals("<a target=\"_blank\" href=\"http://test/url?x=1&amp;y=2\">1 &lt; 2</a>", html);
+		assertEquals("<a href=\"http://test/url?x=1&amp;y=2\">1 &lt; 2</a>", html);
 
 		bbcode = "[url]http://test/url?x=1&y=2[/url]";
 		html = BBCodeCreator.generateHTML(bbcode);
 
-		assertEquals("<a target=\"_blank\" href=\"http://test/url?x=1&amp;y=2\">http://test/url?x=1&amp;y=2</a>", html);
+		assertEquals("<a href=\"http://test/url?x=1&amp;y=2\">http://test/url?x=1&amp;y=2</a>", html);
 	}
 
 	@Test
