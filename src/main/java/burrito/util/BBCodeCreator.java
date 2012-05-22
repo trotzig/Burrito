@@ -21,11 +21,12 @@ public class BBCodeCreator {
 		Map<String, String> bbMap = new HashMap<String, String>();
 
 		bbMap.put("(\r\n|\n\r|\r|\n)", "<br/>");
-		bbMap.put("\\[b\\](.+?)\\[/b\\]", "<span style=\"font-weight:bold;\">$1</span>");
-		bbMap.put("\\[i\\](.+?)\\[/i\\]", "<span style=\"font-style:italic;\">$1</span>");
-		bbMap.put("\\[url\\](.+?)\\[/url\\]", "<a href=\"$1\">$1</a>");
+		bbMap.put("\\[b\\](.*?)\\[/b\\]", "<span style=\"font-weight:bold;\">$1</span>");
+		bbMap.put("\\[i\\](.*?)\\[/i\\]", "<span style=\"font-style:italic;\">$1</span>");
+		bbMap.put("\\[img\\]\\[/img\\]", "");
 		bbMap.put("\\[img\\](.+?)\\[/img\\]", "<img src=\"/blobstore/image?key=$1\" />");
-		bbMap.put("\\[url=(.+?)\\](.+?)\\[/url\\]", "<a href=\"$1\">$2</a>");
+		bbMap.put("\\[url\\](.*?)\\[/url\\]", "<a href=\"$1\">$1</a>");
+		bbMap.put("\\[url=(.*?)\\](.*?)\\[/url\\]", "<a href=\"$1\">$2</a>");
 
 		for (Map.Entry entry : bbMap.entrySet()) {
 			html = html.replaceAll(entry.getKey().toString(), entry.getValue().toString());

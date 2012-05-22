@@ -63,4 +63,27 @@ public class BBCodeCreatorTest extends TestBase {
 
 		assertEquals("<a href=\"http://test/url?x=1&amp;y=2\">&quot;A clean desk is a sign of a sick mind.&quot;</a>", html);
 	}
+
+	@Test
+	public void testEmptyTags() {
+		String bbcode = "[b]text[/b][b][/b]";
+		String html = BBCodeCreator.generateHTML(bbcode);
+
+		assertEquals("<span style=\"font-weight:bold;\">text</span><span style=\"font-weight:bold;\"></span>", html);
+
+		bbcode = "[i]text[/i][i][/i]";
+		html = BBCodeCreator.generateHTML(bbcode);
+
+		assertEquals("<span style=\"font-style:italic;\">text</span><span style=\"font-style:italic;\"></span>", html);
+
+		bbcode = "[img]blobkey[/img][img][/img]";
+		html = BBCodeCreator.generateHTML(bbcode);
+
+		assertEquals("<img src=\"/blobstore/image?key=blobkey\" />", html);
+
+		bbcode = "[url]target[/url][url=target]text[/url][url=target][/url][url=][/url][url][/url]";
+		html = BBCodeCreator.generateHTML(bbcode);
+
+		assertEquals("<a href=\"target\">target</a><a href=\"target\">text</a><a href=\"target\"></a><a href=\"\"></a><a href=\"\"></a>", html);
+	}
 }
