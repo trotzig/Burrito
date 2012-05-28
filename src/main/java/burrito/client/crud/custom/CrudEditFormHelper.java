@@ -106,6 +106,7 @@ public class CrudEditFormHelper {
 
 			@Override
 			public void onSuccess(Long result) {
+				desc.setId(result);
 				saveCallback.success();
 			}
 
