@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import burrito.client.CtrlSaveHandler;
 import burrito.client.widgets.layout.VerticalSpacer;
 import burrito.client.widgets.validation.HasValidators;
 
@@ -52,7 +53,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("deprecation")
-public abstract class EditForm extends Composite {
+public abstract class EditForm extends Composite implements CtrlSaveHandler {
 
 	
 
@@ -327,6 +328,11 @@ public abstract class EditForm extends Composite {
 
 	}
 
+	@Override
+	public void onCtrlSave() {
+		save();
+	}
+	
 	/**
 	 * Called when the save button has been clicked. Be sure to calls
 	 * callback.done() when the asynchronous action has been performed. This

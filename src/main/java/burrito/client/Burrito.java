@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class Burrito implements EntryPoint {
 	
 	private static EditForm currentEditForm;
+	private static CtrlSaveHandler currentCtrlSaveHandler;
 	
 	public void onModuleLoad() {
 		RootPanel adminPanel = RootPanel.get("burrito-admin");
@@ -71,13 +72,13 @@ public class Burrito implements EntryPoint {
 				
 				@Override
 				public void onPreviewNativeEvent(NativePreviewEvent event) {
-					if (currentEditForm == null) {
+					if (currentCtrlSaveHandler == null) {
 						return;
 					}
 					if (event.getTypeInt() == Event.ONKEYDOWN) {
 						int sCharacterCode = 83;
 						if (event.getNativeEvent().getCtrlKey() && event.getNativeEvent().getKeyCode() == sCharacterCode) {
-							currentEditForm.getSaveButton().click();
+							currentCtrlSaveHandler.onCtrlSave();
 							event.cancel();
 						}
 					}
@@ -86,8 +87,13 @@ public class Burrito implements EntryPoint {
 		}		
 	}
 	
+	public static void setCurrentCtrlSaveHandler(CtrlSaveHandler handler) {
+		currentCtrlSaveHandler = handler;
+	}
+	
 	public static void setCurrentEditForm(EditForm current) {
 		currentEditForm = current;
+		setCurrentCtrlSaveHandler(current);
 		Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
 			
 			@Override
