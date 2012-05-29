@@ -41,4 +41,21 @@ public @interface Displayable {
 	 * @return
 	 */
 	boolean last() default false;
+	
+	
+	/**
+	 * Use this on Displayable annotations on Boolean fields/methods to display a
+	 * special icon when the value is <code>true</code>.
+	 * 
+	 * @return
+	 */
+	String iconUrlOnTrue() default "";
+	
+	/**
+	 * Use this on Displayable annotations on String fields/methods to treat the
+	 * value as an icon URL. Will display as an icon in the CRUD admin view.
+	 */
+	boolean useAsIconUrl() default false;
+	
+	
 }

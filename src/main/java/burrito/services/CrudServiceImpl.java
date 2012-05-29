@@ -579,8 +579,11 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		desc.setDisplayString(entity.toString());
 		
 		for (Method method : EntityUtil.getMethods(clazz)) {
-			if (method.isAnnotationPresent(Displayable.class)) {
+			Displayable displayable = method.getAnnotation(Displayable.class);
+			if (displayable != null) {
 				CrudField cf = new DisplayableMethodField();
+				cf.setIconUrlOnTrue(displayable.iconUrlOnTrue());
+				cf.setUseAsIconUrl(displayable.useAsIconUrl());
 				cf.setName(method.getName());
 				try {
 					cf.setValue(method.invoke(entity));
@@ -674,6 +677,12 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			crud.setSortAscending(field.getAnnotation(DefaultSort.class)
 					.ascending());
 		}
+		Displayable displayable = field.getAnnotation(Displayable.class);
+		if (displayable != null) {
+			crud.setIconUrlOnTrue(displayable.iconUrlOnTrue());
+			crud.setUseAsIconUrl(displayable.useAsIconUrl());
+		}
+
 		return crud;
 	}
 

@@ -155,4 +155,6 @@ public interface CrudMessages extends Messages {
 	String searchListNoItemSelected();
 
 	String searchListHelpText(String entityDisplayName);
+
+	String clickToOpenInNewWindow();
 }

@@ -28,7 +28,6 @@ import siena.Id;
 import siena.Model;
 import siena.Query;
 
-import com.google.appengine.api.channel.ChannelFailureException;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 

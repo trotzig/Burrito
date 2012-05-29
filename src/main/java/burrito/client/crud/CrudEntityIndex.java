@@ -28,6 +28,8 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
+import burrito.client.crud.generic.fields.BooleanField;
+import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
@@ -56,6 +58,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -84,7 +87,7 @@ public class CrudEntityIndex extends Composite {
 		public CrudEntityTable(final String entityName, final CrudEntityDescription headers) {
 			super(headers.getFields().size() + (headers.isCloneable() ? 1 : 0), true, true);
 			this.entityName = entityName;
-			String underscoreName = entityName.replace('.', '_');
+			final String underscoreName = entityName.replace('.', '_');
 
 			for (CrudField f : headers.getFields()) {
 				Header h = null;
@@ -109,14 +112,49 @@ public class CrudEntityIndex extends Composite {
 				addCellRenderer(new CellRenderer<CrudEntityDescription>() {
 
 					public Widget render(CrudEntityDescription modelObj) {
+						Widget w;
 						CrudField field = modelObj.getField(f.getName());
 						if (field instanceof AdminLinkMethodField) {
 							AdminLinkMethodField linkField = (AdminLinkMethodField) field;
-							return new Anchor(linkField.getText(), linkField.getUrl());
-						} if (field instanceof ManyToOneRelationField) {
-							return lazyLoadRelation((ManyToOneRelationField)field);
+							w = new Anchor(linkField.getText(), linkField.getUrl());
+						} else if (field instanceof ManyToOneRelationField) {
+							w = lazyLoadRelation((ManyToOneRelationField)field);
+						} else if (field instanceof ImageField) {
+							ImageField imageField = (ImageField)field;
+							if (field.getValue() == null) {
+								w = new Label();
+							} else {
+								Anchor a = new Anchor();
+								String url;
+								if (imageField.isUrlMode()) {
+									url = imageField.getValue().toString();
+								} else {
+									url = "/blobstore/image?key=" + imageField.getValue().toString();
+								}
+								a.setHref(url);
+								a.setTitle(messages.clickToOpenInNewWindow());
+								a.setTarget("_blank");
+								a.setHTML("<img src=\"" + url +  "&s=50"+"\">");
+								w = a;
+							}
+						} else if (field.isUseAsIconUrl()) {
+							if (field.getValue() == null) {
+								w = new Label();
+							} else {
+								w = new Image(field.getValue().toString());
+							}
+						} else if (field instanceof BooleanField && field.getIconUrlOnTrue() != null && !"".equals(field.getIconUrlOnTrue())) {
+							Boolean val = (Boolean) field.getValue(); 
+							if (val != null && val.booleanValue()) {
+								w = new Image(field.getIconUrlOnTrue());
+							} else {
+								w = new Label();
+							}
+						} else {
+							w = new Label(valueToString(field.getValue()));
 						}
-						return new Label(valueToString(field.getValue()));
+						w.addStyleName(underscoreName + "-" + f.getName());
+						return w;
 					}
 				});
 			}
@@ -257,12 +295,17 @@ public class CrudEntityIndex extends Composite {
 			return wrapper;
 		}
 
+		@SuppressWarnings("deprecation")
 		protected String valueToString(Object value) {
 			if (value == null) {
 				return null;
 			}
 			if (value instanceof Date) {
-				return format.format((Date) value);
+				Date date = (Date) value;
+				if (date.getYear() != new Date().getYear()) {
+					return otherYearFormat.format(date);
+				}
+				return sameYearFormat.format(date);
 			}
 			return String.valueOf(value);
 		}
@@ -370,7 +413,8 @@ public class CrudEntityIndex extends Composite {
 
 	}
 
-	private static DateTimeFormat format = DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM);
+	private static DateTimeFormat otherYearFormat = DateTimeFormat.getFormat("yyyy-MM-dd hh:mm");
+	private static DateTimeFormat sameYearFormat = DateTimeFormat.getFormat("d MMM hh:mm");
 	private static CrudServiceAsync service = GWT.create(CrudService.class);
 	private static CrudMessages messages = GWT.create(CrudMessages.class);
 	private CrudEntityTable table;

@@ -38,6 +38,9 @@ public abstract class CrudField implements Serializable {
 	private boolean searchable = false;
 	private boolean defaultSort = false;
 	private boolean sortAscending = true;
+	private boolean useAsIconUrl = false;
+	private String iconUrlOnTrue;
+
 
 	public String getName() {
 		return name;
@@ -141,4 +144,23 @@ public abstract class CrudField implements Serializable {
 	public boolean isSortable() {
 		return true;
 	}
+	
+
+	public boolean isUseAsIconUrl() {
+		return useAsIconUrl;
+	}
+
+	public void setUseAsIconUrl(boolean useAsIconUrl) {
+		this.useAsIconUrl = useAsIconUrl;
+	}
+
+	public String getIconUrlOnTrue() {
+		return iconUrlOnTrue;
+	}
+
+	public void setIconUrlOnTrue(String iconUrlOnTrue) {
+		this.iconUrlOnTrue = iconUrlOnTrue;
+	}
+	
+	
 }

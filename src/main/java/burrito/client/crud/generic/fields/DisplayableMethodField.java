@@ -24,7 +24,7 @@ public class DisplayableMethodField extends CrudField {
 	private static final long serialVersionUID = 1L;
 
 	private String value;
-
+	
 	@Override
 	public Class<?> getType() {
 		return String.class;
@@ -44,4 +44,5 @@ public class DisplayableMethodField extends CrudField {
 	public boolean isSortable() {
 		return false;
 	}
+
 }
