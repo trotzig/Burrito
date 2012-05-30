@@ -30,6 +30,7 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.ImageField;
+import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
@@ -49,7 +50,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -119,6 +119,14 @@ public class CrudEntityIndex extends Composite {
 							w = new Anchor(linkField.getText(), linkField.getUrl());
 						} else if (field instanceof ManyToOneRelationField) {
 							w = lazyLoadRelation((ManyToOneRelationField)field);
+						} else if (field instanceof ListedByEnumField) {
+							ListedByEnumField enumField = (ListedByEnumField) field;
+							if (enumField.getValue() == null) {
+								w = new Label();
+							} else {
+								w = new Label(CrudLabelHelper.getString((enumField.getTypeClassName()
+										+ "_" + enumField.getValue().toString()).replace('.', '_')));
+							}
 						} else if (field instanceof ImageField) {
 							ImageField imageField = (ImageField)field;
 							if (field.getValue() == null) {
