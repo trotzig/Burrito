@@ -8,6 +8,5 @@ public class BBCodeField extends StringField  {
 	}
 	
 	public BBCodeField() {
-		// TODO Auto-generated constructor stub
 	}
 }

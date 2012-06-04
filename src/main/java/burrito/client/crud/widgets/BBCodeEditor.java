@@ -105,37 +105,8 @@ public class BBCodeEditor extends VerticalPanel implements HasValidators {
 		buttonLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				LinkedEntityWidgetPopup popup = new LinkedEntityWidgetPopup(
-					new LinkedEntityWidgetPopup.SaveHandler() {
-						public void saved(String json) {
-
-							SelectedText selectedText = rawEditor.getSelectedTextObj();
-							LinkJavaScriptObject link = LinkJavaScriptObjectFactory.fromJson(json);
-
-							String linkText = link.getLinkText();
-							String absoluteUrl = link.getAbsoluteUrl();
-
-							if (absoluteUrl != null) {
-								if (linkText.isEmpty()) {
-									selectedText.text = "[url]" + absoluteUrl + "[/url]";
-								}
-								else {
-									selectedText.text = "[url=" + absoluteUrl + "]" + linkText + "[/url]";
-								}
-							}
-							else {
-								selectedText.text = "[linkable=" + link.getTypeClassName() + ":" + ((long) link.getTypeId()) + "]" + linkText + "[/linkable]";
-							}
-
-							rawEditor.setSelectedText(selectedText);
-						}
-					}
-				);
-
-				popup.setLinkText(rawEditor.getSelectedTextObj().text);
-
-				popup.center();
-				popup.show();
+				BBUrlPanel panel = new BBUrlPanel(rawEditor);
+				panel.show();
 			}
 		});
 		buttonPanel.add(buttonLink);
