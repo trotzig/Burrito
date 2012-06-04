@@ -434,19 +434,23 @@ public class CrudEntityIndex extends Composite {
 	private String underscoreEntityName;
 
 	public CrudEntityIndex(final String entityName) {
+		search.addStyleName("k5-CrudEntityIndex-searchPanel");
 		tablePlaceHolder.setWidget(new Label(labels.loading()));
 		description.addStyleName("k5-CrudEntityIndex-description");
 		underscoreEntityName = entityName.replace('.', '_');
 		description.setText(CrudLabelHelper.getString(underscoreEntityName
 				+ "_desc"));
 		wrapper.add(description);
-		wrapper.add(new Hyperlink(CrudLabelHelper
-				.getString(underscoreEntityName + "_new"), entityName + "/-1"));
+		Hyperlink newLink = new Hyperlink(CrudLabelHelper
+				.getString(underscoreEntityName + "_new"), entityName + "/-1");
+		newLink.addStyleName("k5-CrudEntityIndex-newLink");
+		wrapper.add(newLink);
 		wrapper.add(new VerticalSpacer(10));
 		search.setVisible(false);
 		wrapper.add(search);
 
 		initWidget(wrapper);
+		addStyleName("k5-CrudEntityIndex-" + underscoreEntityName);
 		wrapper.add(tablePlaceHolder);
 		service.getEntityHeaders(entityName,
 				new AsyncCallback<CrudEntityDescription>() {

@@ -23,10 +23,13 @@ import java.util.Map;
 
 import burrito.client.Burrito;
 import burrito.client.crud.custom.CrudCustomEditFormHandler;
+import burrito.client.crud.custom.CrudCustomEntityIndexHandler;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.labels.CrudMessages;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -52,9 +55,11 @@ import com.google.gwt.user.client.ui.Widget;
  * @author henper
  * 
  */
+@SuppressWarnings("deprecation")
 public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 
 	private static Map<String, CrudCustomEditFormHandler> customEntityHandlers = new HashMap<String, CrudCustomEditFormHandler>();
+	private static Map<String, CrudCustomEntityIndexHandler> customEntityIndexHandlers = new HashMap<String, CrudCustomEntityIndexHandler>();
 	
 	
 	private SimplePanel content = new SimplePanel();
@@ -69,7 +74,13 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 		top.addStyleName("k5-CrudPanel-top");
 		wrapper.add(content, DockPanel.CENTER);
 		initWidget(wrapper);
-		History.fireCurrentHistoryState();
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			
+			@Override
+			public void execute() {
+				History.fireCurrentHistoryState();
+			}
+		});
 		addStyleName("k5-CrudPanel");
 		setWidth("100%");
 	}
@@ -90,14 +101,20 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 		final String entityName = split[0];
 		if (split.length == 1) {
 			top.update(entityName, null);
-			CrudEntityIndex index = loadedIndexPanels.get(entityName);
-			if (index == null) {
-				index = new CrudEntityIndex(entityName);
-				loadedIndexPanels.put(entityName, index);
+			
+			CrudCustomEntityIndexHandler customHandler = customEntityIndexHandlers.get(entityName);
+			if (customHandler != null) {
+				return customHandler.createEntityIndex();
 			} else {
-				index.reload();
+				CrudEntityIndex index = loadedIndexPanels.get(entityName);
+				if (index == null) {
+					index = new CrudEntityIndex(entityName);
+					loadedIndexPanels.put(entityName, index);
+				} else {
+					index.reload();
+				}
+				return index;
 			}
-			return index;
 		}
 		if (split.length >= 2) {
 			String strId = split[1];
@@ -149,7 +166,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 	}
 
 	/**
-	 * Registers a custom entitym edit form that is to be used instead of the
+	 * Registers a custom entity edit form that is to be used instead of the
 	 * standard CRUD edit form.
 	 * 
 	 * @param entityName
@@ -158,6 +175,16 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 	public static void registerCustomEditForm(String entityName,
 			CrudCustomEditFormHandler registration) {
 		customEntityHandlers.put(entityName, registration);
+	}
+	
+	/**
+	 * Registers a custom entity index panel
+	 * 
+	 * @param entityName the classname of the entity to show a custom panel for
+	 * @param handler 
+	 */
+	public static void registerCustomEntityIndex(String entityName, CrudCustomEntityIndexHandler handler) {
+		customEntityIndexHandlers.put(entityName, handler);
 	}
 
 }
