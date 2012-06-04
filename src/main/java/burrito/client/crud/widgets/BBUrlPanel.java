@@ -48,7 +48,7 @@ public class BBUrlPanel extends BBPopupPanel {
 			String absoluteUrl = link.getAbsoluteUrl();
 
 			if (absoluteUrl != null) {
-				if (!absoluteUrl.startsWith("http://")) {
+				if (!absoluteUrl.startsWith("http")) {
 					absoluteUrl = "http://" + absoluteUrl;
 				}
 				
