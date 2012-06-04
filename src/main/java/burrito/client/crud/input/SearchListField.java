@@ -1,5 +1,8 @@
 package burrito.client.crud.input;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudField;
@@ -12,8 +15,11 @@ import burrito.client.widgets.validation.HasValidators;
 import burrito.client.widgets.validation.InputFieldValidator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -23,7 +29,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SearchListField extends Composite implements CrudInputField, HasValidators {
+public class SearchListField extends Composite implements CrudInputField<Long>, HasValidators, HasChangeHandlers {
 
 	private static CrudMessages labels = GWT.create(CrudMessages.class);
 	
@@ -35,8 +41,9 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 	private Anchor clearAnchor;
 	private Label errorLabel;
 	private Anchor changeAnchor;
-
 	private String entityDisplayName;
+
+	private List<ChangeHandler> changeHandlers = new ArrayList<ChangeHandler>();
 	
 	public SearchListField(final ManyToOneRelationField relationField, final CrudServiceAsync service) {
 		this.relationField = relationField;
@@ -57,6 +64,7 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 			@Override
 			public void onClick(ClickEvent event) {
 				selectedId = null;	
+				fireChange();
 				setDescribingLable(selectedId, entityDisplayName, relatedEntityName);
 			}
 		});
@@ -76,6 +84,7 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 					@Override
 					public void onSelect(Long id) {
 						selectedId = id;
+						fireChange();
 						setDescribingLable(selectedId, entityDisplayName, relatedEntityName);
 						
 						popup.hide();
@@ -105,6 +114,12 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 		addStyleName("searchList");
 	}
 	
+	protected void fireChange() {
+		for (ChangeHandler handler : changeHandlers) {
+			handler.onChange(null);
+		}
+	}
+
 	private void setDescribingLable(Long entityId, String entityDisplayName, String relatedEntityName) {
 		if (entityId == null) {
 			selectedLabel.setText(labels.searchListNoItemSelected());
@@ -133,12 +148,12 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 	}
 
 	@Override
-	public void load(Object value) {
+	public void load(Long value) {
 		selectedId = (Long) value;
 	}
 
 	@Override
-	public Object getValue() {
+	public Long getValue() {
 		return selectedId;
 	}
 
@@ -178,5 +193,11 @@ public class SearchListField extends Composite implements CrudInputField, HasVal
 	@Override
 	public void highlight() {
 		changeAnchor.setFocus(true);
+	}
+
+	@Override
+	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+		changeHandlers.add(handler);
+		return null; //bad, but I can't get my head around how to send custom change events in GWT...
 	}
 }
