@@ -19,19 +19,28 @@ package burrito.client.crud.input;
 
 
 import burrito.client.crud.generic.CrudField;
-import burrito.client.crud.generic.fields.StringField;
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ReadOnlyTextCrudInputField implements CrudInputField<String> {
 
-	private StringField field;
+	private CrudField field;
 	private Label label;
 
-	public ReadOnlyTextCrudInputField(StringField field) {
+	public ReadOnlyTextCrudInputField(CrudField field) {
 		this.field = field;
-		String value = (String) field.getValue();
+		
+		String value = null;
+		
+		//Perhaps add a getReadOnlyHTML() method on CrudField? 
+		//That way we would get better outputs than just toString()
+		
+		Object objectValue = field.getValue();
+		if (objectValue != null) {
+			value = objectValue.toString();
+		}
+		
 		label = new Label(value != null ? value : "(Not set)");
 		label.addStyleName("k5-ReadOnlyTextCrudInputField");
 		label.addStyleName("readOnly");
@@ -49,7 +58,7 @@ public class ReadOnlyTextCrudInputField implements CrudInputField<String> {
 
 	@Override
 	public String getValue() {
-		return (String) field.getValue();
+		return field.toString();
 	}
 
 	@Override

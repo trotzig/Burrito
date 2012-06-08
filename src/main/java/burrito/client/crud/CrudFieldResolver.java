@@ -122,6 +122,9 @@ public class CrudFieldResolver {
 			return null;
 		}
 		
+		if (field.isReadOnly()) {
+			return new ReadOnlyTextCrudInputField(field);
+		}
 		
 		if (field instanceof ManyToOneRelationField) {
 			ManyToOneRelationField relationField = (ManyToOneRelationField) field;
@@ -168,9 +171,6 @@ public class CrudFieldResolver {
 		if (field instanceof EmbeddedListField) {
 			return new EmbeddedListInputField((EmbeddedListField) field);
 		}
-		
-		
-		
 
 		// Fallback to raw type input:
 		if (field.getType() == Date.class) {
@@ -187,30 +187,26 @@ public class CrudFieldResolver {
 		}
 		if (field.getType() == String.class) {
 			final StringField sf = (StringField) field;
-			if (sf.isReadOnly()) {
-				return new ReadOnlyTextCrudInputField(sf);
+			
+			StringInputField stringInputField;
+			if (sf.isRenderAsTextArea()) {
+				stringInputField = new StringInputField(field.isRequired()) {
+					@Override
+					protected TextBoxBase createField() {
+						return new TextArea();
+					}
+				};
+			} else {
+				stringInputField = new StringInputField(field.isRequired());
 			}
-			else {
-				StringInputField stringInputField;
-				if (sf.isRenderAsTextArea()) {
-					stringInputField = new StringInputField(field.isRequired()) {
-						@Override
-						protected TextBoxBase createField() {
-							return new TextArea();
-						}
-					};
-				} else {
-					stringInputField = new StringInputField(field.isRequired());
-				}
-				if (sf.getRegexpPattern() != null) {
-					stringInputField
-							.addInputFieldValidator(new RegexpInputFieldValidator(
-									sf.getRegexpPattern(), sf
-											.getRegexpDescription()));
-				}
-				return new CrudInputFieldImpl<String>(field, stringInputField,
-						(String) field.getValue());
+			if (sf.getRegexpPattern() != null) {
+				stringInputField
+						.addInputFieldValidator(new RegexpInputFieldValidator(
+								sf.getRegexpPattern(), sf
+										.getRegexpDescription()));
 			}
+			return new CrudInputFieldImpl<String>(field, stringInputField,
+					(String) field.getValue());
 		}
 		if (field.getType() == Boolean.class) {
 			return new BooleanCrudInputField((BooleanField) field);

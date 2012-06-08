@@ -35,6 +35,7 @@ public abstract class CrudField implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private boolean required = false;
+	private boolean readOnly = false;
 	private boolean searchable = false;
 	private boolean defaultSort = false;
 	private boolean sortAscending = true;
@@ -90,6 +91,25 @@ public abstract class CrudField implements Serializable {
 	 */
 	public boolean isRequired() {
 		return required;
+	}
+	
+	
+	/**
+	 * Sets whether this field is a readonly field or not
+	 * 
+	 * @param readOnly
+	 */
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+	
+	/**
+	 * Returns true if the field is readonly
+	 * 
+	 * @return
+	 */
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 
 	/**

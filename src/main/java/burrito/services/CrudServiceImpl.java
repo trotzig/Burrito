@@ -450,6 +450,8 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			CrudEntityDescription desc, Class<?> clazz) {
 		for (CrudField field : desc.getFields()) {
 			try {
+				// Should we really overwrite values from readonly fields?
+				// Perhaps skip field if field.isReadOnly()?
 				Object value = field.getValue();
 				if (field instanceof EmbeddedListField) {
 					value = deserializeEmbedded(
@@ -758,11 +760,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				throw new RuntimeException("Unknown list type: " + type);
 			}
 			
-		} else if (clazz == String.class && field.isAnnotationPresent(ReadOnly.class)) {
-			StringField stringCrud = new StringField((String) field.get(entity));
-			stringCrud.setReadOnly(true);
-			crud = stringCrud;
-			
 		} else if (clazz == String.class && field.isAnnotationPresent(ListedByEnum.class)) {
 			ListedByEnum lenum = field.getAnnotation(ListedByEnum.class);
 			crud = new ListedByEnumField((String) field.get(entity), lenum.type().getName());
@@ -807,6 +804,11 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		} else {
 			throw new RuntimeException("No such field type: " + clazz.getName());
 		}
+		
+		if (field.isAnnotationPresent(ReadOnly.class)) {
+			crud.setReadOnly(true);
+		}
+		
 		return crud;
 	}
 

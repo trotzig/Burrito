@@ -24,7 +24,6 @@ public class StringField extends CrudField {
 	private static final long serialVersionUID = 1L;
 
 	private String string;
-	private boolean readOnly = false;
 	private String regexpPattern;
 	private String regexpDescription;
 	private boolean renderAsTextArea = false;
@@ -51,14 +50,6 @@ public class StringField extends CrudField {
 	@Override
 	public void setValue(Object value) {
 		this.string = (String) value;
-	}
-
-	public boolean isReadOnly() {
-		return readOnly;
-	}
-
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
 	}
 
 	public void setRegexpPattern(String regexpPattern) {

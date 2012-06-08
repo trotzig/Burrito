@@ -36,8 +36,7 @@ public class FeedsCleanupTest extends TestBase {
 		insertEntities(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2);
 
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = (Map<String, String>) TestUtils
-				.runController("/burrito/feeds/cleanup/5", BurritoRouter.class);
+		Map<String, String> result = (Map<String, String>) TestUtils.runController("/burrito/feeds/cleanup/5", BurritoRouter.class);
 		assertNotNull(result.get("success"));
 		assertEquals("12 old feeds removed.", result.get("success"));
 	}
