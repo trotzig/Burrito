@@ -86,8 +86,10 @@ public class CrudEditFormHelper {
 		desc.getFields().clear();
 		for(CrudInputFieldWrapper field : inputFields) {
 			CrudField cf = field.getCrudField();
-			cf.setValue(field.getValue());
-			desc.add(cf);
+			if (!cf.isReadOnly()) {
+				cf.setValue(field.getValue());
+				desc.add(cf);
+			}
 		}
 	}
 
