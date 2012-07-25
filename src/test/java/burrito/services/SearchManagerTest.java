@@ -8,6 +8,7 @@ import org.junit.Test;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.test.TestBase;
+import burrito.test.crud.ChildEntity;
 import burrito.test.crud.SearchTestEntity;
 
 public class SearchManagerTest extends TestBase {
@@ -89,6 +90,23 @@ public class SearchManagerTest extends TestBase {
 		
 		
 	}
+	
+	@Test
+	public void searchIsDoneOnOneEntityType() {
+		ChildEntity otherType = new ChildEntity();
+		otherType.setChildProperty("hello");
+		otherType.save();
+		searchManager.insertOrUpdateSearchEntry(otherType, otherType.getId());
+		
+		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "hello");
+		Assert.assertEquals(1, search.getItems().size());
+		
+		search = searchManager.search(ChildEntity.class, "hello");
+		Assert.assertEquals(1, search.getItems().size());
+		
+	}
+	
+	
 	
 	
 }
