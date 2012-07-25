@@ -123,7 +123,7 @@ public class SearchSelectWidget extends DialogBox {
 		p.setItemsPerPage(1000000);
 		p.setSortKey(relationField.getSearchSortField());
 		
-		service.searchStartsWith(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
+		service.listEntities(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {
 			
 			@Override
 			public void onSuccess(CrudEntityList result) {

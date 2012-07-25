@@ -185,13 +185,6 @@
 			<type>pom</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-snowball</artifactId>
-			<version>2.9.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>texmex</groupId>
@@ -242,7 +235,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-jsr107cache</artifactId>
-			<version>1.4.3</version>
+			<version>1.7.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -256,7 +249,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.4.3</version>
+			<version>1.7.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -264,21 +257,21 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-labs</artifactId>
-			<version>1.4.3</version>
+			<version>1.7.0</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-stubs</artifactId>
-			<version>1.4.0</version>
+			<version>1.7.0</version>
 			<scope>test</scope>
 
 		</dependency>
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-testing</artifactId>
-			<version>1.4.3</version>
+			<version>1.7.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -299,7 +292,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-tools-sdk</artifactId>
-			<version>1.4.3</version>
+			<version>1.7.0</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>

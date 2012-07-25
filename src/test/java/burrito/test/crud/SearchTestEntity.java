@@ -1,10 +1,11 @@
 package burrito.test.crud;
 
-import burrito.annotations.SearchableField;
-import burrito.annotations.SearchableMethod;
 import siena.Generator;
 import siena.Id;
 import siena.Model;
+import burrito.annotations.Displayable;
+import burrito.annotations.SearchableField;
+import burrito.annotations.SearchableMethod;
 
 public class SearchTestEntity extends Model {
 
@@ -16,6 +17,19 @@ public class SearchTestEntity extends Model {
 
 	private String notSearchField;
 	
+	@Displayable
+	private String displayableField;
+	
+	
+	
+	public String getDisplayableField() {
+		return displayableField;
+	}
+
+	public void setDisplayableField(String displayableField) {
+		this.displayableField = displayableField;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -39,5 +53,10 @@ public class SearchTestEntity extends Model {
 	@SearchableMethod
 	public String searchableFunction() {
 		return "searchable function " + name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

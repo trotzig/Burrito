@@ -25,7 +25,6 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.services.CrudServiceImpl;
-import burrito.services.SearchEntry;
 import burrito.services.SearchManager;
 import burrito.test.crud.ChildEntity;
 import burrito.test.crud.GrandParentEntity;
@@ -112,10 +111,8 @@ public class CrudTest extends TestBase {
 
 		SearchManager searchManager = SearchManager.get();
 		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
-		SearchEntry searchEntry = Model.all(SearchEntry.class).get();
-
-		String[] expectedTokens = {"searchabl", "is", "automatic", "a", "valu", "this"};
-		Assert.assertEquals(Arrays.asList(expectedTokens), searchEntry.tokens);
+		
+		Assert.assertEquals(1, searchManager.search(ChildEntity.class, "searchable").getItems().size());
 
 		try {
 			ValidationUtil.assertNoMissingRequiredFields(entity);

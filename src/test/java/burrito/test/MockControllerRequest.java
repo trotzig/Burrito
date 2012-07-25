@@ -14,12 +14,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("rawtypes")
 public class MockControllerRequest implements HttpServletRequest {
 
 	private final String uri;
 	private Map parameters;
 	
-	public MockControllerRequest(String uri, Map parameters) {
+	public MockControllerRequest(String uri,Map parameters) {
 		this.uri = uri;
 		this.parameters = parameters;
 	}

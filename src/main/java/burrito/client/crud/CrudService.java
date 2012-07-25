@@ -69,17 +69,7 @@ public interface CrudService extends RemoteService {
 	 */
 	CrudEntityList listEntities(String filter, String entityName,
 			PageMetaData<String> p);
-	
-	/**
-	 * Search for entities of a certain kind.
-	 * 
-	 * @param filter
-	 * @param entityName
-	 * @param p
-	 * @return
-	 */
-	CrudEntityList searchStartsWith(String searchString, String entityName,
-			PageMetaData<String> p);
+
 
 	/**
 	 * Deletes a set of entities from the db.

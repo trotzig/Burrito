@@ -7,7 +7,9 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.images.Composite;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.InputSettings;
 import com.google.appengine.api.images.OutputSettings;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.images.Transform;
 
 public class MockImagesService implements ImagesService {
@@ -85,6 +87,39 @@ public class MockImagesService implements ImagesService {
 
 	@Override
 	public int[][] histogram(Image arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Image applyTransform(Transform arg0, Image arg1, InputSettings arg2,
+			OutputSettings arg3) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Future<Image> applyTransformAsync(Transform arg0, Image arg1,
+			InputSettings arg2, OutputSettings arg3) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServingUrl(ServingUrlOptions arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServingUrl(BlobKey arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServingUrl(BlobKey arg0, int arg1, boolean arg2,
+			boolean arg3) {
 		// TODO Auto-generated method stub
 		return null;
 	}

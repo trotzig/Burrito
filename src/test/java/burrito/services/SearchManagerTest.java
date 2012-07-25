@@ -1,10 +1,12 @@
 package burrito.services;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import siena.Query;
 import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.test.TestBase;
 import burrito.test.crud.SearchTestEntity;
 
@@ -31,11 +33,10 @@ public class SearchManagerTest extends TestBase {
 	
 	@Test
 	public void weHaveSearchEntries() {
-		Query<SearchEntry> all = SearchEntry.all();
-		Assert.assertEquals(2, all.count());
+		List<SearchEntry> all = searchManager.getAllEntries();
+		Assert.assertEquals(2, all.size());
 		
-		Object[] expecteds = {"hello","searchabl","world","function"};
-		Assert.assertArrayEquals(expecteds , all.get().tokens.toArray());
+		Assert.assertEquals(1, searchManager.search(SearchTestEntity.class, "world").getItems().size());
 	}
 	
 	@Test
@@ -56,31 +57,38 @@ public class SearchManagerTest extends TestBase {
 		Assert.assertEquals(1, search.getItems().size());
 	}
 	
-	@Test
-	public void searchStartsWith() {
-		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "he");
-		Assert.assertEquals(1, search.getItems().size());
-	}
-	
-	@Test
-	public void searchStartsWithWholeWord() {
-		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello");
-		Assert.assertEquals(1, search.getItems().size());
-	}
-	
-	@Test
-	public void searchStartsWithOnlyTheFirstWord() {
-		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "hello wor");
-		Assert.assertEquals(0, search.getItems().size());
-		
-		search = searchManager.searchStartsWith(SearchTestEntity.class, "hello world");
-		Assert.assertEquals(1, search.getItems().size());
-	}
 	
 	@Test
 	public void searchOnFunction() {
-		ItemCollection<SearchEntry> search = searchManager.searchStartsWith(SearchTestEntity.class, "searchable function hello");
+		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "searchable function hello");
 		Assert.assertEquals(1, search.getItems().size());
 	}
+	
+	
+	@Test
+	public void searchCanBeSortedAndPaged() {
+		//Start by adding 10 entities to the database 
+		int num = 10;
+		for (int i = 0; i < num; i++) {
+			SearchTestEntity entity = new SearchTestEntity();
+			entity.setName("a " + i);
+			entity.setDisplayableField("display " + (num - i - 1));
+			entity.save();
+			searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
+		}
+		
+		ItemCollection<SearchEntry> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "displayableField", true));
+		Assert.assertEquals("a 9", entries.getItems().get(0).getTitle());
+		
+		entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(2, 0, "displayableField", false));
+		Assert.assertEquals("a 0", entries.getItems().get(0).getTitle());
+		Assert.assertTrue(entries.isHasNextPage());
+		
+		entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(2, entries.getPage() + 1, "displayableField", false));
+		Assert.assertEquals("a 2", entries.getItems().get(0).getTitle());
+		
+		
+	}
+	
 	
 }

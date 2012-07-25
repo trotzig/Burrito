@@ -25,7 +25,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -311,7 +310,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Class<? extends Model> clazz = extractClass(entityName);
 
 		if (filter != null) {
-			return search(clazz, filter, p, false);
+			return search(clazz, filter, p);
 		}
 
 		// Prepare query object
@@ -352,30 +351,19 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		return collection;
 	}
 
-	public CrudEntityList searchStartsWith(String searchString,
-			String entityName, PageMetaData<String> p) {
-		Class<? extends Model> clazz = extractClass(entityName);
-		return search(clazz, searchString, p, true);
-	}
 	
 	private CrudEntityList search(Class<? extends Model> clazz, String filter,
-			PageMetaData<String> p, boolean doStartsWithSearch) {
+			PageMetaData<String> p) {
 		
 		ItemCollection<SearchEntry> entries;
-		if (doStartsWithSearch) {
-			entries = searchManager.searchStartsWith(clazz, filter);
-		} else {
-			entries = searchManager.search(clazz, filter);
-		}
+		entries = searchManager.search(clazz, filter, p);
 				
 		List<Model> entities = new ArrayList<Model>();
 		for (SearchEntry entry : entries) {
-			Model entity = extractEntity(entry.ownerId, null, clazz);
+			Model entity = extractEntity(entry.getOwnerId(), null, clazz);
 			if (entity != null)
 				entities.add(entity);
 		}
-			
-		sortTable(entities, p);
 		
 		CrudEntityList collection = new CrudEntityList();
 		collection.setItems(convertEntitesToCrudEntityDescriptions(entities));
@@ -405,14 +393,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 	
-	private void sortTable(List<Model> entities, PageMetaData<String> p){
-		
-		if(p.isAscending()){
-			Collections.sort(entities, new EntityComparator(p.getSortKey()));
-		}else{
-			Collections.sort(entities, Collections.reverseOrder(new EntityComparator(p.getSortKey())));
-		}
-	}
 
 	public Long save(CrudEntityDescription desc, Long clonedFromId) throws FieldValueNotUniqueException, CrudGenericException {
 		Class<? extends Model> clazz = extractClass(desc.getEntityName());

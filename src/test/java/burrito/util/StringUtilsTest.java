@@ -26,4 +26,10 @@ public class StringUtilsTest {
 		assertEquals("qweqwe", res);
 	}
 	
+	@Test
+	public void testStripBBCode() {
+		String test = "[b]Bold text[/b], [url=http://www.google.com]link[/url], no styling";
+		assertEquals("Bold text, link, no styling", StringUtils.stripBBCode(test));
+	}
+	
 }

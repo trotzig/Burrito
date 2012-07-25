@@ -17,8 +17,6 @@
 
 package burrito.services;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -26,17 +24,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-
 import siena.Model;
+import burrito.annotations.BBCode;
+import burrito.annotations.Displayable;
+import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
 import burrito.annotations.SearchableMethod;
 import burrito.client.widgets.panels.table.ItemCollection;
+import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
 import burrito.util.StringUtils;
+
+import com.google.appengine.api.search.Consistency;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Index;
+import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.ListRequest;
+import com.google.appengine.api.search.ListResponse;
+import com.google.appengine.api.search.Query;
+import com.google.appengine.api.search.QueryOptions;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
+import com.google.appengine.api.search.SearchException;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.SortExpression;
+import com.google.appengine.api.search.SortExpression.Builder;
+import com.google.appengine.api.search.SortOptions;
 
 
 /**
@@ -53,6 +66,8 @@ import burrito.util.StringUtils;
  */
 public class SearchManager {
 
+	private static final String CONTENT_FIELD_NAME = "content_"; //ending with an underscore to prevent clashes with true field names.
+	private static final String TITLE_FIELD_NAME = "title_"; //ending with an underscore to prevent clashes with true field names.
 	static SearchManager instance;
 
 	public static SearchManager get() {
@@ -67,50 +82,52 @@ public class SearchManager {
 		//private
 	}
 	
-	/** From StopAnalyzer Lucene 2.9.1 */
-	public final static String[] stopWords = new String[] { "en", "ett", "i",
-			"och", "eller", "men", "den", "det", "att" };
-
+	private Index getIndex() {
+	    IndexSpec indexSpec = IndexSpec.newBuilder()
+	        .setName("global")
+	        .setConsistency(Consistency.PER_DOCUMENT)
+	        .build();
+	    return SearchServiceFactory.getSearchService().getIndex(indexSpec);
+	}
+	
 	public void insertOrUpdateSearchEntry(Model entity, Long entityId) {
-		boolean update = true;
 		Class<? extends Model> ownerType = entity.getClass();
 		
-		SearchEntry entry = SearchEntry.getByOwner(ownerType, entityId);
-		if (entry == null) {
-			entry = new SearchEntry();
-			entry.ownerClassName = ownerType.getName();
-			entry.ownerId = entityId;
-			update = false;
-		}
-		Set<String> searchables = getSearchableTextsFromEntity(ownerType, entity);
-		if (searchables.isEmpty()) {
-			return;
-		}
-		String text = concatenateAndClean(searchables);
-		entry.tokens = setToList(getTokensForIndexingOrQuery(text, 200));
-		if (update) {
-			entry.update();
-		} else {
-			entry.insert();
-		}
+		Document document = entityToDocument(ownerType, entity, entityId);
+		getIndex().add(document);
+		
 	}
 
 	public void deleteSearchEntry(Model entity, Long entityId) {
 		Class<? extends Model> ownerType = entity.getClass();
-		SearchEntry entry = SearchEntry.getByOwner(ownerType, entityId);
-		if (entry != null) entry.delete();
+		getIndex().remove(ownerType.getName() + ":" + entityId);
 	}
 
-	private Set<String> getSearchableTextsFromEntity(Class<? extends Model> ownerType, Model entity) {
+	private Document entityToDocument(Class<? extends Model> ownerType, Model entity, Long entityId) {
+		Document.Builder builder = Document.newBuilder()
+			.setId(ownerType.getName() + ":" + entityId)
+			.addField(com.google.appengine.api.search.Field.newBuilder().setName("ownerType").setText(ownerType.getName()))
+			.addField(com.google.appengine.api.search.Field.newBuilder().setName(TITLE_FIELD_NAME).setText(entity.toString()));;
+			
 		Set<String> searchables = new HashSet<String>();
 		
 		for (Field field : EntityUtil.getFields(ownerType)) {
-			if (field.isAnnotationPresent(SearchableField.class)) {
+			if (field.isAnnotationPresent(SearchableField.class) || field.isAnnotationPresent(Displayable.class)) {
 				try {
 					field.setAccessible(true);
 					Object obj = field.get(entity);
 					if (obj != null) {
-						searchables.add(obj.toString());
+						String val = obj.toString();
+						if (field.isAnnotationPresent(RichText.class)) {
+							val = StringUtils.stripHTML(val);
+						}
+						if (field.isAnnotationPresent(BBCode.class)) {
+							val = StringUtils.stripBBCode(val);
+						}
+						searchables.add(val);
+						if (field.isAnnotationPresent(Displayable.class)) {
+							builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(field.getName()).setText(val));
+						}
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to get searchable texts from entity", e);
@@ -132,56 +149,27 @@ public class SearchManager {
 			}
 		}  
 		
-		return searchables;
+		String text = concatenate(searchables);
+		builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(CONTENT_FIELD_NAME).setText(text));
+		return builder.build();
 	}
 
-	private List<String> setToList(Set<String> set) {
-		List<String> list = new ArrayList<String>();
-		for (String s : set) {
-			list.add(s);
-		}
-		return list;
-	}
 
-	private String concatenateAndClean(Set<String> texts) {
+	private String concatenate(Set<String> texts) {
 		StringBuilder sb = new StringBuilder();
 		for (String text : texts) {
 			if (sb.length() > 0) {
-				sb.append(" ");
+				sb.append(". ");
 			}
-			sb.append(StringUtils.stripHTML(text));
+			sb.append(text);
 		}
 		return sb.toString();
 	}
 
-	/**
-	 * Uses english stemming (snowball + lucene) + stopwords for getting the
-	 * words.
-	 * 
-	 * @param index
-	 * @return
-	 */
-	@SuppressWarnings("deprecation")
-	private Set<String> getTokensForIndexingOrQuery(String text,
-			int maximumNumberOfTokensToReturn) {
-		Set<String> returnSet = new HashSet<String>();
-		try {
-			Analyzer analyzer = new SnowballAnalyzer("Swedish", stopWords);
-			TokenStream tokenStream = analyzer.tokenStream("content",
-					new StringReader(text));
-			Token token = new Token();
-			while (((token = tokenStream.next()) != null)
-					&& (returnSet.size() < maximumNumberOfTokensToReturn)) {
-				returnSet.add(token.term());
-			}
-
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to get tokens from text", e);
-		}
-
-		return returnSet;
-
+	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query) {
+		return search(clazz, query, new PageMetaData<String>(100, 0, null, true));
 	}
+	
 
 	/**
 	 * Searches for entries matching a query.
@@ -191,14 +179,76 @@ public class SearchManager {
 	 * @param p
 	 * @return
 	 */
-	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query) {
-		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils.stripHTML(query), 20);
-		return SearchEntry.search(clazz, tokens);
-	}
-	
-	public ItemCollection<SearchEntry> searchStartsWith(Class<? extends Model> clazz, String searchString) {
-		Set<String> tokens = getTokensForIndexingOrQuery(StringUtils.stripHTML(searchString), 20);
-		return SearchEntry.searchStartsWith(clazz, tokens, 50);
+	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query, PageMetaData<String> page) {
+		try {
+			QueryOptions.Builder options = QueryOptions.newBuilder()
+				.setLimit(100)
+				.setFieldsToSnippet(CONTENT_FIELD_NAME)
+				.setFieldsToReturn(CONTENT_FIELD_NAME, TITLE_FIELD_NAME)
+				.setLimit(page.getItemsPerPage())
+				.setOffset((int) page.getRangeStart());
+			
+			
+			if (page.getSortKey() != null) {
+				Builder sortExpression = SortExpression.newBuilder();
+				sortExpression.setExpression(page.getSortKey());
+				sortExpression.setDirection((page.isAscending()) ? SortExpression.SortDirection.ASCENDING : SortExpression.SortDirection.DESCENDING);
+				sortExpression.setDefaultValue("");
+				SortOptions.Builder sortOptions = SortOptions.newBuilder()
+					.setLimit(1000)
+					.addSortExpression(sortExpression);
+				options.setSortOptions(sortOptions);
+			}
+			
+			Query q = Query.newBuilder().setOptions(options).build("ownerType:\""+clazz.getName()+"\" AND "+CONTENT_FIELD_NAME+":\"" + query.replace("\"", "") + "\"");
+
+		    Results<ScoredDocument> results = getIndex().search(q);
+		    List<SearchEntry> entries = new ArrayList<SearchEntry>();
+		    for (ScoredDocument document : results) {
+		    	SearchEntry entry = documentToSearchEntry(document);
+		        entries.add(entry);
+		    }
+		    ItemCollection<SearchEntry> result = new ItemCollection<SearchEntry>();
+		    result.setHasNextPage(false);
+		    result.setItems(entries);
+		    result.setHasNextPage(entries.size() == page.getItemsPerPage());
+		    result.setItemsPerPage(page.getItemsPerPage());
+		    return result;
+		    
+		} catch (SearchException e) {
+			throw new RuntimeException("Failed search", e);
+		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private SearchEntry documentToSearchEntry(Document document) {
+		String docId = document.getId();
+		String[] splitId = docId.split(":");
+		
+		Class<? extends Model> clazz;
+		try {
+			clazz = (Class<? extends Model>) Class.forName(splitId[0]);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Class not found", e);
+		}
+		
+		SearchEntry entry = new SearchEntry();
+		entry.setOwnerClass(clazz);
+		entry.setOwnerId(Long.valueOf(splitId[1]));
+		entry.setSnippetHtml(document.getOnlyField(CONTENT_FIELD_NAME).getHTML());
+		entry.setTitle(document.getOnlyField(TITLE_FIELD_NAME).getText());
+		return entry;
+	}
+	
+
+
+	public List<SearchEntry> getAllEntries() {
+		List<SearchEntry> result = new ArrayList<SearchEntry>();
+		ListResponse<Document> response = getIndex().listDocuments(ListRequest.newBuilder().build());
+		for (Document doc : response) {
+            result.add(documentToSearchEntry(doc));
+        }
+		return result;
+	}
+	
 }

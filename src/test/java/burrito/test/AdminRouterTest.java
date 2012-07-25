@@ -17,14 +17,14 @@
 
 package burrito.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
 import org.junit.Test;
 
 import burrito.BurritoRouter;
-import burrito.services.SearchEntry;
 
 
 public class AdminRouterTest extends TestBase {
@@ -41,10 +41,6 @@ public class AdminRouterTest extends TestBase {
 		
 //		o = TestUtils.runController("/asdasd", AdminRouter.class);
 		
-		
-		SearchEntry s = new SearchEntry();
-		s.ownerId = 234234L;
-		s.insert();
 		
 	}
 	

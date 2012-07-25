@@ -52,6 +52,10 @@ public class StringUtils {
 		string = string.replaceAll("&nbsp;", " ");
 		return string.trim();
 	}
+	
+	public static String stripBBCode(String string) {
+		return string.replaceAll("\\[.*?\\]", "");
+	}
 
 	private static String stripScripts(String string) {
 		Matcher m = scriptPattern.matcher(string);
