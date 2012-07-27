@@ -106,7 +106,31 @@ public class SearchManagerTest extends TestBase {
 		
 	}
 	
+	@Test
+	public void searchCanBeSortedEvenIfValuesAreMissing() {
+		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(10, 0, "displayableField", true));
+		Assert.assertEquals(0, search.getItems().size());
+	}
 	
+	@Test
+	public void searchFindsReturnedValuesFromDisplayableMethods() {
+		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "unicorn");
+		Assert.assertEquals(2, search.getItems().size());
+	}
+	
+	
+	@Test
+	public void searchHasSameBehaviourAfterRebuiltIndex() {
+		searchOnFunction();
+		searchOnWord();
+		searchOnWrongKeyword();
+		
+		new CrudServiceImpl().reindex(SearchTestEntity.class.getName(), new PageMetaData<String>(100, 0, null, false));
+		
+		searchOnFunction();
+		searchOnWord();
+		searchOnWrongKeyword();
+	}
 	
 	
 }

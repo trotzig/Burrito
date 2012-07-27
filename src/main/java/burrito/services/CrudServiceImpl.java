@@ -906,4 +906,25 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		Previewable previewable = (Previewable) entity;
 		return new CrudPreviewPayload(previewable.getPreviewData(), previewable.getPreviewUrl());
 	}
+	
+	
+	@Override
+	public Integer count(String entityClassName) {
+		return Model.all(extractClass(entityClassName)).count();
+	}
+	
+	@Override
+	public void reindex(String entityClassName, PageMetaData<String> page) {
+		@SuppressWarnings("unchecked")
+		List<Model> entities = (List<Model>) Model.all(extractClass(entityClassName)).order("-id").fetch(page.getItemsPerPage(), (int)page.getRangeStart());
+		for (Model model : entities) {
+			searchManager.insertOrUpdateSearchEntry(model, extractIDFromEntity(model));
+		}
+	}
+	
+	@Override
+	public void clearIndexForEntity(String entityName) {
+		searchManager.clearIndexForEntity(extractClass(entityName));
+	}
+	
 }

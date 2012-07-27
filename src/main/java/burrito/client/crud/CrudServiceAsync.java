@@ -70,4 +70,10 @@ public interface CrudServiceAsync {
 			AsyncCallback<List<CrudEntityReference>> asyncCallback);
 
 	void getPreviewPayload(CrudEntityDescription desc, AsyncCallback<CrudPreviewPayload> asyncCallback);
+
+	void count(String entityName, AsyncCallback<Integer> asyncCallback);
+
+	void reindex(String entityName, PageMetaData<String> page, AsyncCallback<Void> asyncCallback);
+	
+	void clearIndexForEntity(String entityName, AsyncCallback<Void> callback);
 }

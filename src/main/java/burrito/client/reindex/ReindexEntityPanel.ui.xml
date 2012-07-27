@@ -1,0 +1,15 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:with field='res' type='burrito.client.crud.labels.CrudMessages'/>
+	
+	<g:HTMLPanel styleName="reindex-entity">
+		<div class="reindex-entity-name" ui:field="name"></div>
+		<g:Button ui:field="reindex"><ui:text from='{res.reindexEntity}'/></g:Button>
+		<div class="reindex-entity-progress" ui:field="progress">
+			<div class="reindex-entity-progress-inner" ui:field="progressInner"></div>
+			<div class="reindex-entity-progress-text" ui:field="progressText"></div>		
+		</div>
+	
+	</g:HTMLPanel>
+</ui:UiBinder> 

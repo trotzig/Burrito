@@ -55,6 +55,11 @@ public class SearchTestEntity extends Model {
 		return "searchable function " + name;
 	}
 	
+	@Displayable
+	public String displayableFunction() {
+		return "unicorn";
+	}
+	
 	@Override
 	public String toString() {
 		return name;

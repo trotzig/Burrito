@@ -157,4 +157,20 @@ public interface CrudMessages extends Messages {
 	String searchListHelpText(String entityDisplayName);
 
 	String clickToOpenInNewWindow();
+
+	String administrativeTasksHeader();
+
+	String reindex();
+	
+	String reindexDesc();
+	
+	String reindexEntity();
+	
+	String reindexAllButton();
+
+	String done();
+
+	String clearingIndex();
+
+	String initializing();
 }

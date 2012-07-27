@@ -150,4 +150,28 @@ public interface CrudService extends RemoteService {
 	 * @return
 	 */
 	CrudPreviewPayload getPreviewPayload(CrudEntityDescription desc);
+	
+	/**
+	 * Counts rows for an entity
+	 * 
+	 * @param entityClassName
+	 * @return
+	 */
+	Integer count(String entityClassName);
+
+	/**
+	 * Reindex an entity
+	 * 
+	 * @param cursor
+	 * @return
+	 */
+	void reindex(String entityClassName, PageMetaData<String> page);
+
+	/**
+	 * Clears all index entries for a certain entity
+	 * 
+	 * @param entityName
+	 */
+	void clearIndexForEntity(String entityName);
+	
 }

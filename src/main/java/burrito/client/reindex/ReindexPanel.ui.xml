@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:with field='res' type='burrito.client.crud.labels.CrudMessages'/>
+	
+	<g:HTMLPanel styleName="reindex-home">
+		<h1 class="reindex-home-header"><ui:text from='{res.reindex}'/></h1>
+		<p class="reindex-home-desc"><ui:text from='{res.reindexDesc}'/></p>
+		<g:Button ui:field="reindexAll"><ui:text from='{res.reindexAllButton}'/></g:Button>
+		<g:HTMLPanel ui:field="entities" styleName="reindex-entities"></g:HTMLPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

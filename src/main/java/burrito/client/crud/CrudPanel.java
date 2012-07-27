@@ -26,6 +26,7 @@ import burrito.client.crud.custom.CrudCustomEditFormHandler;
 import burrito.client.crud.custom.CrudCustomEntityIndexHandler;
 import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.reindex.ReindexPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -67,12 +68,15 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 	private CrudPanelTop top = new CrudPanelTop();
 	private Map<String, CrudEntityIndex> loadedIndexPanels = new HashMap<String, CrudEntityIndex>();
 
+	static CrudMessages messages = GWT.create(CrudMessages.class);
+
 	public CrudPanel() {
 		History.addValueChangeHandler(this);
 		wrapper.add(top, DockPanel.NORTH);
 		content.addStyleName("k5-CrudPanel-content");
 		top.addStyleName("k5-CrudPanel-top");
 		wrapper.add(content, DockPanel.CENTER);
+		
 		initWidget(wrapper);
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			
@@ -84,6 +88,7 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 		addStyleName("k5-CrudPanel");
 		setWidth("100%");
 	}
+
 
 	public void onValueChange(ValueChangeEvent<String> event) {
 		// history has changed
@@ -97,6 +102,10 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 			top.update(null, null);
 			return new CrudIndexPanel();
 		}
+		if ("reindex".equals(token)) {
+			return new ReindexPanel();
+		}
+		
 		String[] split = token.split("/");
 		final String entityName = split[0];
 		if (split.length == 1) {
@@ -134,7 +143,6 @@ public class CrudPanel extends Composite implements ValueChangeHandler<String> {
 		// delay creation until entity has been fetched
 		final SimplePanel sp = new SimplePanel();
 		CrudServiceAsync service = GWT.create(CrudService.class);
-		final CrudMessages messages = GWT.create(CrudMessages.class);
 		service.describe(entityName, id, copyFromId,
 				new AsyncCallback<CrudEntityDescription>() {
 

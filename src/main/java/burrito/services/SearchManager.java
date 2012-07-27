@@ -116,8 +116,9 @@ public class SearchManager {
 				try {
 					field.setAccessible(true);
 					Object obj = field.get(entity);
+					String val = null;
 					if (obj != null) {
-						String val = obj.toString();
+						val = obj.toString();
 						if (field.isAnnotationPresent(RichText.class)) {
 							val = StringUtils.stripHTML(val);
 						}
@@ -125,9 +126,9 @@ public class SearchManager {
 							val = StringUtils.stripBBCode(val);
 						}
 						searchables.add(val);
-						if (field.isAnnotationPresent(Displayable.class)) {
-							builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(field.getName()).setText(val));
-						}
+					}
+					if (field.isAnnotationPresent(Displayable.class)) {
+						builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(field.getName()).setText((val == null)? "" : val));
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to get searchable texts from entity", e);
@@ -136,7 +137,7 @@ public class SearchManager {
 		}
 		
 		for (Method method : EntityUtil.getMethods(ownerType)) {
-			if (method.isAnnotationPresent(SearchableMethod.class)) {
+			if (method.isAnnotationPresent(SearchableMethod.class) || method.isAnnotationPresent(Displayable.class)) {
 				try {
 					method.setAccessible(true);
 					Object obj = method.invoke(entity);
@@ -182,7 +183,6 @@ public class SearchManager {
 	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query, PageMetaData<String> page) {
 		try {
 			QueryOptions.Builder options = QueryOptions.newBuilder()
-				.setLimit(100)
 				.setFieldsToSnippet(CONTENT_FIELD_NAME)
 				.setFieldsToReturn(CONTENT_FIELD_NAME, TITLE_FIELD_NAME)
 				.setLimit(page.getItemsPerPage())
@@ -249,6 +249,28 @@ public class SearchManager {
             result.add(documentToSearchEntry(doc));
         }
 		return result;
+	}
+
+
+	public void clearIndexForEntity(Class<? extends Model> clazz) {
+		while (true) {
+			List<String> docIds = new ArrayList<String>();
+			// Return a set of document IDs.
+			QueryOptions.Builder options = QueryOptions.newBuilder()
+					.setLimit(100).setReturningIdsOnly(true);
+
+			Query q = Query.newBuilder().setOptions(options)
+					.build("ownerType:" + clazz.getName());
+
+			Results<ScoredDocument> results = getIndex().search(q);
+			if (results.getNumberFound() == 0) {
+				break;
+			}
+			for (ScoredDocument document : results) {
+				docIds.add(document.getId());
+			}
+			getIndex().remove(docIds);
+	    }
 	}
 	
 }

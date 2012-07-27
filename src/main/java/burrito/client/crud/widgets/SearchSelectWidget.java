@@ -120,7 +120,7 @@ public class SearchSelectWidget extends DialogBox {
 
 	private void searchFor(String searchValue) {
 		PageMetaData<String> p = new PageMetaData<String>();
-		p.setItemsPerPage(1000000);
+		p.setItemsPerPage(100);
 		p.setSortKey(relationField.getSearchSortField());
 		
 		service.listEntities(searchValue, relationField.getRelatedEntityName(), p , new AsyncCallback<CrudEntityList>() {

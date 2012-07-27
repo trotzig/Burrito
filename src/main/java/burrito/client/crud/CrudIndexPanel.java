@@ -87,6 +87,14 @@ public class CrudIndexPanel extends Composite {
 			wrapper.add(fp);
 			wrapper.add(new VerticalSpacer(10));
 		}
+	
+
+		wrapper.add(new VerticalSpacer(30));
+		wrapper.add(new Label(messages.administrativeTasksHeader()));
+		
+		wrapper.add(new VerticalSpacer(10));
+		wrapper.add(new Hyperlink(messages.reindex(), "reindex"));
+		
 	}
 
 }

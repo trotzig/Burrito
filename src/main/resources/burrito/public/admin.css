@@ -417,3 +417,45 @@ td.datePickerMonth {
 	height: 400px;
 	overflow: auto;	
 }
+
+.reindex-entity {
+	margin-top: 10px;	
+}
+
+.reindex-entity-name, .reindex-entity-progress {
+	display: inline-block;
+	width: 120px;
+}
+
+.reindex-entity-name {
+	word-wrap: break-word;
+	padding: 5px 10px 5px 0px;
+		
+}
+
+.reindex-entity-progress {
+	height: 25px;
+	width: 200px;
+	display: inline-block;
+	border: 1px solid #CCC;
+	vertical-align: bottom;
+	position: relative;
+}
+.reindex-entity-progress-inner {
+	height: 100%;
+	background-color: #F0F0F0;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.reindex-entity-progress-text {
+	padding: 3px;
+	text-align: center;		
+	color: #CCC;
+	position: relative;
+}
+
+.reindex-home-desc {
+	width: 485px;
+}
