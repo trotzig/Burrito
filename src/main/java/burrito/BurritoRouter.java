@@ -25,6 +25,7 @@ import burrito.controller.BroadcastMessageAsyncController;
 import burrito.controller.BroadcastMessageController;
 import burrito.controller.DropFeedsSubscriptionChannelController;
 import burrito.controller.FeedsInactivateController;
+import burrito.controller.GlobalSearchController;
 import burrito.controller.KeepFeedsSubscriptionAliveController;
 import burrito.controller.NewFeedsSubscriptionChannelController;
 import burrito.controller.NewFeedsSubscriptionController;
@@ -87,5 +88,6 @@ public class BurritoRouter extends Router {
 		route("/burrito/feeds/{feedId}/broadcast").through(BroadcastMessageController.class).renderAsJson().protect(bcProtector);
 		
 		route("/burrito/bbCodePreview").through(BBPreviewController.class).renderedBy(BBCodeCreator.getPreviewJspUrl());
+		route("/burrito/search").through(GlobalSearchController.class).renderAsJson().protect(Configurator.getAdminProtector());
 	}
 }

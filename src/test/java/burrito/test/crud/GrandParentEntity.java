@@ -1,16 +1,16 @@
 package burrito.test.crud;
 
+import siena.core.lifecycle.PreInsert;
+import siena.core.lifecycle.PreSave;
+import siena.core.lifecycle.PreUpdate;
+import burrito.BurritoModel;
 import burrito.annotations.AdminLink;
 import burrito.annotations.Displayable;
 import burrito.annotations.Required;
 import burrito.annotations.SearchableField;
 import burrito.annotations.Unique;
-import siena.Model;
-import siena.core.lifecycle.PreInsert;
-import siena.core.lifecycle.PreSave;
-import siena.core.lifecycle.PreUpdate;
 
-public class GrandParentEntity extends Model {
+public class GrandParentEntity extends BurritoModel {
 	
 	@Displayable
 	@SearchableField
@@ -20,6 +20,7 @@ public class GrandParentEntity extends Model {
 	@Unique
 	private Long uniqueValue;
 
+	
 	public void setGrandParentProperty(String grandParentProperty) {
 		this.grandParentProperty = grandParentProperty;
 	}

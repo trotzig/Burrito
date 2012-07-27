@@ -249,7 +249,6 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			Class<? extends Model> clazz = extractClass(crud.getEntityName());
 			Long entityId = crud.getId();
 			Model entity = extractEntity(entityId, null, clazz);
-			searchManager.deleteSearchEntry(entity, entityId);
 			cascadeDeleteRelations(entity);
 			entity.delete();
 		}
@@ -412,17 +411,12 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			}
 	
 			Long id = extractIDFromEntity(entity);
-			updateSearchIndicies(entity, id);
 	
 			return id;
 		} catch (SienaException e) {
 			EntityValidationException ve = ValidationUtil.getValidationErrorOrRethrow(e);
 			throw new CrudGenericException(ve.getMessage());
 		}
-	}
-
-	private void updateSearchIndicies(Model entity, Long databaseId) {
-		searchManager.insertOrUpdateSearchEntry(entity, databaseId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -854,34 +848,8 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Class<? extends Model> extractClass(String entityName) {
-		// Attempts to get the class from the entity name.
-		Class<? extends Model> clazz;
-		try {
-			clazz = (Class<? extends Model>) Class.forName(entityName);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Class not found: " + entityName, e);
-		}
-		if (!classIsSubclassOfModel(clazz)) {
-		
-			throw new RuntimeException(
-					"Class must be subclass of siena.Model. The specified class is not: "
-							+ clazz.getName());
-		}
-		return clazz;
-	}
-
-	private boolean classIsSubclassOfModel(Class<?> clazz) {
-		if (clazz.equals(Model.class)) {
-			return true;
-		}
-		Class<?> superClass = clazz.getSuperclass();
-		if (superClass == null) {
-			return false;
-		}
-		return classIsSubclassOfModel(superClass);
-		
+		return EntityUtil.getClazz(entityName); 
 	}
 
 	@Override

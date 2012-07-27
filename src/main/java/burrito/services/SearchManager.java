@@ -30,6 +30,7 @@ import burrito.annotations.Displayable;
 import burrito.annotations.RichText;
 import burrito.annotations.SearchableField;
 import burrito.annotations.SearchableMethod;
+import burrito.client.util.StringCutter;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
@@ -98,8 +99,7 @@ public class SearchManager {
 		
 	}
 
-	public void deleteSearchEntry(Model entity, Long entityId) {
-		Class<? extends Model> ownerType = entity.getClass();
+	public void deleteSearchEntry(Class<? extends Model> ownerType, Long entityId) {
 		getIndex().remove(ownerType.getName() + ":" + entityId);
 	}
 
@@ -173,6 +173,27 @@ public class SearchManager {
 	
 
 	/**
+	 * Makes a global search, i.e. not filtering on a specific entity kind.
+	 * 
+	 * @param query
+	 */
+	public ItemCollection<SearchEntry> search(String query) {
+		return search(query, new PageMetaData<String>(100, 0, null, true));
+	}
+	
+	/**
+	 * Makes a global search, i.e. not filtering on a specific entity kind.
+	 * 
+	 * @param query the search query
+	 * @param pageMetaData The current page
+	 * @return
+	 */
+	public ItemCollection<SearchEntry> search(String query, PageMetaData<String> pageMetaData) {
+		return search(null, query, pageMetaData);
+	}
+
+
+	/**
 	 * Searches for entries matching a query.
 	 * 
 	 * @param clazz
@@ -181,6 +202,8 @@ public class SearchManager {
 	 * @return
 	 */
 	public ItemCollection<SearchEntry> search(Class<? extends Model> clazz, String query, PageMetaData<String> page) {
+		
+		query = escape(query);
 		try {
 			QueryOptions.Builder options = QueryOptions.newBuilder()
 				.setFieldsToSnippet(CONTENT_FIELD_NAME)
@@ -199,13 +222,17 @@ public class SearchManager {
 					.addSortExpression(sortExpression);
 				options.setSortOptions(sortOptions);
 			}
-			
-			Query q = Query.newBuilder().setOptions(options).build("ownerType:\""+clazz.getName()+"\" AND "+CONTENT_FIELD_NAME+":\"" + query.replace("\"", "") + "\"");
+			String ownerTypeFilter = "";
+			if (clazz != null) {
+				//Filter on entity kind
+				ownerTypeFilter = "ownerType:\""+clazz.getName()+"\" ";
+			}
+			Query q = Query.newBuilder().setOptions(options).build(ownerTypeFilter + CONTENT_FIELD_NAME+":\"" + query + "\"");
 
 		    Results<ScoredDocument> results = getIndex().search(q);
 		    List<SearchEntry> entries = new ArrayList<SearchEntry>();
 		    for (ScoredDocument document : results) {
-		    	SearchEntry entry = documentToSearchEntry(document);
+		    	SearchEntry entry = documentToSearchEntry(document, query);
 		        entries.add(entry);
 		    }
 		    ItemCollection<SearchEntry> result = new ItemCollection<SearchEntry>();
@@ -220,24 +247,56 @@ public class SearchManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private SearchEntry documentToSearchEntry(Document document) {
+	private String escape(String query) {
+		if (query == null) {
+			return null;
+		}
+		return query.replace("\"", "");
+	}
+
+
+	private SearchEntry documentToSearchEntry(Document document, String query) {
 		String docId = document.getId();
 		String[] splitId = docId.split(":");
 		
-		Class<? extends Model> clazz;
-		try {
-			clazz = (Class<? extends Model>) Class.forName(splitId[0]);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Class not found", e);
-		}
 		
 		SearchEntry entry = new SearchEntry();
-		entry.setOwnerClass(clazz);
+		entry.setOwnerClass(splitId[0]);
 		entry.setOwnerId(Long.valueOf(splitId[1]));
-		entry.setSnippetHtml(document.getOnlyField(CONTENT_FIELD_NAME).getHTML());
+		
+		com.google.appengine.api.search.Field content = document.getOnlyField(CONTENT_FIELD_NAME);
+		String snippet = content.getHTML();
+		if (snippet == null && query != null) {
+			//In devmode, snippets are not created. Therefor, we add our own. 
+			//See http://code.google.com/p/googleappengine/issues/detail?id=7473
+			snippet = createSnippet(content.getText(), query);
+		}
+		
+		entry.setSnippetHtml(snippet);
 		entry.setTitle(document.getOnlyField(TITLE_FIELD_NAME).getText());
 		return entry;
+	}
+	
+	
+	private String createSnippet(String test, String query) {
+		int nameIndex = test.toLowerCase().indexOf(query);
+		if (nameIndex != -1) {
+			String highlight = test.substring(nameIndex, nameIndex
+					+ query.length());
+			StringBuffer sb = new StringBuffer(new StringCutter(100).cut(test, true,
+					nameIndex));
+			// update name index from the cut string
+			nameIndex = sb.toString().toLowerCase().indexOf(query);
+			if (nameIndex == -1) {
+				//something wrong
+				return sb.toString();
+			}
+			sb.replace(nameIndex, nameIndex + query.length(),
+					"<span class=\"snippet-highlight\">" + highlight
+							+ "</span>");
+			return sb.toString();
+		}
+		return null;
 	}
 	
 
@@ -246,7 +305,7 @@ public class SearchManager {
 		List<SearchEntry> result = new ArrayList<SearchEntry>();
 		ListResponse<Document> response = getIndex().listDocuments(ListRequest.newBuilder().build());
 		for (Document doc : response) {
-            result.add(documentToSearchEntry(doc));
+            result.add(documentToSearchEntry(doc, null));
         }
 		return result;
 	}
@@ -272,5 +331,7 @@ public class SearchManager {
 			getIndex().remove(docIds);
 	    }
 	}
+
+
 	
 }

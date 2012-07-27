@@ -51,4 +51,44 @@ public class EntityUtil {
 		}
 		return interfaces;
 	}
+	
+	public static List<Class<?>> getParentClasses(Class<?> clazz) {
+		List<Class<?>> parentClasses = new ArrayList<Class<?>>();
+		while(clazz != Model.class) {
+			parentClasses.add(clazz.getSuperclass());
+			clazz = clazz.getSuperclass();
+			if (clazz == null) return parentClasses;
+		}
+		return parentClasses;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Class<? extends Model> getClazz(String entityName) {
+		// Attempts to get the class from the entity name.
+		Class<? extends Model> clazz;
+		try {
+			clazz = (Class<? extends Model>) Class.forName(entityName);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Class not found: " + entityName, e);
+		}
+		if (!classIsSubclassOfModel(clazz)) {
+		
+			throw new RuntimeException(
+					"Class must be subclass of siena.Model. The specified class is not: "
+							+ clazz.getName());
+		}
+		return clazz;
+	}
+	
+	private static boolean classIsSubclassOfModel(Class<?> clazz) {
+		if (clazz.equals(Model.class)) {
+			return true;
+		}
+		Class<?> superClass = clazz.getSuperclass();
+		if (superClass == null) {
+			return false;
+		}
+		return classIsSubclassOfModel(superClass);
+		
+	}
 }

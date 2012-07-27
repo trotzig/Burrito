@@ -32,6 +32,7 @@ import siena.Model;
 import taco.Protector;
 import burrito.links.Linkable;
 import burrito.sitelet.Sitelet;
+import burrito.util.EntityUtil;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -53,6 +54,9 @@ public abstract class Configurator implements ServletContextListener {
 	 * @param m
 	 */
 	public void addCrudable(Class<? extends Model> m) {
+		if (!EntityUtil.getParentClasses(m).contains(BurritoModel.class)) {
+			System.err.println("The crudable class " + m.getName() + " does not extend " + BurritoModel.class.getName() + ". This means that you will have to update search indexes on save/delete yourself.");
+		}
 		crudables.add(m);
 	}
 
@@ -170,6 +174,7 @@ public abstract class Configurator implements ServletContextListener {
 		init();
 	}
 	
+
 	private boolean isDevMode(ServletContext context) {
 		String serverInfo = context.getServerInfo();
 		/*

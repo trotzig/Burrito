@@ -9,6 +9,7 @@ import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.test.TestBase;
 import burrito.test.crud.ChildEntity;
+import burrito.test.crud.NoSearchTestEntity;
 import burrito.test.crud.SearchTestEntity;
 
 public class SearchManagerTest extends TestBase {
@@ -23,13 +24,11 @@ public class SearchManagerTest extends TestBase {
 		SearchTestEntity entity = new SearchTestEntity();
 		entity.setName("hello world");
 		entity.save();
-		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 		
 		entity = new SearchTestEntity();
 		entity.setName("pizza hamburger");
 		entity.save();
 		
-		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 	}
 	
 	@Test
@@ -75,7 +74,6 @@ public class SearchManagerTest extends TestBase {
 			entity.setName("a " + i);
 			entity.setDisplayableField("display " + (num - i - 1));
 			entity.save();
-			searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 		}
 		
 		ItemCollection<SearchEntry> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "displayableField", true));
@@ -96,7 +94,6 @@ public class SearchManagerTest extends TestBase {
 		ChildEntity otherType = new ChildEntity();
 		otherType.setChildProperty("hello");
 		otherType.save();
-		searchManager.insertOrUpdateSearchEntry(otherType, otherType.getId());
 		
 		ItemCollection<SearchEntry> search = searchManager.search(SearchTestEntity.class, "hello");
 		Assert.assertEquals(1, search.getItems().size());
@@ -132,5 +129,30 @@ public class SearchManagerTest extends TestBase {
 		searchOnWrongKeyword();
 	}
 	
+	@Test
+	public void entitiesCanOverrideWhetherToBeSearchIndexedOrNot() {
+		NoSearchTestEntity n = new NoSearchTestEntity();
+		n.setName("yngwie");
+		n.insert();
+		
+		ItemCollection<SearchEntry> search = searchManager.search(NoSearchTestEntity.class, "yngwie");
+		Assert.assertEquals(0, search.getItems().size());
+		
+	}
+	
+	@Test
+	public void globalSearchReturnsDecentSnippets() {
+		ChildEntity otherType = new ChildEntity();
+		otherType.setChildProperty("I was at a big pile of something where I met a man who said hello and continued walking a long way back. Refrigerator.");
+		otherType.save();
+		
+		ItemCollection<SearchEntry> results = searchManager.search("hello");
+		Assert.assertEquals(2, results.getItems().size());
+		
+		//Due to a current bug in the dev_appserver, snippets are missing. This led to our own snippet creator. 
+		//It works, but will probably have to be updated soon. 
+		Assert.assertEquals("...something where I met a man who said hello and <span class=\"snippet-highlight\">continued</span> walking a long way back....", searchManager.search("continued").getItems().get(0).getSnippetHtml());
+		
+	}
 	
 }

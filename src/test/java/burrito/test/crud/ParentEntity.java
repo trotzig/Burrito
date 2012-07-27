@@ -1,7 +1,5 @@
 package burrito.test.crud;
 
-import siena.Generator;
-import siena.Id;
 import siena.core.lifecycle.PreInsert;
 import siena.core.lifecycle.PreSave;
 import siena.core.lifecycle.PreUpdate;
@@ -10,9 +8,6 @@ import burrito.annotations.Displayable;
 import burrito.annotations.Relation;
 
 public class ParentEntity extends GrandParentEntity {
-
-	@Id(Generator.AUTO_INCREMENT)
-	private Long id;
 	
 	private Integer parentProperty;
 
@@ -41,14 +36,6 @@ public class ParentEntity extends GrandParentEntity {
 		return "/parent";
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getId() {
-		return id;
-	}
-	
 	@PreInsert
 	@PreSave
 	@PreUpdate

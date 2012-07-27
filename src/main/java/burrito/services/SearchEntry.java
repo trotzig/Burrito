@@ -2,13 +2,11 @@ package burrito.services;
 
 import java.io.Serializable;
 
-import siena.Model;
-
 @SuppressWarnings("serial")
 public class SearchEntry implements Serializable {
 
 	private Long ownerId;
-	private Class<? extends Model> ownerClass;
+	private String ownerClass;
 	private String title;
 	/**
 	 * A snippet of HTML highlighting the search hit
@@ -21,10 +19,11 @@ public class SearchEntry implements Serializable {
 	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
-	public Class<? extends Model> getOwnerClass() {
+	
+	public String getOwnerClass() {
 		return ownerClass;
 	}
-	public void setOwnerClass(Class<? extends Model> ownerClass) {
+	public void setOwnerClass(String ownerClass) {
 		this.ownerClass = ownerClass;
 	}
 	public String getSnippetHtml() {
