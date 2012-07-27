@@ -55,7 +55,7 @@ public abstract class Configurator implements ServletContextListener {
 	 */
 	public void addCrudable(Class<? extends Model> m) {
 		if (!EntityUtil.getParentClasses(m).contains(BurritoModel.class)) {
-			System.err.println("The crudable class " + m.getName() + " does not extend " + BurritoModel.class.getName() + ". This means that you will have to update search indexes on save/delete yourself.");
+			System.err.println("WARNING:\nThe crudable class " + m.getName() + " does not extend " + BurritoModel.class.getName() + ". This means that you will have to update search indexes on save/delete yourself.\n\n");
 		}
 		crudables.add(m);
 	}
