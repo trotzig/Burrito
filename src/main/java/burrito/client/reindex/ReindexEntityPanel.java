@@ -133,7 +133,8 @@ public class ReindexEntityPanel extends Composite {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				throw new RuntimeException(caught);
+				progressText.setInnerText("Retrying...");
+				recursiveIndexBatch(index, callback);
 			}
 		});
 	}
