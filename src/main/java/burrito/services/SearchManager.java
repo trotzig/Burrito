@@ -107,7 +107,7 @@ public class SearchManager {
 		Document.Builder builder = Document.newBuilder()
 			.setId(ownerType.getName() + ":" + entityId)
 			.addField(com.google.appengine.api.search.Field.newBuilder().setName("ownerType").setText(ownerType.getName()))
-			.addField(com.google.appengine.api.search.Field.newBuilder().setName(TITLE_FIELD_NAME).setText(entity.toString()));;
+			.addField(com.google.appengine.api.search.Field.newBuilder().setName(TITLE_FIELD_NAME).setText(entity.toString()));
 			
 		Set<String> searchables = new HashSet<String>();
 		
