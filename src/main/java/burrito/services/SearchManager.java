@@ -95,7 +95,10 @@ public class SearchManager {
 		Class<? extends Model> ownerType = entity.getClass();
 		
 		Document document = entityToDocument(ownerType, entity, entityId);
-		getIndex().add(document);
+		if (document != null) {
+			getIndex().add(document);
+		}
+		//If the document is null, there is nothing to index
 		
 	}
 
@@ -106,8 +109,13 @@ public class SearchManager {
 	private Document entityToDocument(Class<? extends Model> ownerType, Model entity, Long entityId) {
 		Document.Builder builder = Document.newBuilder()
 			.setId(ownerType.getName() + ":" + entityId)
-			.addField(com.google.appengine.api.search.Field.newBuilder().setName("ownerType").setText(ownerType.getName()))
-			.addField(com.google.appengine.api.search.Field.newBuilder().setName(TITLE_FIELD_NAME).setText(entity.toString()));
+			.addField(com.google.appengine.api.search.Field.newBuilder().setName("ownerType").setText(ownerType.getName()));
+		
+		String title = entity.toString();
+		if (title == null) {
+			title = "(untitled)";
+		}
+		builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(TITLE_FIELD_NAME).setText(title));
 			
 		Set<String> searchables = new HashSet<String>();
 		
@@ -142,14 +150,20 @@ public class SearchManager {
 					method.setAccessible(true);
 					Object obj = method.invoke(entity);
 					if (obj != null) {
-						searchables.add(obj.toString());
+						String val = obj.toString();
+						if (val != null) {
+							searchables.add(val);
+						}
 					}
 				} catch (Exception e) {
 					throw new RuntimeException("Failed to get searchable texts from entity", e);
 				}
 			}
 		}  
-		
+		if (searchables.isEmpty()) {
+			//Nothing to index
+			return null;
+		}
 		String text = concatenate(searchables);
 		builder.addField(com.google.appengine.api.search.Field.newBuilder().setName(CONTENT_FIELD_NAME).setText(text));
 		return builder.build();

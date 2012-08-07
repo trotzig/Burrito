@@ -155,4 +155,12 @@ public class SearchManagerTest extends TestBase {
 		
 	}
 	
+	
+	
+	@Test
+	public void emptyEntityIsNotAddedToSearchIndex() {
+		SearchTestEntity entity = new SearchTestEntity();
+		entity.save();
+	}
+	
 }
