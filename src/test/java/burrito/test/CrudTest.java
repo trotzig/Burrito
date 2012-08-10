@@ -26,6 +26,7 @@ import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.services.CrudServiceImpl;
 import burrito.services.SearchManager;
+import burrito.services.SearchManagerFactory;
 import burrito.test.crud.ChildEntity;
 import burrito.test.crud.GrandParentEntity;
 import burrito.test.crud.ParentEntity;
@@ -109,7 +110,7 @@ public class CrudTest extends TestBase {
 		entity.setChildProperty("This is a searchable value.");
 		entity.update();
 
-		SearchManager searchManager = SearchManager.get();
+		SearchManager searchManager = SearchManagerFactory.getSearchManager();
 		searchManager.insertOrUpdateSearchEntry(entity, entity.getId());
 		
 		Assert.assertEquals(1, searchManager.search(ChildEntity.class, "searchable").getItems().size());

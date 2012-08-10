@@ -31,6 +31,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import siena.Model;
 import taco.Protector;
 import burrito.links.Linkable;
+import burrito.services.DatastoreSearchManager;
+import burrito.services.SearchManager;
 import burrito.sitelet.Sitelet;
 import burrito.util.EntityUtil;
 
@@ -43,6 +45,8 @@ public abstract class Configurator implements ServletContextListener {
 	public static List<Class<? extends Sitelet>> sitelets = Collections.synchronizedList(new ArrayList<Class<? extends Sitelet>>());
 	public static List<Class<? extends burrito.links.Linkable>> linkables = Collections.synchronizedList(new ArrayList<Class<? extends Linkable>>());
 	public static boolean MAY_RETIRE_SITELETS = false;
+	public static Class<? extends SearchManager> SEARCH_MANAGER_TYPE = DatastoreSearchManager.class;
+	
 	private static final String DEV_MODE_CONFIGURATION_SUFFIX = "-DEV-" + RandomStringUtils.randomAlphabetic(4);
 	private static String SITE_IDENTIFIER;
 	private static BroadcastSettings BROADCAST_SETTINGS;

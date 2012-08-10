@@ -11,7 +11,7 @@ import siena.core.lifecycle.PostInsert;
 import siena.core.lifecycle.PostSave;
 import siena.core.lifecycle.PostUpdate;
 import siena.gae.GaePersistenceManager;
-import burrito.services.SearchManager;
+import burrito.services.SearchManagerFactory;
 
 /**
  * Useful base class for all entities. Provides support for automatically
@@ -49,14 +49,14 @@ public abstract class BurritoModel extends Model {
 	@PostSave
 	public final void reindex() {
 		if (updateSearchIndexOnSave()) {
-			SearchManager.get().insertOrUpdateSearchEntry(this, id);
+			SearchManagerFactory.getSearchManager().insertOrUpdateSearchEntry(this, id);
 		}
 	}
 
 	@PostDelete
 	public final void removeFromIndex() {
 		if (updateSearchIndexOnSave()) {
-			SearchManager.get().deleteSearchEntry(this.getClass(), id);
+			SearchManagerFactory.getSearchManager().deleteSearchEntry(this.getClass(), id);
 		}
 	}
 

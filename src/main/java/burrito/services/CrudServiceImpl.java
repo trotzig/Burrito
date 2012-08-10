@@ -25,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -116,7 +117,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 
 	private static final long serialVersionUID = 1L;
 
-	private SearchManager searchManager = SearchManager.get();
+	private SearchManager searchManager = SearchManagerFactory.getSearchManager();
 	private PluginCrudManager pluginManager = PluginCrudManager.get();
 
 	@SuppressWarnings("unchecked")
@@ -354,15 +355,21 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	private CrudEntityList search(Class<? extends Model> clazz, String filter,
 			PageMetaData<String> p) {
 		
-		ItemCollection<SearchEntry> entries;
+		ItemCollection<SearchHit> entries;
 		entries = searchManager.search(clazz, filter, p);
 				
 		List<Model> entities = new ArrayList<Model>();
-		for (SearchEntry entry : entries) {
+		for (SearchHit entry : entries) {
 			Model entity = extractEntity(entry.getOwnerId(), null, clazz);
 			if (entity != null)
 				entities.add(entity);
 		}
+		
+		if (Configurator.SEARCH_MANAGER_TYPE == DatastoreSearchManager.class) {
+			//Must sort results after search, since this search manager doesn't know how to page or order results.
+			sortTable(entities, p);
+		}
+		
 		
 		CrudEntityList collection = new CrudEntityList();
 		collection.setItems(convertEntitesToCrudEntityDescriptions(entities));
@@ -393,6 +400,14 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	}
 	
 
+	private void sortTable(List<Model> entities, PageMetaData<String> p){
+		if(p.isAscending()){
+			Collections.sort(entities, new EntityComparator(p.getSortKey()));
+		}else{
+			Collections.sort(entities, Collections.reverseOrder(new EntityComparator(p.getSortKey())));
+		}
+	}
+	
 	public Long save(CrudEntityDescription desc, Long clonedFromId) throws FieldValueNotUniqueException, CrudGenericException {
 		Class<? extends Model> clazz = extractClass(desc.getEntityName());
 		Model entity = extractEntity(desc.getId(), clonedFromId, clazz);
