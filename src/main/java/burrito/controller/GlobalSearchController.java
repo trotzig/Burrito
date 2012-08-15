@@ -3,7 +3,7 @@ package burrito.controller;
 import java.util.List;
 
 import taco.Controller;
-import taco.StatusCodeException;
+import taco.exception.StatusCodeException;
 import burrito.services.SearchHit;
 import burrito.services.SearchManagerFactory;
 /**
