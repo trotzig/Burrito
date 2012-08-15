@@ -1,5 +1,7 @@
 package burrito.test.crud;
 
+import java.util.Date;
+
 import burrito.BurritoModel;
 import burrito.annotations.Displayable;
 import burrito.annotations.SearchableField;
@@ -11,6 +13,9 @@ public class SearchTestEntity extends BurritoModel {
 	private String name;
 
 	private String notSearchField;
+	
+	@Displayable
+	private Date date;
 	
 	@Displayable
 	private String displayableField;
@@ -52,5 +57,13 @@ public class SearchTestEntity extends BurritoModel {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public Date getDate() {
+		return date;
 	}
 }

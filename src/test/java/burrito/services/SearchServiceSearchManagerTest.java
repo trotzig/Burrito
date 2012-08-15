@@ -1,5 +1,7 @@
 package burrito.services;
 
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +37,26 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 		
 		entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(2, entries.getPage() + 1, "displayableField", false));
 		Assert.assertEquals("a 2", entries.getItems().get(0).getTitle());
+		
+		
+	}
+	
+	@Test
+	public void searchCanBeSortedByDate() {
+		int num = 10;
+		for (int i = 0; i < num; i++) {
+			SearchTestEntity entity = new SearchTestEntity();
+			entity.setName("a " + i);
+			entity.setDisplayableField("display " + (num - i - 1));
+			entity.setDate(new Date(i));
+			entity.save();
+		}
+		
+		ItemCollection<SearchHit> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "date", true));
+		Assert.assertEquals("a 0", entries.getItems().get(0).getTitle());
+		
+		entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "date", false));
+		Assert.assertEquals("a 9", entries.getItems().get(0).getTitle());
 		
 		
 	}
