@@ -120,11 +120,11 @@ public class SearchServiceSearchManager implements SearchManager {
 					com.google.appengine.api.search.Field.Builder fieldBuilder = com.google.appengine.api.search.Field.newBuilder().setName(field.getName());
 					if (obj instanceof Date) {
 						Date d = (Date) obj;
-						long millis = 0;
+						long seconds = 0;
 						if (d != null) {
-							millis = d.getTime();
+							seconds = d.getTime() / 1000;
 						}
-						fieldBuilder.setNumber(millis);
+						fieldBuilder.setNumber(seconds);
 					} else if (obj instanceof Number) {
 						fieldBuilder.setNumber(((Number)obj).doubleValue());
 					} else {

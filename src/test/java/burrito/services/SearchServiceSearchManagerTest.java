@@ -44,11 +44,12 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 	@Test
 	public void searchCanBeSortedByDate() {
 		int num = 10;
+		long now = System.currentTimeMillis();
 		for (int i = 0; i < num; i++) {
 			SearchTestEntity entity = new SearchTestEntity();
 			entity.setName("a " + i);
 			entity.setDisplayableField("display " + (num - i - 1));
-			entity.setDate(new Date(i));
+			entity.setDate(new Date(now + (i * 1000))); //Search can only deal with second precision
 			entity.save();
 		}
 		
