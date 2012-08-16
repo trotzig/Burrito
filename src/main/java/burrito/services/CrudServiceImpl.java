@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,6 +76,7 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
+import burrito.client.crud.generic.fields.EnumListField;
 import burrito.client.crud.generic.fields.FileField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.IntegerField;
@@ -434,7 +434,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void updateEntityFromDescription(Object entity,
 			CrudEntityDescription desc, Class<?> clazz) {
 		for (CrudField field : desc.getFields()) {
@@ -449,18 +449,15 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				}
 				
 				Field privField = EntityUtil.getField(clazz, field.getName());
-				@SuppressWarnings("rawtypes")
 				Class fieldType = privField.getType();
 				
 				if (value != null && field instanceof ListedByEnumField && (Enum.class.isAssignableFrom(fieldType))) {
 					ListedByEnumField fieldEnum = (ListedByEnumField) field;
 					String className = fieldEnum.getTypeClassName();
-					@SuppressWarnings("rawtypes")
 					Class enumClass = Class.forName(className);
 					
 					value = Enum.valueOf(enumClass, (String) value);
 				}
-				
 				
 				privField.setAccessible(true);
 				privField.set(entity, value);
@@ -720,7 +717,7 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 		} else if (clazz == List.class) {
 			ParameterizedType pType = (ParameterizedType) field
 					.getGenericType();
-			Type type = pType.getActualTypeArguments()[0];
+			Class type = (Class) pType.getActualTypeArguments()[0];
 			
 			if (field.isAnnotationPresent(EmbeddedBy.class)) {
 				EmbeddedBy embeddedBy = field.getAnnotation(EmbeddedBy.class);
@@ -735,6 +732,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				
 			} else if (type.equals(String.class) && field.isAnnotationPresent(Link.class)) {
 				crud = new LinkListField((List<String>) field.get(entity));
+				
+			} else if (field.isAnnotationPresent(ListedByEnum.class)) {
+				ListedByEnum annot = field.getAnnotation(ListedByEnum.class);
+				crud = new EnumListField((List<String>) field.get(entity), annot.type().getName());
 				
 			} else if (type.equals(String.class)) {
 				crud = new StringListField((List<String>) field.get(entity));

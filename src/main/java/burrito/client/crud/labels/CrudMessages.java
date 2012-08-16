@@ -118,6 +118,8 @@ public interface CrudMessages extends Messages {
 
 	String embeddedItemAtLeastOne(String embeddedTypeInSingular);
 
+	String atLeastOne();
+	
 	String linkIsRequired();
 
 	String chooseLinkType();
