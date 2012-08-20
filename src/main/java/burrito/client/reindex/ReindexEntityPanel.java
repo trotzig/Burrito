@@ -6,6 +6,7 @@ import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
 import burrito.client.widgets.panels.table.PageMetaData;
+import burrito.client.widgets.selection.SelectionList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -41,13 +42,16 @@ public class ReindexEntityPanel extends Composite {
 	private CrudEntityInfo info;
 
 	private int times;
+
+	private final SelectionList<Boolean> typeSelector;
 	
 	interface ReindexEntityPanelUiBinder extends
 			UiBinder<Widget, ReindexEntityPanel> {
 	}
 
-	public ReindexEntityPanel(CrudEntityInfo info) {
+	public ReindexEntityPanel(CrudEntityInfo info, SelectionList<Boolean> typeSelector) {
 		this.info = info;
+		this.typeSelector = typeSelector;
 		initWidget(uiBinder.createAndBindUi(this));
 		String underscore = info.getEntityName().replace('.', '_');
 		name.setInnerText(CrudLabelHelper.getString(underscore));
@@ -57,7 +61,7 @@ public class ReindexEntityPanel extends Composite {
 	
 	@UiHandler("reindex")
 	public void reindexClicked(ClickEvent e) {
-		reindex(new AsyncCallback<Void>() {
+		reindex(typeSelector.getValue(), new AsyncCallback<Void>() {
 			
 			@Override
 			public void onSuccess(Void result) {
@@ -73,23 +77,42 @@ public class ReindexEntityPanel extends Composite {
 
 	/**
 	 * Starts a process to reindex the entity
+	 * @param full 
 	 * 
 	 * @param asyncCallback the callback used when done.
 	 */
-	public void reindex(final AsyncCallback<Void> callback) {
+	public void reindex(Boolean full, final AsyncCallback<Void> callback) {
 		setProgress(0);
 		progressText.setInnerText(messages.initializing());
 		reindex.setEnabled(false);
-		service.count(info.getEntityName(), new AsyncCallback<Integer>() {
-			@Override
-			public void onSuccess(Integer count) {
-				startIndexing(count.intValue(), callback);
-			}
-			@Override
-			public void onFailure(Throwable caught) {
-				throw new RuntimeException(caught);
-			}
-		});
+		
+		if (full) {
+			service.count(info.getEntityName(), new AsyncCallback<Integer>() {
+				@Override
+				public void onSuccess(Integer count) {
+					startIndexing(count.intValue(), callback);
+				}
+				@Override
+				public void onFailure(Throwable caught) {
+					failed(callback, caught);
+				}
+			});
+		} else {
+			progressText.setInnerText(messages.partialReindex());
+			service.reindexPartial(info.getEntityName(), new AsyncCallback<Void>() {
+				
+				@Override
+				public void onSuccess(Void result) {
+					done(callback);
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					failed(callback, caught);
+				}
+			});
+		}
+		
 	}
 
 
@@ -105,7 +128,7 @@ public class ReindexEntityPanel extends Composite {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				throw new RuntimeException(caught);
+				failed(callback, caught);
 			}
 		});
 		
@@ -116,6 +139,12 @@ public class ReindexEntityPanel extends Composite {
 		callback.onSuccess(null);
 		progressText.setInnerText(messages.done());
 	}
+
+	private void failed(AsyncCallback<Void> callback, Throwable caught) {
+		progressText.setInnerText(messages.failed());
+		callback.onFailure(caught);
+	}
+
 	
 
 	private void recursiveIndexBatch(final int index, final AsyncCallback<Void> callback) {

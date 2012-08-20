@@ -1,12 +1,15 @@
 package burrito.client.reindex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import burrito.client.crud.CrudService;
 import burrito.client.crud.CrudServiceAsync;
 import burrito.client.crud.generic.CrudEntityInfo;
 import burrito.client.crud.labels.CrudMessages;
+import burrito.client.widgets.selection.SelectionList;
+import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +21,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ReindexPanel extends Composite {
@@ -28,8 +32,10 @@ public class ReindexPanel extends Composite {
 	
 	@UiField HTMLPanel entities; 
 	@UiField Button reindexAll;
+	@UiField SimplePanel typeWrapper;
 	private List<CrudEntityInfo> allEntities;
 	private List<ReindexEntityPanel> panels = new ArrayList<ReindexEntityPanel>();
+	private SelectionList<Boolean> type;
 	
 	interface ReindexPanelUiBinder extends UiBinder<Widget, ReindexPanel> {
 	}
@@ -51,12 +57,26 @@ public class ReindexPanel extends Composite {
 				throw new RuntimeException(caught);
 			}
 		});
+		type = new SelectionList<Boolean>(false);
+		type.setLabelCreator(new SelectionListLabelCreator<Boolean>() {
+			
+			@Override
+			public String createLabel(Boolean full) {
+				if (full) {
+					return messages.reindexTypeFull();
+				}
+				return messages.reindexTypePartial();
+			}
+		});
+		type.setModel(Arrays.asList(false, true));
+		type.render();
+		typeWrapper.add(type);
 	}
 	
 	protected void init() {
 		entities.clear();
 		for (CrudEntityInfo info : allEntities) {
-			ReindexEntityPanel panel = new ReindexEntityPanel(info);
+			ReindexEntityPanel panel = new ReindexEntityPanel(info, type);
 			entities.add(panel);
 			panels .add(panel);
 		}
@@ -72,7 +92,7 @@ public class ReindexPanel extends Composite {
 		if (i == panels.size()) {
 			return;
 		}
-		panels.get(i).reindex(new AsyncCallback<Void>() {
+		panels.get(i).reindex(type.getValue(), new AsyncCallback<Void>() {
 			
 			@Override
 			public void onSuccess(Void result) {
@@ -81,7 +101,7 @@ public class ReindexPanel extends Composite {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				throw new RuntimeException(caught);
+				reindexAllIter(i+1); //never mind errors, just continue with the next.
 			}
 		});
 	}

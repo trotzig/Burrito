@@ -375,6 +375,29 @@ public class SearchServiceSearchManager implements SearchManager {
 	    }
 	}
 
+	@Override
+	public Date getLastModified(Class<? extends Model> clazz) {
+		QueryOptions.Builder options = QueryOptions.newBuilder()
+			.setFieldsToReturn("lastModified");
 
+		Builder sortExpression = SortExpression.newBuilder();
+		sortExpression.setExpression("lastModified");
+		sortExpression.setDefaultValueNumeric(0.0d);
+		sortExpression.setDirection(SortExpression.SortDirection.DESCENDING);
+		SortOptions.Builder sortOptions = SortOptions.newBuilder()
+			.setLimit(1)
+			.addSortExpression(sortExpression);
+		options.setSortOptions(sortOptions);
+		
+		Query q = Query.newBuilder().setOptions(options)
+				.build("ownerType:\"" + clazz.getName() + "\" ");
+
+		Results<ScoredDocument> results = getIndex().search(q);
+		for (ScoredDocument document : results) {
+			com.google.appengine.api.search.Field f = document.getOnlyField("lastModified");
+			return new Date((long) (f.getNumber() * 1000d));
+		}
+		return null;
+	}
 	
 }

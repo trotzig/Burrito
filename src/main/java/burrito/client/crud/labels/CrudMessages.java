@@ -168,6 +168,8 @@ public interface CrudMessages extends Messages {
 	
 	String reindexEntity();
 	
+	String reindexSelectType();
+	
 	String reindexAllButton();
 
 	String done();
@@ -175,4 +177,12 @@ public interface CrudMessages extends Messages {
 	String clearingIndex();
 
 	String initializing();
+
+	String reindexTypePartial();
+
+	String reindexTypeFull();
+
+	String partialReindex();
+
+	String failed();
 }

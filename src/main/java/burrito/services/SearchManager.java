@@ -1,5 +1,6 @@
 package burrito.services;
 
+import java.util.Date;
 import java.util.List;
 
 import burrito.client.widgets.panels.table.ItemCollection;
@@ -32,4 +33,11 @@ public interface SearchManager {
 	List<SearchHit> getAllEntries();
 
 	void clearIndexForEntity(Class<? extends Model> clazz);
+
+	/**
+	 * Gets the last modified date on the last updated entity search entry.
+	 * 
+	 * @return
+	 */
+	Date getLastModified(Class<? extends Model> clazz);
 }

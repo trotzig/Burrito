@@ -76,4 +76,6 @@ public interface CrudServiceAsync {
 	void reindex(String entityName, PageMetaData<String> page, AsyncCallback<Void> asyncCallback);
 	
 	void clearIndexForEntity(String entityName, AsyncCallback<Void> callback);
+
+	void reindexPartial(String entityName, AsyncCallback<Void> asyncCallback);
 }

@@ -910,5 +910,20 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	public void clearIndexForEntity(String entityName) {
 		searchManager.clearIndexForEntity(extractClass(entityName));
 	}
+
+	@Override
+	public void reindexPartial(String entityClassName) {
+		
+		Class<? extends Model> clazz = extractClass(entityClassName);
+		Date lastModified = searchManager.getLastModified(clazz);
+		if (lastModified == null) {
+			throw new RuntimeException("Failed to get last modified date of entity in search index. Run a full reindex instead.");
+		}
+		@SuppressWarnings("unchecked")
+		List<Model> entities = (List<Model>) Model.all(clazz).filter("lastModified>", lastModified).fetch();
+		for (Model model : entities) {
+			searchManager.insertOrUpdateSearchEntry(model, extractIDFromEntity(model));
+		}
+	}
 	
 }

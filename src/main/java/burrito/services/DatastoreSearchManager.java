@@ -3,6 +3,7 @@ package burrito.services;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -159,7 +160,10 @@ public class DatastoreSearchManager implements SearchManager {
 	public void clearIndexForEntity(Class<? extends Model> clazz) {
 		SearchEntry.deleteAllForOwnerType(clazz);
 	}
-		
-	
 
+	@Override
+	public Date getLastModified(Class<? extends Model> clazz) {
+		throw new UnsupportedOperationException("The legacy DatastoreSearchManager does not know lastModified dates. Use the newer SearchServiceSearchManager instead.");
+	}
+	
 }

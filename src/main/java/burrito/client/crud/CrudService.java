@@ -173,5 +173,13 @@ public interface CrudService extends RemoteService {
 	 * @param entityName
 	 */
 	void clearIndexForEntity(String entityName);
+
+	/**
+	 * Reindexes entities from the last known indexed document.
+	 * 
+	 * @param entityName
+	 * @param asyncCallback
+	 */
+	void reindexPartial(String entityName);
 	
 }
