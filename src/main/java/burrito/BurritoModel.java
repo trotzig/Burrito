@@ -1,5 +1,9 @@
 package burrito;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import siena.Generator;
 import siena.Id;
 import siena.Model;
@@ -22,7 +26,7 @@ import burrito.services.SearchManagerFactory;
  */
 public abstract class BurritoModel extends Model {
 	
-	private static boolean lifecycleEnabled = false;
+	private final static Set<Class<?>> LIFE_CYCLE_ENABLED_CLASSES = Collections.synchronizedSet(new HashSet<Class<?>>());
 
 	@Id(Generator.AUTO_INCREMENT)
 	private Long id;
@@ -32,14 +36,14 @@ public abstract class BurritoModel extends Model {
 	 * 
 	 */
 	public BurritoModel() {
-		if (!lifecycleEnabled) {
+		if (!LIFE_CYCLE_ENABLED_CLASSES.contains(this.getClass())) {
 			//To add support for @Pre... and @Post...-annotations, we need to programmatically tell Siena about this class. 
-			synchronized (BurritoModel.class) {
+			synchronized (LIFE_CYCLE_ENABLED_CLASSES) {
 				PersistenceManager pm = new GaePersistenceManager();
 				pm = new PersistenceManagerLifeCycleWrapper(pm);
 				pm.init(null);
 				PersistenceManagerFactory.install(pm, this.getClass());
-				lifecycleEnabled = true;
+				LIFE_CYCLE_ENABLED_CLASSES.add(this.getClass());
 			}
 		}
 	}

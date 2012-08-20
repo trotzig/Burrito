@@ -2,6 +2,10 @@ package burrito.test.crud;
 
 import java.util.Date;
 
+import siena.core.lifecycle.PreInsert;
+import siena.core.lifecycle.PreSave;
+import siena.core.lifecycle.PreUpdate;
+
 import burrito.BurritoModel;
 import burrito.annotations.Displayable;
 import burrito.annotations.SearchableField;
@@ -19,6 +23,8 @@ public class SearchTestEntity extends BurritoModel {
 	
 	@Displayable
 	private String displayableField;
+
+	private Date lastModified;
 	
 	public String getDisplayableField() {
 		return displayableField;
@@ -66,4 +72,16 @@ public class SearchTestEntity extends BurritoModel {
 	public Date getDate() {
 		return date;
 	}
+	
+	@PreSave
+	@PreInsert
+	@PreUpdate
+	public void updateLastModifiedDate() {
+		lastModified = new Date();
+	}
+	
+	public Date getLastModified() {
+		return lastModified;
+	}
+	
 }
