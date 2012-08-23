@@ -53,6 +53,14 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 			entity.save();
 		}
 		
+		//Create another one with null date value
+		SearchTestEntity entity = new SearchTestEntity();
+		entity.setName("a " + num);
+		entity.setDisplayableField("display " + (num - 1));
+		entity.setDate(null); 
+		entity.save();
+	
+		
 		ItemCollection<SearchHit> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "date", true));
 		Assert.assertEquals("a 0", entries.getItems().get(0).getTitle());
 		
@@ -61,6 +69,43 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 		
 		
 	}
+	
+	
+	@Test
+	public void searchCanBeSortedByNumber() {
+		int num = 10;
+		for (int i = 0; i < num; i++) {
+			SearchTestEntity entity = new SearchTestEntity();
+			entity.setName("a " + i);
+			entity.setDisplayableField("display " + (num - i - 1));
+			entity.setNumber((long) (num - i)); 
+			entity.save();
+		}
+		
+		//Create another one with null number value
+		SearchTestEntity entity = new SearchTestEntity();
+		entity.setName("null");
+		entity.setDisplayableField("display " + (num - 1));
+		entity.setNumber(null); 
+		entity.insert();
+	
+		//Create another one with very large number value
+		entity = new SearchTestEntity();
+		entity.setName("Long.MAX_VALUE");
+		entity.setDisplayableField("display " + (num));
+		entity.setNumber(Long.MAX_VALUE); 
+		entity.insert();
+		
+		
+		ItemCollection<SearchHit> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(100, 0, "number", true));
+		Assert.assertEquals("null", entries.getItems().get(0).getTitle());
+		
+		entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(100, 0, "number", false));
+		Assert.assertEquals("Long.MAX_VALUE", entries.getItems().get(0).getTitle());
+		
+		
+	}
+	
 	
 
 	@Test

@@ -71,6 +71,8 @@ public class SearchServiceSearchManager implements SearchManager {
 	private static final String CONTENT_FIELD_NAME = "content_"; //ending with an underscore to prevent clashes with true field names.
 	private static final String TITLE_FIELD_NAME = "title_"; //ending with an underscore to prevent clashes with true field names.
 	
+	private static double NUMBER_MAX_VAL = 2.14748364E9d;
+	
 	protected SearchServiceSearchManager() {
 		//private
 	}
@@ -117,16 +119,24 @@ public class SearchServiceSearchManager implements SearchManager {
 				try {
 					field.setAccessible(true);
 					Object obj = field.get(entity);
+					
 					com.google.appengine.api.search.Field.Builder fieldBuilder = com.google.appengine.api.search.Field.newBuilder().setName(field.getName());
-					if (obj instanceof Date) {
+					if (Date.class.isAssignableFrom(field.getType())) {
 						Date d = (Date) obj;
 						long seconds = 0;
 						if (d != null) {
 							seconds = d.getTime() / 1000;
 						}
 						fieldBuilder.setNumber(seconds);
-					} else if (obj instanceof Number) {
-						fieldBuilder.setNumber(((Number)obj).doubleValue());
+					} else if (Number.class.isAssignableFrom(field.getType())) {
+						double d = 0d;
+						if (obj != null) {
+							d = ((Number)obj).doubleValue();
+						}
+						if (d > NUMBER_MAX_VAL) {
+							d = NUMBER_MAX_VAL; //We don't really deal with large numbers. But this will prevent it from breaking if a very large value is entered.
+						}
+						fieldBuilder.setNumber(d);
 					} else {
 						fieldBuilder.setText(obj == null ? "" : obj.toString());
 					}
@@ -257,7 +267,14 @@ public class SearchServiceSearchManager implements SearchManager {
 				Builder sortExpression = SortExpression.newBuilder();
 				sortExpression.setExpression(page.getSortKey());
 				sortExpression.setDirection((page.isAscending()) ? SortExpression.SortDirection.ASCENDING : SortExpression.SortDirection.DESCENDING);
-				sortExpression.setDefaultValue("");
+				
+				if (isFieldNumber(clazz, page.getSortKey())) {
+					sortExpression.setDefaultValueNumeric(0d);
+				} else {
+					sortExpression.setDefaultValue("");
+				}
+				
+				
 				SortOptions.Builder sortOptions = SortOptions.newBuilder()
 					.setLimit(1000)
 					.addSortExpression(sortExpression);
@@ -286,6 +303,17 @@ public class SearchServiceSearchManager implements SearchManager {
 		} catch (SearchException e) {
 			throw new RuntimeException("Failed search", e);
 		}
+	}
+
+	private boolean isFieldNumber(Class<? extends Model> clazz, String sortKey) {
+		Field f = EntityUtil.getField(clazz, sortKey);
+		if (Date.class.isAssignableFrom(f.getType())) {
+			return true;
+		}
+		if (Number.class.isAssignableFrom(f.getType())) {
+			return true;
+		}
+		return false;
 	}
 
 	private String escape(String query) {

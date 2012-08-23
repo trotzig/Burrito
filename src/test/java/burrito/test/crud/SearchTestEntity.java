@@ -24,8 +24,22 @@ public class SearchTestEntity extends BurritoModel {
 	@Displayable
 	private String displayableField;
 
+	@Displayable
+	private Long number;
+	
 	private Date lastModified;
 	
+	
+	
+	
+	public Long getNumber() {
+		return number;
+	}
+
+	public void setNumber(Long number) {
+		this.number = number;
+	}
+
 	public String getDisplayableField() {
 		return displayableField;
 	}

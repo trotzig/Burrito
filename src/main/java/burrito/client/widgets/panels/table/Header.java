@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.HTML;
 public class Header extends HTML {
 
 	String key;
+	boolean sortAscendingOnFirstClick = true;
 
 	/**
 	 * Constructs a header which will not be sortable
@@ -52,6 +53,14 @@ public class Header extends HTML {
 	 */
 	public String getKey() {
 		return key;
+	}
+	
+	public void setSortAscendingOnFirstClick(boolean sortAscendingOnFirstClick) {
+		this.sortAscendingOnFirstClick = sortAscendingOnFirstClick;
+	}
+	
+	public boolean isSortAscendingOnFirstClick() {
+		return sortAscendingOnFirstClick;
 	}
 
 }

@@ -29,6 +29,7 @@ import burrito.client.crud.generic.CrudEntityList;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.AdminLinkMethodField;
 import burrito.client.crud.generic.fields.BooleanField;
+import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.ImageField;
 import burrito.client.crud.generic.fields.ListedByEnumField;
 import burrito.client.crud.generic.fields.ManyToOneRelationField;
@@ -98,6 +99,10 @@ public class CrudEntityIndex extends Composite {
 				} else {
 					h = new Header(displayName);
 				}
+				if (f instanceof DateField) {
+					h.setSortAscendingOnFirstClick(false);
+				}
+				
 				addHeader(h, f.isDefaultSort());
 				if (f.isDefaultSort()) {
 					setSortAscending(f.isSortAscending());

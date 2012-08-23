@@ -334,7 +334,7 @@ public abstract class Table<T extends Serializable> extends Composite {
 							setSortAscending(!isSortAscending());
 						} else {
 							currentHeader = head;
-							setSortAscending(true);
+							setSortAscending(head.isSortAscendingOnFirstClick());
 						}
 						currentHeader.addStyleName("current-sort");
 						if (isSortAscending()) {
