@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
+import burrito.test.crud.AnotherSearchTestEntity;
 import burrito.test.crud.ChildEntity;
 import burrito.test.crud.SearchTestEntity;
 
@@ -60,6 +61,13 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 		entity.setDate(null); 
 		entity.save();
 	
+		//Create another entity, with same field names but different data types:
+		AnotherSearchTestEntity another = new AnotherSearchTestEntity();
+		another.setName(1000L);
+		another.setLastModified("display");
+		another.setDate("2001-02-22");
+		another.setNumber("12");
+		another.save();
 		
 		ItemCollection<SearchHit> entries = searchManager.search(SearchTestEntity.class, "display", new PageMetaData<String>(num, 0, "date", true));
 		Assert.assertEquals("a 0", entries.getItems().get(0).getTitle());

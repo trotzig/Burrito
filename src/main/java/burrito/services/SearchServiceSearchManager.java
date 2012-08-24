@@ -120,7 +120,7 @@ public class SearchServiceSearchManager implements SearchManager {
 					field.setAccessible(true);
 					Object obj = field.get(entity);
 					
-					com.google.appengine.api.search.Field.Builder fieldBuilder = com.google.appengine.api.search.Field.newBuilder().setName(field.getName());
+					com.google.appengine.api.search.Field.Builder fieldBuilder = com.google.appengine.api.search.Field.newBuilder().setName(ownerType.getSimpleName() + "_" + field.getName());
 					if (Date.class.isAssignableFrom(field.getType())) {
 						Date d = (Date) obj;
 						long seconds = 0;
@@ -265,7 +265,7 @@ public class SearchServiceSearchManager implements SearchManager {
 			
 			if (page.getSortKey() != null) {
 				Builder sortExpression = SortExpression.newBuilder();
-				sortExpression.setExpression(page.getSortKey());
+				sortExpression.setExpression(clazz.getSimpleName() + "_" + page.getSortKey());
 				sortExpression.setDirection((page.isAscending()) ? SortExpression.SortDirection.ASCENDING : SortExpression.SortDirection.DESCENDING);
 				
 				if (isFieldNumber(clazz, page.getSortKey())) {
