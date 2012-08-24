@@ -27,6 +27,7 @@ public class SearchTestEntity extends BurritoModel {
 	@Displayable
 	private Long number;
 	
+	@Displayable
 	private Date lastModified;
 	
 	

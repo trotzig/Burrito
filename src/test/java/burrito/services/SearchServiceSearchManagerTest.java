@@ -130,5 +130,12 @@ public class SearchServiceSearchManagerTest extends SearchManagerTest {
 		Assert.assertEquals("...something where I met a man who said hello and <span class=\"snippet-highlight\">continued</span> walking a long way back....", searchManager.search("continued").getItems().get(0).getSnippetHtml());
 		
 	}
+	
+	
+	@Test
+	public void getDateOfLastModified() {
+		
+		Assert.assertNotNull(searchManager.getLastModified(SearchTestEntity.class));
+	}
 
 }

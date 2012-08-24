@@ -405,11 +405,12 @@ public class SearchServiceSearchManager implements SearchManager {
 
 	@Override
 	public Date getLastModified(Class<? extends Model> clazz) {
+		String fieldName = clazz.getSimpleName() + "_lastModified";
 		QueryOptions.Builder options = QueryOptions.newBuilder()
-			.setFieldsToReturn("lastModified");
+			.setFieldsToReturn(fieldName);
 
 		Builder sortExpression = SortExpression.newBuilder();
-		sortExpression.setExpression("lastModified");
+		sortExpression.setExpression(fieldName);
 		sortExpression.setDefaultValueNumeric(0.0d);
 		sortExpression.setDirection(SortExpression.SortDirection.DESCENDING);
 		SortOptions.Builder sortOptions = SortOptions.newBuilder()
@@ -422,7 +423,7 @@ public class SearchServiceSearchManager implements SearchManager {
 
 		Results<ScoredDocument> results = getIndex().search(q);
 		for (ScoredDocument document : results) {
-			com.google.appengine.api.search.Field f = document.getOnlyField("lastModified");
+			com.google.appengine.api.search.Field f = document.getOnlyField(fieldName);
 			return new Date((long) (f.getNumber() * 1000d));
 		}
 		return null;
