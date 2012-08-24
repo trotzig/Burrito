@@ -907,8 +907,8 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 	}
 	
 	@Override
-	public void clearIndexForEntity(String entityName) {
-		searchManager.clearIndexForEntity(extractClass(entityName));
+	public boolean clearIndexForEntity(String entityName) {
+		return searchManager.clearIndexForEntity(extractClass(entityName));
 	}
 
 	@Override

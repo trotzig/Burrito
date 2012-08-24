@@ -157,8 +157,9 @@ public class DatastoreSearchManager implements SearchManager {
 	}
 
 	@Override
-	public void clearIndexForEntity(Class<? extends Model> clazz) {
+	public boolean clearIndexForEntity(Class<? extends Model> clazz) {
 		SearchEntry.deleteAllForOwnerType(clazz);
+		return true;
 	}
 
 	@Override

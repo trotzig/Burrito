@@ -382,25 +382,24 @@ public class SearchServiceSearchManager implements SearchManager {
 
 
 	@Override
-	public void clearIndexForEntity(Class<? extends Model> clazz) {
-		while (true) {
-			List<String> docIds = new ArrayList<String>();
-			// Return a set of document IDs.
-			QueryOptions.Builder options = QueryOptions.newBuilder()
-					.setLimit(100).setReturningIdsOnly(true);
+	public boolean clearIndexForEntity(Class<? extends Model> clazz) {
+		List<String> docIds = new ArrayList<String>();
+		// Return a set of document IDs.
+		QueryOptions.Builder options = QueryOptions.newBuilder()
+				.setLimit(100).setReturningIdsOnly(true);
 
-			Query q = Query.newBuilder().setOptions(options)
-					.build("ownerType:" + clazz.getName());
+		Query q = Query.newBuilder().setOptions(options)
+				.build("ownerType:" + clazz.getName());
 
-			Results<ScoredDocument> results = getIndex().search(q);
-			if (results.getNumberFound() == 0) {
-				break;
-			}
-			for (ScoredDocument document : results) {
-				docIds.add(document.getId());
-			}
-			getIndex().remove(docIds);
-	    }
+		Results<ScoredDocument> results = getIndex().search(q);
+		if (results.getNumberFound() == 0) {
+			return true;
+		}
+		for (ScoredDocument document : results) {
+			docIds.add(document.getId());
+		}
+		getIndex().remove(docIds);
+		return false;
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public interface SearchManager {
 
 	List<SearchHit> getAllEntries();
 
-	void clearIndexForEntity(Class<? extends Model> clazz);
+	boolean clearIndexForEntity(Class<? extends Model> clazz);
 
 	/**
 	 * Gets the last modified date on the last updated entity search entry.

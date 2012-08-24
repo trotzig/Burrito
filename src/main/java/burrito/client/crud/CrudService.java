@@ -168,11 +168,13 @@ public interface CrudService extends RemoteService {
 	void reindex(String entityClassName, PageMetaData<String> page);
 
 	/**
-	 * Clears all index entries for a certain entity
+	 * Clears index entries for a certain entity in a fairly large batch. If
+	 * there are no more entries in the index, true is returned. Otherwise,
+	 * false is returned, signalling that there are more to clear.
 	 * 
 	 * @param entityName
 	 */
-	void clearIndexForEntity(String entityName);
+	boolean clearIndexForEntity(String entityName);
 
 	/**
 	 * Reindexes entities from the last known indexed document.

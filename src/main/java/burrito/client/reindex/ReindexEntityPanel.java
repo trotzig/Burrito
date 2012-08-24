@@ -90,7 +90,7 @@ public class ReindexEntityPanel extends Composite {
 			service.count(info.getEntityName(), new AsyncCallback<Integer>() {
 				@Override
 				public void onSuccess(Integer count) {
-					startIndexing(count.intValue(), callback);
+					initIndexing(count.intValue(), callback);
 				}
 				@Override
 				public void onFailure(Throwable caught) {
@@ -116,14 +116,24 @@ public class ReindexEntityPanel extends Composite {
 	}
 
 
-	protected void startIndexing(int count, final AsyncCallback<Void> callback) {
+	protected void initIndexing(int count, final AsyncCallback<Void> callback) {
 		times = (int) Math.ceil((double)count / BATCH_SIZE);	
 		progressText.setInnerText(messages.clearingIndex());
-		service.clearIndexForEntity(info.getEntityName(), new AsyncCallback<Void>() {
+		
+		recursiveClearIndex(callback);
+	}
+
+	private void recursiveClearIndex(final AsyncCallback<Void> callback) {
+		
+		service.clearIndexForEntity(info.getEntityName(), new AsyncCallback<Boolean>() {
 			
 			@Override
-			public void onSuccess(Void result) {
-				recursiveIndexBatch(0, callback);
+			public void onSuccess(Boolean result) {
+				if (result.booleanValue()) {
+					recursiveIndexBatch(0, callback);
+				} else {
+					recursiveClearIndex(callback);
+				}
 			}
 			
 			@Override
@@ -131,8 +141,9 @@ public class ReindexEntityPanel extends Composite {
 				failed(callback, caught);
 			}
 		});
-		
+
 	}
+
 
 	private void done(AsyncCallback<Void> callback) {
 		setProgress(1.0d);
