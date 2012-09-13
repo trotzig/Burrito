@@ -426,8 +426,8 @@ public class CrudEntityIndex extends Composite {
 
 	}
 
-	private static DateTimeFormat otherYearFormat = DateTimeFormat.getFormat("yyyy-MM-dd hh:mm");
-	private static DateTimeFormat sameYearFormat = DateTimeFormat.getFormat("d MMM hh:mm");
+	private static DateTimeFormat otherYearFormat = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm");
+	private static DateTimeFormat sameYearFormat = DateTimeFormat.getFormat("d MMM HH:mm");
 	private static CrudServiceAsync service = GWT.create(CrudService.class);
 	private static CrudMessages messages = GWT.create(CrudMessages.class);
 	private CrudEntityTable table;
