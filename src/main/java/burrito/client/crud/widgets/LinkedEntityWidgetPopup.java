@@ -58,6 +58,7 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 	private CrudServiceAsync service = GWT.create(CrudService.class);
 	private SelectionList<String> type = new SelectionList<String>(false);
 	private SimplePanel valuesWrapper = new SimplePanel();
+	private VerticalPanel urlWrapper = new VerticalPanel();
 	private RelationSelectionList relationSelectionList;
 	private StringInputField linkText = new StringInputField(true);
 	private URLInputfield url = new URLInputfield(true);
@@ -65,8 +66,6 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 	private CrudMessages labels = GWT.create(CrudMessages.class);
 
 	private Long typeIdWaitingToBeSet;
-
-	private VerticalPanel urlWrapper;
 
 	public LinkedEntityWidgetPopup(final SaveHandler saveHandler) {
 		super(false, true);
@@ -86,13 +85,13 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 				handleTypeChange();
 			}
 		});
+
 		wrapper.add(new Label(labels.linkText()));
 		wrapper.add(linkText);
 		wrapper.add(new Label(labels.selectLinkTo()));
 		wrapper.add(type);
 		wrapper.add(valuesWrapper);
 
-		urlWrapper = new VerticalPanel();
 		urlWrapper.setVisible(false);
 		urlWrapper.add(new Label(labels.writeOrPasteLink()));
 		urlWrapper.add(url);

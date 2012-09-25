@@ -37,16 +37,17 @@ import burrito.client.widgets.messages.CommonMessages;
 public class SelectionList<T> extends Composite implements HasChangeHandlers,
 		HasValidators {
 
+	private CommonMessages messages = GWT.create(CommonMessages.class);
 	private Grid wrapper = new Grid(1, 3);
 	private ListBox listBox;
 	private List<T> model;
 	private SelectionListLabelCreator<T> labelCreator;
 	private String nullSelectLabel;
 	private boolean required;
+	private Label pleaseWaitLabel = new Label(messages.pleaseWait());
 	private Label validationError;
 	private T waitingToBeSet;
 	private Label requiredStar;
-	private CommonMessages messages = GWT.create(CommonMessages.class);
 
 	/**
 	 * Creates an empty selection list with no values to select from. Using this
@@ -58,35 +59,24 @@ public class SelectionList<T> extends Composite implements HasChangeHandlers,
 	 */
 	public SelectionList(boolean required) {
 		this.required = required;
-		listBox = createListBox();
+
+		listBox = new ListBox();
 		wrapper.setWidget(0, 0, listBox);
+
 		validationError = new Label();
 		validationError.addStyleName("validationError");
 		setValidationError(null);
+
 		requiredStar = new Label("*");
 		if (required) {
 			wrapper.setWidget(0, 1, requiredStar);
 		}
+
+		wrapper.setWidget(0, 2, pleaseWaitLabel);
+
 		initWidget(wrapper);
+
 		addStyleName("k5-SelectionBox");
-	}
-
-	private ListBox createListBox() {
-		return new ListBox();
-	}
-
-	/**
-	 * Creates a selection list which is immediately rendered
-	 * 
-	 * @param model
-	 * @param labelCreator
-	 */
-	public SelectionList(List<T> model,
-			SelectionListLabelCreator<T> labelCreator, boolean required) {
-		this.required = required;
-		this.model = model;
-		this.labelCreator = labelCreator;
-		render();
 	}
 
 	/**
@@ -111,6 +101,8 @@ public class SelectionList<T> extends Composite implements HasChangeHandlers,
 	 * Call this method after having called setModel and setLabelCreator
 	 */
 	public void render() {
+		pleaseWaitLabel.removeFromParent();
+
 		if (model == null) {
 			throw new IllegalStateException(
 					"No model set. Make sure you call setModel() before render()");

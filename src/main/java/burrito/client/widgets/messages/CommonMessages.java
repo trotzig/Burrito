@@ -82,4 +82,6 @@ public interface CommonMessages extends Messages {
 	String blobImageDelete();
 
 	String add();
+
+	String pleaseWait();
 }
