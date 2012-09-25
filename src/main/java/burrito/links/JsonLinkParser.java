@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import siena.Model;
-import burrito.util.Logger;
+import burrito.client.crud.widgets.LinkedEntityWidgetPopup;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -35,88 +35,112 @@ import com.google.gson.JsonParseException;
 public class JsonLinkParser {
 
 	/**
-	 * This method will parse a json string to a {@link Link}. If the json is
-	 * malformed or invalid, a {@link JsonParseException} will be thrown. If you
-	 * need to be failsafe, use parseFailSafe(json) instead.
+	 * This method will attempt to parse the input string as JSON, and
+	 * return a {@link Link} object. If the referenced entity can not be
+	 * found, the return value is null.
 	 * 
-	 * @param json
+	 * If the string is not a valid JSON representation, the returned
+	 * {@link Link} object will instead contain the input string in it's
+	 * url field.
+	 * 
+	 * If the input value is null, the method returns null.
+	 * 
+	 * In other words, the input should be either a valid link JSON
+	 * string, or a URL, or null.
+	 * 
+	 * @param value
 	 * @return
-	 * @throws JsonParseException
 	 */
-	public Link parse(String json) throws JsonParseException {
-		Gson gson = new Gson();
-		LinkJsonOverlay overlay = gson.fromJson(json, LinkJsonOverlay.class);
+	public Link parse(String value) {
+		if (value == null) {
+			return null;
+		}
+
 		Link link = new Link();
-		link.setTypeName(overlay.typeClassName);
-		link.setId(overlay.typeId);
-		link.setText(overlay.linkText);
-		
-		if (overlay.absoluteUrl != null) {
-			link.setUrl(overlay.absoluteUrl);
-			return link;
-		}
-		Class<?> clazz;
+		String url = null;
+
 		try {
-			clazz = Class.forName(overlay.typeClassName);
-		} catch (Exception e) {
-			throw new RuntimeException("No such class: "
-					+ overlay.typeClassName, e);
+			Gson gson = new Gson();
+			LinkJsonOverlay overlay = gson.fromJson(value, LinkJsonOverlay.class);
+
+			if (overlay.absoluteUrl != null) {
+				url = overlay.absoluteUrl;
+			}
+			else {
+				try {
+					Class<?> clazz = Class.forName(overlay.typeClassName);
+					Linkable linkable = (Linkable) Model.all(clazz).filter("id", overlay.typeId).get();
+
+					if (linkable != null) {
+						url = linkable.getUrl();
+					}
+				}
+				catch (ClassNotFoundException e) {
+					// url remains null
+				}
+			}
+
+			link.setTypeName(overlay.typeClassName);
+			link.setId(overlay.typeId);
+			link.setText(overlay.linkText);
 		}
-		Linkable linkable = (Linkable) Model.all(clazz).filter("id",
-				overlay.typeId).get();
-		link.setUrl(linkable.getUrl());
+		catch (JsonParseException e) {
+			url = value;
+
+			link.setTypeName(LinkedEntityWidgetPopup.TYPE_ABSOLUTE_URL);
+			link.setId(-1L);
+			link.setText(value);
+		}
+
+		if (url == null) {
+			return null;
+		}
+
+		link.setUrl(url);
+
 		return link;
 	}
 
 	/**
-	 * Same as parse() but will not throw an exception if the json is invalid.
-	 * In such cases, an error message is logged and <code>null</code> is
-	 * returned.
+	 * Same as parse(String). Exists for historical reasons.
 	 * 
-	 * @param json
+	 * @param value
 	 * @return
 	 */
-	public Link parseFailSafe(String json) {		
-		try {
-			return parse(json);
-		} catch (JsonParseException e) {
-			Logger.error("Json could not be parsed: " + json);
-			return null;
-		}
+	public Link parseFailSafe(String value) {
+		return parse(value);
 	}
 
 	/**
-	 * Parses a list of strings to {@link Link}s. This method is not fail safe
-	 * and will throw an exception if the json can't be parsed. Use
-	 * parseFailSafe() if you need to be fail safe.
+	 * Creates a list of {@link Link}s from a list of strings.
 	 * 
-	 * @param jsons
+	 * Uses parse() internally for each input string. If parse() returns
+	 * null for an input string, that {@link Link} is then not included
+	 * in the output list. Thus, the length of the output list
+	 * can be smaller than the length of the input list.
+	 * 
+	 * @param values
 	 * @return
 	 */
-	public List<Link> parse(List<String> jsons) throws JsonParseException {
-		List<Link> result = new ArrayList<Link>(jsons.size());
-		for (String json : jsons) {
-			result.add(parse(json));
-		}
-		return result;
-	}
-
-	/**
-	 * Parses a list of strings to {@link Link}s. This method is fail safe and
-	 * will only add those links that can be parsed to the resulting list.
-	 * 
-	 * @param jsons
-	 * @return
-	 */
-	public List<Link> parseFailSafe(List<String> jsons) {
-		List<Link> result = new ArrayList<Link>(jsons.size());
-		for (String json : jsons) {
-			Link failSafe = parseFailSafe(json);
-			if (failSafe != null) {
-				result.add(failSafe);
+	public List<Link> parse(List<String> values) {
+		List<Link> result = new ArrayList<Link>(values.size());
+		for (String value : values) {
+			Link link = parseFailSafe(value);
+			if (link != null) {
+				result.add(link);
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Same a parse(List<String>). Exists for historical reasons.
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public List<Link> parseFailSafe(List<String> values) {
+		return parse(values);
 	}
 
 }

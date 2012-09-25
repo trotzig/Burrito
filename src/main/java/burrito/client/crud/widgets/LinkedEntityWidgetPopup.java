@@ -33,6 +33,7 @@ import burrito.client.widgets.selection.SelectionList;
 import burrito.client.widgets.selection.SelectionListLabelCreator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -219,6 +220,7 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 			type.setValue(null);
 			return;
 		}
+
 		try {
 			LinkedEntityJsonOverlay linked = asLinkedEntity(json);
 			if (linked.getTypeId() > 0) {
@@ -227,9 +229,14 @@ public class LinkedEntityWidgetPopup extends DialogBox {
 			linkText.setValue(linked.getLinkText());
 			type.setValue(linked.getTypeClassName());
 			url.setValue(linked.getAbsoluteLink());
-		} catch (Exception e) {
-			GWT.log("Failed to parse json: " + json, e);
 		}
+		catch (JavaScriptException e) {
+			typeIdWaitingToBeSet = -1L;
+			linkText.setValue(json);
+			type.setValue(LinkedEntityWidgetPopup.TYPE_ABSOLUTE_URL);
+			url.setValue(json);
+		}
+
 		handleTypeChange();
 	}
 

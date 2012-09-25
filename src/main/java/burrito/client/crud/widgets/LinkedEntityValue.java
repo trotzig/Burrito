@@ -25,6 +25,7 @@ import burrito.client.crud.labels.CrudLabelHelper;
 import burrito.client.crud.labels.CrudMessages;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -72,20 +73,39 @@ public class LinkedEntityValue extends Composite {
 	}
 
 	private void load() {
-		LinkedEntityJsonOverlay overlay = asLinkedEntity(json);
-		String className = overlay.getTypeClassName();
-		final String linkText = overlay.getLinkText();
+		String className;
+		String linkText;
+		String absoluteLink;
+		long typeId;
+		
+		try {
+			LinkedEntityJsonOverlay overlay = asLinkedEntity(json);
+
+			className = overlay.getTypeClassName();
+			linkText = overlay.getLinkText();
+			absoluteLink = overlay.getAbsoluteLink();
+			typeId = overlay.getTypeId();
+		}
+		catch (JavaScriptException e) {
+			className = LinkedEntityWidgetPopup.TYPE_ABSOLUTE_URL;
+			linkText = json;
+			absoluteLink = json;
+			typeId = -1;
+		}
+
 		final String typeLabel = CrudLabelHelper.getString(className.replace(
 				'.', '_') + "_singular");
 		if (LinkedEntityWidgetPopup.TYPE_ABSOLUTE_URL.equals(className)) {
-			label.setText(labels.linkOutputAbsoluteUrl(linkText, overlay.getAbsoluteLink()));
-	
-		} else {
-			service.describe(className, Long.valueOf(overlay.getTypeId()),
+			label.setText(labels.linkOutputAbsoluteUrl(linkText, absoluteLink));
+		}
+		else {
+			final String finalLinkText = linkText;
+
+			service.describe(className, Long.valueOf(typeId),
 					null, new AsyncCallback<CrudEntityDescription>() {
 
 						public void onSuccess(CrudEntityDescription result) {
-							label.setText(labels.linkOutputUrl(linkText, typeLabel, result.getDisplayString()));
+							label.setText(labels.linkOutputUrl(finalLinkText, typeLabel, result.getDisplayString()));
 						}
 
 						public void onFailure(Throwable caught) {
