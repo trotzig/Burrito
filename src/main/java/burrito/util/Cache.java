@@ -17,30 +17,53 @@
 
 package burrito.util;
 
+import java.util.logging.Logger;
+
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceException;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class Cache {
 
-	private static MemcacheService memcacheService = MemcacheServiceFactory
-			.getMemcacheService();
+	private static MemcacheService memcacheService = MemcacheServiceFactory.getMemcacheService();
+
+	private static Logger log = Logger.getLogger(Cache.class.getName());
 
 	public static void put(String key, Object value) {
-		memcacheService.put(key, value);
+		try {
+			memcacheService.put(key, value);
+		}
+		catch (MemcacheServiceException e) {
+			log.warning("Memcache put failed for key " + key + ": " + e.getMessage());
+		}
 	}
 
 	public static void put(String key, Object value, int expirationInSeconds) {
-		memcacheService.put(key, value, Expiration
-				.byDeltaSeconds(expirationInSeconds));
+		try {
+			memcacheService.put(key, value, Expiration.byDeltaSeconds(expirationInSeconds));
+		}
+		catch (MemcacheServiceException e) {
+			log.warning("Memcache put failed for key " + key + ": " + e.getMessage());
+		}
 	}
 	
 	public static Object get(String key) {
-		return memcacheService.get(key);
+		try {
+			return memcacheService.get(key);
+		}
+		catch (MemcacheServiceException e) {
+			log.warning("Memcache get failed for key " + key + ": " + e.getMessage());
+			return null;
+		}
 	}
 
 	public static void delete(String key) {
-		memcacheService.delete(key);
+		try {
+			memcacheService.delete(key);
+		}
+		catch (MemcacheServiceException e) {
+			log.warning("Memcache delete failed for key " + key + ": " + e.getMessage());
+		}
 	}
-
 }
