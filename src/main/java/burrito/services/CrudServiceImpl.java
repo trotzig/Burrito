@@ -46,6 +46,7 @@ import burrito.annotations.FileKey;
 import burrito.annotations.Hidden;
 import burrito.annotations.Image;
 import burrito.annotations.ImageKey;
+import burrito.annotations.IndexedByEnum;
 import burrito.annotations.Link;
 import burrito.annotations.ListedBy;
 import burrito.annotations.ListedByEnum;
@@ -76,6 +77,7 @@ import burrito.client.crud.generic.fields.BooleanField;
 import burrito.client.crud.generic.fields.DateField;
 import burrito.client.crud.generic.fields.DisplayableMethodField;
 import burrito.client.crud.generic.fields.EmbeddedListField;
+import burrito.client.crud.generic.fields.EnumIndexedListField;
 import burrito.client.crud.generic.fields.EnumListField;
 import burrito.client.crud.generic.fields.FileField;
 import burrito.client.crud.generic.fields.ImageField;
@@ -736,6 +738,10 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 			} else if (field.isAnnotationPresent(ListedByEnum.class)) {
 				ListedByEnum annot = field.getAnnotation(ListedByEnum.class);
 				crud = new EnumListField((List<String>) field.get(entity), annot.type().getName());
+				
+			} else if (field.isAnnotationPresent(IndexedByEnum.class)) {
+				IndexedByEnum annot = field.getAnnotation(IndexedByEnum.class);
+				crud = new EnumIndexedListField((List<String>) field.get(entity), annot.type().getName());
 				
 			} else if (type.equals(String.class)) {
 				crud = new StringListField((List<String>) field.get(entity));
