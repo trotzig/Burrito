@@ -1,6 +1,7 @@
 package burrito.client.crud.widgets;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import burrito.client.crud.CrudService;
@@ -74,7 +75,10 @@ public class EnumIndexedListWidget extends Composite implements HasValidators {
 
 	public void setValue(List<String> value) {
 		startValue = value;
-
+		if(startValue == null) {
+			startValue = Collections.emptyList();
+		}
+		
 		renderStartValue();
 	}
 
