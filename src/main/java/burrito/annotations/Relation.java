@@ -47,6 +47,7 @@ public @interface Relation {
 	 * @return
 	 */
 	Class<? extends Model> value();
+	boolean allowDeadReference() default false;
 
 	public enum RenderMode {
 		DROPDOWN("dropdown"),

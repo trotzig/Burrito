@@ -267,9 +267,9 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				for (Field field : EntityUtil.getFields(clazz)) {
 					if (field.isAnnotationPresent(Relation.class)) {
 						Relation relation = field.getAnnotation(Relation.class);
-						boolean isCorrectClass = relation.value().equals(
-								toBeDeleted.getClass());
-						if (isCorrectClass) {
+						boolean isCorrectClass = relation.value().equals(toBeDeleted.getClass());
+						boolean shouldRemoveDeadReferences = relation.allowDeadReference();
+						if (isCorrectClass && !shouldRemoveDeadReferences) {
 							// Get relateted class values based on the id from
 							// the
 							// deleted entity
