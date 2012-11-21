@@ -115,7 +115,7 @@ public class DateTimePickerWidget extends Composite implements HasChangeHandlers
 			}
 		});
 		dateBox.getTextBox().setTitle(messages.dateHelpText());
-
+		
 		Label dateHeader = new Label(messages.date());
 		dateHeader.addStyleName("k5-DateTimePicker-dateHeader");
 		Label timeHeader = new Label(messages.time());

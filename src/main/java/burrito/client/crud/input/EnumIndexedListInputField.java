@@ -25,16 +25,17 @@ import burrito.client.crud.widgets.EnumIndexedListWidget;
 
 import com.google.gwt.user.client.ui.Widget;
 
-public class EnumIndexedListInputField implements CrudInputField<List<String>> {
+public class EnumIndexedListInputField<Object> implements CrudInputField<List<Object>> {
 
 	private EnumIndexedListField field;
 	private EnumIndexedListWidget widget;
-
+	
 	@SuppressWarnings("unchecked")
-	public EnumIndexedListInputField(EnumIndexedListField field) {
+	public EnumIndexedListInputField(EnumIndexedListField field, String valueListClassName) {
 		this.field = field;
-		widget = new EnumIndexedListWidget(field.isRequired(), field.getEnumClassName());
-		load((List<String>) field.getValue());
+		this.widget = new EnumIndexedListWidget(field.isRequired(), field.getEnumClassName(), valueListClassName);
+		
+		load((List<Object>) field.getValue());
 	}
 
 	public CrudField getCrudField() {
@@ -46,11 +47,11 @@ public class EnumIndexedListInputField implements CrudInputField<List<String>> {
 		return widget;
 	}
 
-	public List<String> getValue() {
+	public List<Object> getValue() {
 		return widget.getValue();
 	}
 
-	public void load(List<String> value) {
+	public void load(List<Object> value) {
 		widget.setValue(value);
 	}
 }

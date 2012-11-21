@@ -21,19 +21,28 @@ import java.util.List;
 
 import burrito.client.crud.generic.CrudField;
 
-@SuppressWarnings("serial")
 public class EnumIndexedListField extends CrudField {
 
-	private List<String> value;
-	private String enumClassName;
+	private static final long serialVersionUID = -1622137165818184232L;
 
+	private List<Object> value;
+	private String enumClassName;
+	private String valueListClassName;
+	
 	public EnumIndexedListField() {
 		// default constructor
 	}
-
-	public EnumIndexedListField(List<String> value, String enumClassName) {
+	
+	/**
+	 * 
+	 * @param value
+	 * @param enumClassName
+	 * @param valueListClassName List<valueListClassName> value
+	 */
+	public EnumIndexedListField(List<Object> value, String enumClassName, String valueListClassName) {
 		super();
-
+		
+		this.valueListClassName = valueListClassName;
 		this.setValue(value);
 		this.setEnumClassName(enumClassName);
 	}
@@ -49,7 +58,7 @@ public class EnumIndexedListField extends CrudField {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Object value) {
-		this.value = (List<String>) value;
+		this.value = (List<Object>) value;
 	}
 
 	@Override
@@ -60,5 +69,9 @@ public class EnumIndexedListField extends CrudField {
 	@Override
 	public Class<?> getType() {
 		return List.class;
+	}
+	
+	public String getListClassName() {
+		return valueListClassName;
 	}
 }

@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -741,7 +742,16 @@ public class CrudServiceImpl extends RemoteServiceServlet implements
 				
 			} else if (field.isAnnotationPresent(IndexedByEnum.class)) {
 				IndexedByEnum annot = field.getAnnotation(IndexedByEnum.class);
-				crud = new EnumIndexedListField((List<String>) field.get(entity), annot.type().getName());
+				
+				Type genericType = field.getGenericType();
+				String genericTypeString = genericType.toString();
+				
+				if (genericTypeString.equals("java.util.List<java.lang.String>")) {
+					crud = new EnumIndexedListField((List<Object>) field.get(entity), annot.type().getName(), String.class.getName());
+					
+				} else if (genericTypeString.equals("java.util.List<java.util.Date>")) {
+					crud = new EnumIndexedListField((List<Object>) field.get(entity), annot.type().getName(), Date.class.getName());
+				}
 				
 			} else if (type.equals(String.class)) {
 				crud = new StringListField((List<String>) field.get(entity));

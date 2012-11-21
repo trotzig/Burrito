@@ -143,7 +143,9 @@ public class CrudFieldResolver {
 			return new EnumListInputField((EnumListField) field);
 		}
 		if (field instanceof EnumIndexedListField) {
-			return new EnumIndexedListInputField((EnumIndexedListField) field);
+			EnumIndexedListField enumIndexedListField = (EnumIndexedListField) field;
+			return new EnumIndexedListInputField(enumIndexedListField, enumIndexedListField.getListClassName());
+			
 		}
 		if (field instanceof ImageField) {
 			return new ImageCrudInputField((ImageField) field);
