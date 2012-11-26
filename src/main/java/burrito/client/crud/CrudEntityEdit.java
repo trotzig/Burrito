@@ -24,7 +24,7 @@ import burrito.client.crud.generic.CrudEntityDescription;
 import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.input.CrudInputField;
 import burrito.client.crud.labels.CrudLabelHelper;
-import burrito.client.util.WindowRequest;
+import burrito.client.util.CrudPreviewOpener;
 import burrito.client.widgets.form.EditForm;
 import burrito.client.widgets.form.EditFormMessages;
 import burrito.client.widgets.inputfield.InputField;
@@ -91,9 +91,8 @@ public class CrudEntityEdit extends EditForm {
 				public void onClick(ClickEvent event) {
 					service.getPreviewPayload(updateCrudEntityDescription(), new AsyncCallback<CrudPreviewPayload>() {
 						public void onSuccess(CrudPreviewPayload payload) {
-							WindowRequest request = new WindowRequest(payload.getPreviewUrl());
-							request.addParam("data", payload.getPreviewData());
-							request.post();
+							CrudPreviewOpener opener = new CrudPreviewOpener(payload.getPreviewUrl(), payload.getPreviewData());
+							opener.open();
 						}
 
 						public void onFailure(Throwable caught) {
