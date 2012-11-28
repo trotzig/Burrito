@@ -14,6 +14,10 @@ public class CrudPreviewOpener {
 		var url = this.@burrito.client.util.CrudPreviewOpener::url;
 		var data = this.@burrito.client.util.CrudPreviewOpener::data;
 
+		if (url.indexOf('/') == 0) {
+			url = location.protocol + '//' + location.host + url;
+		}
+
 		var popup = $wnd.open('', '_blank');
 
 		var form = popup.document.createElement('form');
