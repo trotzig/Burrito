@@ -4,7 +4,6 @@ import burrito.client.crud.generic.CrudField;
 import burrito.client.crud.generic.fields.FileField;
 import burrito.client.dto.BlobInfoDTO;
 import burrito.client.widgets.blobstore.BlobStoreUploader;
-import burrito.client.widgets.messages.CommonMessages;
 import burrito.client.widgets.services.BlobService;
 import burrito.client.widgets.services.BlobServiceAsync;
 
@@ -30,7 +29,6 @@ public class FileCrudInputField implements CrudInputField {
 	private Button changeFile = new Button("Change file"); //move to message
 
 	private BlobServiceAsync service = GWT.create(BlobService.class);
-	private CommonMessages messages = GWT.create(CommonMessages.class);
 	
 	public FileCrudInputField(FileField field) {
 		this.field = field;

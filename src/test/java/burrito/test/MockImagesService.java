@@ -124,4 +124,10 @@ public class MockImagesService implements ImagesService {
 		return null;
 	}
 
+	@Override
+	public void deleteServingUrl(BlobKey arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

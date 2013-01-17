@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burrito.client.crud.widgets.SelectableTextArea.SelectedText;
-import burrito.client.dto.LinkJavaScriptObject;
-import burrito.client.util.LinkJavaScriptObjectFactory;
 import burrito.client.widgets.messages.CommonMessages;
 import burrito.client.widgets.services.BBCodeService;
 import burrito.client.widgets.services.BBCodeServiceAsync;

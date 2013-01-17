@@ -37,12 +37,11 @@ import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
 import burrito.util.StringUtils;
 
-import com.google.appengine.api.search.Consistency;
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.GetRequest;
+import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
-import com.google.appengine.api.search.ListRequest;
-import com.google.appengine.api.search.ListResponse;
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
@@ -80,7 +79,6 @@ public class SearchServiceSearchManager implements SearchManager {
 	private Index getIndex() {
 	    IndexSpec indexSpec = IndexSpec.newBuilder()
 	        .setName("global")
-	        .setConsistency(Consistency.PER_DOCUMENT)
 	        .build();
 	    return SearchServiceFactory.getSearchService().getIndex(indexSpec);
 	}
@@ -91,7 +89,7 @@ public class SearchServiceSearchManager implements SearchManager {
 		
 		Document document = entityToDocument(ownerType, entity, entityId);
 		if (document != null) {
-			getIndex().add(document);
+			getIndex().put(document);
 		}
 		//If the document is null, there is nothing to index
 		
@@ -99,7 +97,7 @@ public class SearchServiceSearchManager implements SearchManager {
 
 	@Override
 	public void deleteSearchEntry(Class<? extends Model> ownerType, Long entityId) {
-		getIndex().remove(ownerType.getName() + ":" + entityId);
+		getIndex().delete(ownerType.getName() + ":" + entityId);
 	}
 
 	private Document entityToDocument(Class<? extends Model> ownerType, Model entity, Long entityId) {
@@ -373,7 +371,8 @@ public class SearchServiceSearchManager implements SearchManager {
 	@Override
 	public List<SearchHit> getAllEntries() {
 		List<SearchHit> result = new ArrayList<SearchHit>();
-		ListResponse<Document> response = getIndex().listDocuments(ListRequest.newBuilder().build());
+
+		GetResponse<Document> response = getIndex().getRange(GetRequest.newBuilder().build());
 		for (Document doc : response) {
             result.add(documentToSearchEntry(doc, null));
         }
@@ -398,7 +397,7 @@ public class SearchServiceSearchManager implements SearchManager {
 		for (ScoredDocument document : results) {
 			docIds.add(document.getId());
 		}
-		getIndex().remove(docIds);
+		getIndex().delete(docIds);
 		return false;
 	}
 
