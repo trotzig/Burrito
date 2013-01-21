@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.appengine.api.search.DeleteException;
+import com.google.appengine.api.search.PutException;
+
 import siena.Generator;
 import siena.Id;
 import siena.Model;
@@ -16,6 +19,7 @@ import siena.core.lifecycle.PostSave;
 import siena.core.lifecycle.PostUpdate;
 import siena.gae.GaePersistenceManager;
 import burrito.services.SearchManagerFactory;
+import burrito.util.Logger;
 
 /**
  * Useful base class for all entities. Provides support for automatically
@@ -53,14 +57,22 @@ public abstract class BurritoModel extends Model {
 	@PostSave
 	public final void reindex() {
 		if (updateSearchIndexOnSave()) {
-			SearchManagerFactory.getSearchManager().insertOrUpdateSearchEntry(this, id);
+			try {
+				SearchManagerFactory.getSearchManager().insertOrUpdateSearchEntry(this, id);
+			} catch (PutException e) {
+				Logger.error("Could not update search entry for " + toString(), e);
+			}
 		}
 	}
 
 	@PostDelete
 	public final void removeFromIndex() {
 		if (updateSearchIndexOnSave()) {
-			SearchManagerFactory.getSearchManager().deleteSearchEntry(this.getClass(), id);
+			try {
+				SearchManagerFactory.getSearchManager().deleteSearchEntry(this.getClass(), id);
+			} catch (DeleteException e) {
+				Logger.error("Could not update search entry for " + toString(), e);
+			}
 		}
 	}
 

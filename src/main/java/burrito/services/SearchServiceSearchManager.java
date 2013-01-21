@@ -35,6 +35,7 @@ import burrito.client.util.StringCutter;
 import burrito.client.widgets.panels.table.ItemCollection;
 import burrito.client.widgets.panels.table.PageMetaData;
 import burrito.util.EntityUtil;
+import burrito.util.Logger;
 import burrito.util.StringUtils;
 
 import com.google.appengine.api.search.Document;
@@ -284,7 +285,8 @@ public class SearchServiceSearchManager implements SearchManager {
 				ownerTypeFilter = "ownerType:\""+clazz.getName()+"\" ";
 			}
 			Query q = Query.newBuilder().setOptions(options).build(ownerTypeFilter + CONTENT_FIELD_NAME+":\"" + query + "\"");
-
+			Logger.info("Search query: " + q.getQueryString());
+			
 		    Results<ScoredDocument> results = getIndex().search(q);
 		    List<SearchHit> entries = new ArrayList<SearchHit>();
 		    for (ScoredDocument document : results) {
