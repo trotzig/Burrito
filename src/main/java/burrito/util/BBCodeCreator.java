@@ -84,9 +84,14 @@ public class BBCodeCreator {
 					Long targetId = Long.valueOf(targetParts[1]);
 
 					Linkable target = (Linkable) Model.getByKey(targetClass, targetId);
-
-					startTag = "<a href=\"" + StringUtils.escapeHtml(target.getUrl()) + "\">";
-					endTag = "</a>";
+					if(target == null) {
+						startTag = "<!-- linkable: invalid target id -->";
+						endTag = "<!-- /linkable -->";
+					}
+					else {
+						startTag = "<a href=\"" + StringUtils.escapeHtml(target.getUrl()) + "\">";
+						endTag = "</a>";
+					}
 				}
 				catch (ClassNotFoundException e) {
 					startTag = "<!-- linkable: could not resolve entity class -->";
