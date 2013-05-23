@@ -23,7 +23,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>texmex</groupId>
 	<artifactId>burrito</artifactId>
-	<version>0.2.9-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
+	
 	<distributionManagement>
 		<repository>
 			<id>releases</id>
@@ -36,6 +37,7 @@
 			<url>http://cat994/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+	
 	<build>
 		<plugins>
 			 <plugin>
@@ -177,6 +179,11 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	
+	<properties>
+		<appengine.version>1.7.5</appengine.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -235,7 +242,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-jsr107cache</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -249,7 +256,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -257,21 +264,21 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-labs</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-stubs</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<scope>test</scope>
 
 		</dependency>
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-testing</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -292,7 +299,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-tools-sdk</artifactId>
-			<version>1.7.4</version>
+			<version>${appengine.version}</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>

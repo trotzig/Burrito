@@ -7,9 +7,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.ByteRange;
+import com.google.appengine.api.blobstore.FileInfo;
 import com.google.appengine.api.blobstore.UploadOptions;
 
 public class MockBlobstoreService implements BlobstoreService {
@@ -79,6 +81,18 @@ public class MockBlobstoreService implements BlobstoreService {
 
 	@Override
 	public Map<String, List<BlobKey>> getUploads(HttpServletRequest arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, List<BlobInfo>> getBlobInfos(HttpServletRequest arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, List<FileInfo>> getFileInfos(HttpServletRequest arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
