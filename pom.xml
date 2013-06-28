@@ -29,12 +29,12 @@
 		<repository>
 			<id>releases</id>
 			<name>Internal Releases</name>
-			<url>http://cat994/nexus/content/repositories/releases</url>
+			<url>http://k5playtech:8080/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>Internal Releases</name>
-			<url>http://cat994/nexus/content/repositories/snapshots</url>
+			<url>http://k5playtech:8080/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	
