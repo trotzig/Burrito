@@ -63,7 +63,7 @@ public class ValidationUtil {
 					field.setAccessible(true);
 
 					if (field.get(entity) == null) {
-						throw new EntityValidationException("Missing value for required field " + field.getName());
+						throw new EntityValidationException("Missing value for required field " + field.getName(), field.getName());
 					}
 				}
 				catch (IllegalArgumentException e) {

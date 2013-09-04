@@ -10,8 +10,18 @@ package burrito;
 @SuppressWarnings("serial")
 public class EntityValidationException extends RuntimeException {
 
+	private String fieldName;
+
 	public EntityValidationException(String message) {
 		super(message);
 	}
 
+	public EntityValidationException(String message, String fieldName) {
+		super(message);
+		this.fieldName = fieldName;
+	}
+
+	public String getFieldName() {
+		return fieldName;
+	}
 }
